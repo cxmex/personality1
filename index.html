@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación de Personalidad</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.4s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .test-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .test-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 30px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 3px solid transparent;
+        }
+
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .test-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .test-card h3 {
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .test-card p {
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .question-text {
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .question-number {
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .likert-scale {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .likert-option {
+            flex: 1;
+            text-align: center;
+        }
+
+        .likert-option input[type="radio"] {
+            display: none;
+        }
+
+        .likert-option label {
+            display: block;
+            padding: 12px 8px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .likert-option input[type="radio"]:checked + label {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+
+        .likert-option label:hover {
+            border-color: #667eea;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-right: 10px;
+        }
+
+        .results {
+            margin-top: 30px;
+        }
+
+        .result-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .result-bar {
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .result-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: bold;
+            transition: width 1s ease-out;
+        }
+
+        .dominant-result {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .dominant-result h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .error {
+            color: #dc3545;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .test-selector {
+                grid-template-columns: 1fr;
+            }
+
+            .likert-scale {
+                flex-direction: column;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Pantalla de Bienvenida -->
+        <div id="welcome" class="screen active">
+            <h1>🧠 Evaluación de Personalidad</h1>
+            <p class="subtitle">Descubre tus rasgos únicos de personalidad</p>
+            
+            <div class="input-group">
+                <label for="name">¿Cuál es tu nombre?</label>
+                <input type="text" id="name" placeholder="Ingresa tu nombre" required>
+                <div class="error" id="nameError">Por favor ingresa tu nombre</div>
+            </div>
+
+            <div class="input-group">
+                <label for="email">¿Cuál es tu correo electrónico?</label>
+                <input type="email" id="email" placeholder="tu@email.com" required>
+                <div class="error" id="emailError">Por favor ingresa un correo válido</div>
+            </div>
+
+            <div class="input-group">
+                <label for="phone">¿Cuál es tu número de teléfono?</label>
+                <input type="tel" id="phone" placeholder="+52 123 456 7890" required>
+                <div class="error" id="phoneError">Por favor ingresa tu número de teléfono</div>
+            </div>
+
+            <label>Elige tu evaluación:</label>
+            <div class="test-selector">
+                <div class="test-card" onclick="selectTest('disc')">
+                    <h3>DISC</h3>
+                    <p>Descubre tu estilo de comportamiento en el entorno laboral. Mide Dominancia, Influencia, Estabilidad y Conciencia. (30 preguntas)</p>
+                </div>
+                <div class="test-card" onclick="selectTest('big5')">
+                    <h3>Big Five</h3>
+                    <p>Explora tus dimensiones centrales de personalidad a través de Apertura, Responsabilidad, Extraversión, Amabilidad y Estabilidad Emocional. (50 preguntas)</p>
+                </div>
+                <div class="test-card" onclick="selectTest('mbti')">
+                    <h3>MBTI</h3>
+                    <p>Identifica tu tipo de personalidad Myers-Briggs optimizado para el contexto laboral. Predice fortalezas y áreas de desarrollo profesional. (60 preguntas)</p>
+                </div>
+            </div>
+
+            <button id="startBtn" onclick="startTest()" disabled>Comenzar Evaluación</button>
+        </div>
+
+        <!-- Pantalla de Preguntas -->
+        <div id="questions" class="screen">
+            <h1 id="testTitle">Evaluación</h1>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            
+            <div id="questionsContainer"></div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-secondary" onclick="previousQuestion()">Anterior</button>
+                <button id="nextBtn" onclick="nextQuestion()">Siguiente</button>
+            </div>
+        </div>
+
+        <!-- Pantalla de Resultados -->
+        <div id="results" class="screen">
+            <h1>Tus Resultados</h1>
+            <p class="subtitle" id="resultsName"></p>
+            
+            <div id="resultsContainer"></div>
+
+            <button onclick="restart()">Realizar Otra Evaluación</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedTest = null;
+        let userName = '';
+        let userEmail = '';
+        let userPhone = '';
+        let questions = [];
+        let answers = [];
+        let currentQuestion = 0;
+
+        function selectTest(type) {
+            selectedTest = type;
+            document.querySelectorAll('.test-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.target.closest('.test-card').classList.add('selected');
+            document.getElementById('startBtn').disabled = false;
+        }
+
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        async function startTest() {
+            userName = document.getElementById('name').value.trim();
+            userEmail = document.getElementById('email').value.trim();
+            userPhone = document.getElementById('phone').value.trim();
+            
+            let hasError = false;
+            
+            if (!userName) {
+                document.getElementById('nameError').style.display = 'block';
+                hasError = true;
+            } else {
+                document.getElementById('nameError').style.display = 'none';
+            }
+            
+            if (!userEmail || !validateEmail(userEmail)) {
+                document.getElementById('emailError').style.display = 'block';
+                hasError = true;
+            } else {
+                document.getElementById('emailError').style.display = 'none';
+            }
+            
+            if (!userPhone) {
+                document.getElementById('phoneError').style.display = 'block';
+                hasError = true;
+            } else {
+                document.getElementById('phoneError').style.display = 'none';
+            }
+            
+            if (hasError) return;
+            
+            if (!selectedTest) {
+                alert('Por favor selecciona una prueba');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/questions/${selectedTest}`);
+                const data = await response.json();
+                questions = data.questions;
+                answers = new Array(questions.length).fill(null);
+                currentQuestion = 0;
+
+                document.getElementById('testTitle').textContent = 
+                    selectedTest === 'disc' ? 'Evaluación DISC' : 
+                    selectedTest === 'big5' ? 'Evaluación Big Five' : 
+                    'Evaluación MBTI';
+                
+                showScreen('questions');
+                renderQuestion();
+            } catch (error) {
+                alert('Error cargando las preguntas');
+                console.error(error);
+            }
+        }
+
+        function renderQuestion() {
+            const container = document.getElementById('questionsContainer');
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+
+            container.innerHTML = `
+                <div class="question-container">
+                    <div class="question-number">Pregunta ${currentQuestion + 1} de ${questions.length}</div>
+                    <div class="question-text">${questions[currentQuestion]}</div>
+                    <div class="likert-scale">
+                        ${[1, 2, 3, 4, 5].map(value => `
+                            <div class="likert-option">
+                                <input type="radio" name="q${currentQuestion}" id="q${currentQuestion}_${value}" 
+                                       value="${value}" ${answers[currentQuestion] === value ? 'checked' : ''}
+                                       onchange="setAnswer(${value})">
+                                <label for="q${currentQuestion}_${value}">
+                                    <div style="font-weight: bold; margin-bottom: 5px;">${value}</div>
+                                    <div style="font-size: 0.8em;">
+                                        ${value === 1 ? 'Totalmente en desacuerdo' : 
+                                          value === 2 ? 'En desacuerdo' : 
+                                          value === 3 ? 'Neutral' : 
+                                          value === 4 ? 'De acuerdo' : 
+                                          'Totalmente de acuerdo'}
+                                    </div>
+                                </label>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            const nextBtn = document.getElementById('nextBtn');
+            nextBtn.textContent = currentQuestion === questions.length - 1 ? 'Enviar' : 'Siguiente';
+            nextBtn.disabled = answers[currentQuestion] === null;
+        }
+
+        function setAnswer(value) {
+            answers[currentQuestion] = value;
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        async function nextQuestion() {
+            if (answers[currentQuestion] === null) {
+                alert('Por favor responde la pregunta');
+                return;
+            }
+
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                await submitTest();
+            }
+        }
+
+        async function submitTest() {
+            try {
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: userName,
+                        email: userEmail,
+                        phone: userPhone,
+                        test_type: selectedTest,
+                        answers: answers
+                    })
+                });
+
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                alert('Error enviando la prueba');
+                console.error(error);
+            }
+        }
+
+        function displayResults(data) {
+            document.getElementById('resultsName').textContent = 
+                `Resultados de ${data.name} - ${data.test_type.toUpperCase()}`;
+            const container = document.getElementById('resultsContainer');
+
+            if (data.test_type === 'disc') {
+                container.innerHTML = `
+                    <div class="dominant-result">
+                        <h2>Tu Estilo Principal: ${data.results.dominant}</h2>
+                        <p>${data.results.description}</p>
+                    </div>
+                    ${Object.entries(data.results.percentages).map(([trait, percentage]) => `
+                        <div class="result-card">
+                            <div class="result-header">
+                                <strong>${trait} - ${getTraitName(trait)}</strong>
+                                <span>${percentage}%</span>
+                            </div>
+                            <div class="result-bar">
+                                <div class="result-bar-fill" style="width: ${percentage}%">
+                                    ${data.results.scores[trait]}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+            } else if (data.test_type === 'big5') {
+                container.innerHTML = `
+                    <div class="dominant-result">
+                        <h2>Tu Perfil de Personalidad</h2>
+                        <p>Eres ${Object.values(data.results.descriptions).join(', ')}</p>
+                    </div>
+                    ${Object.entries(data.results.percentages).map(([trait, percentage]) => `
+                        <div class="result-card">
+                            <div class="result-header">
+                                <strong>${data.results.trait_names[trait]}</strong>
+                                <span>${percentage}%</span>
+                            </div>
+                            <div class="result-bar">
+                                <div class="result-bar-fill" style="width: ${percentage}%">
+                                    ${data.results.scores[trait]}
+                                </div>
+                            </div>
+                            <p style="margin-top: 10px; color: #666;">
+                                ${data.results.descriptions[trait]}
+                            </p>
+                        </div>
+                    `).join('')}
+                `;
+            } else if (data.test_type === 'mbti') {
+                container.innerHTML = `
+                    <div class="dominant-result">
+                        <h2>Tu Tipo: ${data.results.type}</h2>
+                        <p>${data.results.description}</p>
+                    </div>
+                    
+                    <div class="result-card" style="background: #e7f3ff; border-left: 4px solid #2196F3;">
+                        <h3 style="color: #1976D2; margin-bottom: 10px;">💼 Indicadores de Desempeño Laboral</h3>
+                        <p style="color: #333; line-height: 1.6;">${data.results.job_performance}</p>
+                    </div>
+
+                    <h3 style="margin: 25px 0 15px 0; color: #667eea;">Tus Preferencias:</h3>
+                    
+                    <div class="result-card">
+                        <div class="result-header">
+                            <strong>Fuente de Energía</strong>
+                            <span>${data.results.preferences.energy}</span>
+                        </div>
+                        <div class="result-bar">
+                            <div class="result-bar-fill" style="width: ${data.results.percentages.E_I}%">
+                                ${data.results.percentages.E_I}%
+                            </div>
+                        </div>
+                        <p style="margin-top: 8px; font-size: 0.9em; color: #666;">
+                            ${data.results.type[0] === 'E' ? 'Te energizas con la interacción social' : 'Te energizas con la reflexión interna'}
+                        </p>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-header">
+                            <strong>Procesamiento de Información</strong>
+                            <span>${data.results.preferences.information}</span>
+                        </div>
+                        <div class="result-bar">
+                            <div class="result-bar-fill" style="width: ${data.results.percentages.S_N}%">
+                                ${data.results.percentages.S_N}%
+                            </div>
+                        </div>
+                        <p style="margin-top: 8px; font-size: 0.9em; color: #666;">
+                            ${data.results.type[1] === 'S' ? 'Te enfocas en hechos y detalles concretos' : 'Te enfocas en patrones y posibilidades'}
+                        </p>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-header">
+                            <strong>Toma de Decisiones</strong>
+                            <span>${data.results.preferences.decisions}</span>
+                        </div>
+                        <div class="result-bar">
+                            <div class="result-bar-fill" style="width: ${data.results.percentages.T_F}%">
+                                ${data.results.percentages.T_F}%
+                            </div>
+                        </div>
+                        <p style="margin-top: 8px; font-size: 0.9em; color: #666;">
+                            ${data.results.type[2] === 'T' ? 'Decides basándote en lógica objetiva' : 'Decides considerando valores y personas'}
+                        </p>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-header">
+                            <strong>Estilo de Vida</strong>
+                            <span>${data.results.preferences.lifestyle}</span>
+                        </div>
+                        <div class="result-bar">
+                            <div class="result-bar-fill" style="width: ${data.results.percentages.J_P}%">
+                                ${data.results.percentages.J_P}%
+                            </div>
+                        </div>
+                        <p style="margin-top: 8px; font-size: 0.9em; color: #666;">
+                            ${data.results.type[3] === 'J' ? 'Prefieres estructura y planificación' : 'Prefieres flexibilidad y adaptación'}
+                        </p>
+                    </div>
+                `;
+            }
+
+            setTimeout(() => {
+                document.querySelectorAll('.result-bar-fill').forEach((el, i) => {
+                    el.style.width = el.style.width;
+                });
+            }, 100);
+
+            showScreen('results');
+        }
+
+        function getTraitName(trait) {
+            const names = {
+                'D': 'Dominancia',
+                'I': 'Influencia',
+                'S': 'Estabilidad',
+                'C': 'Conciencia'
+            };
+            return names[trait];
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function restart() {
+            selectedTest = null;
+            userName = '';
+            userEmail = '';
+            userPhone = '';
+            questions = [];
+            answers = [];
+            currentQuestion = 0;
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('phone').value = '';
+            document.querySelectorAll('.test-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.getElementById('startBtn').disabled = true;
+            showScreen('welcome');
+        }
+    </script>
+</body>
+</html>
