@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Evaluaciones</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-card h3 {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .stat-card .number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .filters label {
+            margin-right: 10px;
+            font-weight: 600;
+        }
+
+        .filters select, .filters input {
+            padding: 8px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            margin-right: 15px;
+            font-size: 14px;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #667eea;
+            color: white;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge-disc { background: #e3f2fd; color: #1976d2; }
+        .badge-big5 { background: #f3e5f5; color: #7b1fa2; }
+        .badge-mbti { background: #e8f5e9; color: #388e3c; }
+        .badge-allport { background: #fff3e0; color: #f57c00; }
+        .badge-terman { background: #fce4ec; color: #c2185b; }
+        .badge-competencias { background: #e0f2f1; color: #00796b; }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-export {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-export:hover {
+            background: #45a049;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #999;
+        }
+
+        .detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2em;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-modal:hover {
+            color: #333;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 20px;
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            border: 1px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .pagination button.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 Dashboard de Evaluaciones</h1>
+        <p>Panel de administración y análisis de resultados</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Total Participantes</h3>
+            <div class="number" id="totalParticipants">0</div>
+        </div>
+        <div class="stat-card">
+            <h3>Evaluaciones Completadas</h3>
+            <div class="number" id="totalTests">0</div>
+        </div>
+        <div class="stat-card">
+            <h3>Test Más Popular</h3>
+            <div class="number" id="popularTest" style="font-size: 1.5em;">-</div>
+        </div>
+        <div class="stat-card">
+            <h3>Última Evaluación</h3>
+            <div class="number" id="lastTest" style="font-size: 1.2em;">-</div>
+        </div>
+    </div>
+
+    <div class="filters">
+        <label>Filtrar por:</label>
+        <select id="filterTest" onchange="filterData()">
+            <option value="">Todos los tests</option>
+            <option value="disc">DISC</option>
+            <option value="big5">Big Five</option>
+            <option value="mbti">MBTI</option>
+            <option value="allport">Allport</option>
+            <option value="terman">Terman</option>
+            <option value="competencias">Competencias</option>
+        </select>
+
+        <input type="text" id="searchName" placeholder="Buscar por nombre..." onkeyup="filterData()">
+        <input type="email" id="searchEmail" placeholder="Buscar por email..." onkeyup="filterData()">
+        
+        <button class="btn btn-export" onclick="exportToCSV()">📥 Exportar CSV</button>
+    </div>
+
+    <div class="table-container">
+        <div id="loading" class="loading">
+            <p>Cargando datos...</p>
+        </div>
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <h3>📭 No hay datos disponibles</h3>
+            <p>Aún no se han completado evaluaciones</p>
+        </div>
+        <table id="dataTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Teléfono</th>
+                    <th>Test</th>
+                    <th>Resultado Principal</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination" id="pagination"></div>
+
+    <!-- Modal de Detalles -->
+    <div id="detailModal" class="detail-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let allData = [];
+        let filteredData = [];
+        let currentPage = 1;
+        const itemsPerPage = 20;
+
+        async function loadData() {
+            try {
+                const response = await fetch('/api/participants');
+                allData = await response.json();
+                filteredData = allData;
+                
+                updateStats();
+                filterData();
+                
+                document.getElementById('loading').style.display = 'none';
+                
+                if (allData.length === 0) {
+                    document.getElementById('emptyState').style.display = 'block';
+                } else {
+                    document.getElementById('dataTable').style.display = 'table';
+                }
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+                document.getElementById('loading').innerHTML = '<p style="color: red;">Error cargando datos</p>';
+            }
+        }
+
+        function updateStats() {
+            const uniqueParticipants = new Set(allData.map(p => p.email)).size;
+            document.getElementById('totalParticipants').textContent = uniqueParticipants;
+            document.getElementById('totalTests').textContent = allData.length;
+            
+            // Test más popular
+            const testCounts = {};
+            allData.forEach(p => {
+                testCounts[p.test_type] = (testCounts[p.test_type] || 0) + 1;
+            });
+            const popularTest = Object.keys(testCounts).reduce((a, b) => 
+                testCounts[a] > testCounts[b] ? a : b, '');
+            document.getElementById('popularTest').textContent = 
+                popularTest.toUpperCase() || '-';
+            
+            // Última evaluación
+            if (allData.length > 0) {
+                const latest = allData.sort((a, b) => 
+                    new Date(b.submitted_at) - new Date(a.submitted_at))[0];
+                const date = new Date(latest.submitted_at);
+                document.getElementById('lastTest').textContent = 
+                    date.toLocaleDateString('es-MX');
+            }
+        }
+
+        function filterData() {
+            const testFilter = document.getElementById('filterTest').value;
+            const nameSearch = document.getElementById('searchName').value.toLowerCase();
+            const emailSearch = document.getElementById('searchEmail').value.toLowerCase();
+            
+            filteredData = allData.filter(p => {
+                const matchTest = !testFilter || p.test_type === testFilter;
+                const matchName = !nameSearch || p.name.toLowerCase().includes(nameSearch);
+                const matchEmail = !emailSearch || p.email.toLowerCase().includes(emailSearch);
+                return matchTest && matchName && matchEmail;
+            });
+            
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageData = filteredData.slice(start, end);
+            
+            tbody.innerHTML = pageData.map(p => {
+                const date = new Date(p.submitted_at).toLocaleDateString('es-MX', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                const result = p.results && p.results.length > 0 
+                    ? p.results[0].dominant_trait 
+                    : 'N/A';
+                
+                return `
+                    <tr>
+                        <td>${p.name}</td>
+                        <td>${p.email}</td>
+                        <td>${p.phone || 'N/A'}</td>
+                        <td><span class="badge badge-${p.test_type}">${p.test_type.toUpperCase()}</span></td>
+                        <td><strong>${result}</strong></td>
+                        <td>${date}</td>
+                        <td>
+                            <button class="btn btn-primary" onclick="viewDetails('${p.id}')">
+                                Ver Detalles
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            const pagination = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            
+            let html = `
+                <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                    ← Anterior
+                </button>
+            `;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    html += `
+                        <button class="${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">
+                            ${i}
+                        </button>
+                    `;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    html += '<span>...</span>';
+                }
+            }
+            
+            html += `
+                <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                    Siguiente →
+                </button>
+            `;
+            
+            pagination.innerHTML = html;
+        }
+
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderTable();
+            renderPagination();
+        }
+
+        function viewDetails(participantId) {
+            const participant = allData.find(p => p.id === participantId);
+            if (!participant || !participant.results || participant.results.length === 0) {
+                alert('No se encontraron detalles para este participante');
+                return;
+            }
+            
+            const result = participant.results[0];
+            const modal = document.getElementById('detailModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            modalContent.innerHTML = `
+                <h2>${participant.name}</h2>
+                <p><strong>Email:</strong> ${participant.email}</p>
+                <p><strong>Teléfono:</strong> ${participant.phone || 'N/A'}</p>
+                <p><strong>Test:</strong> <span class="badge badge-${participant.test_type}">${participant.test_type.toUpperCase()}</span></p>
+                <p><strong>Fecha:</strong> ${new Date(participant.submitted_at).toLocaleString('es-MX')}</p>
+                <hr style="margin: 20px 0;">
+                <h3>Resultados:</h3>
+                <p><strong>Resultado Principal:</strong> ${result.dominant_trait}</p>
+                <p><strong>Descripción:</strong> ${result.description}</p>
+                <h4 style="margin-top: 20px;">Puntajes Detallados:</h4>
+                <div style="margin-top: 10px;">
+                    ${Object.entries(result.scores).map(([key, value]) => `
+                        <div style="margin: 8px 0;">
+                            <strong>${key}:</strong> ${value} 
+                            <span style="color: #667eea;">(${result.percentages[key]}%)</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+
+        function exportToCSV() {
+            const headers = ['Nombre', 'Email', 'Teléfono', 'Test', 'Resultado Principal', 'Fecha'];
+            const rows = filteredData.map(p => {
+                const result = p.results && p.results.length > 0 ? p.results[0].dominant_trait : 'N/A';
+                return [
+                    p.name,
+                    p.email,
+                    p.phone || 'N/A',
+                    p.test_type.toUpperCase(),
+                    result,
+                    new Date(p.submitted_at).toLocaleString('es-MX')
+                ];
+            });
+            
+            let csv = headers.join(',') + '\n';
+            rows.forEach(row => {
+                csv += row.map(cell => `"${cell}"`).join(',') + '\n';
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `evaluaciones_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+
+        // Cerrar modal al hacer clic fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('detailModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Cargar datos al iniciar
+        loadData();
+        
+        // Actualizar cada 30 segundos
+        setInterval(loadData, 30000);
+    </script>
+</body>
+</html>

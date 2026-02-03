@@ -101,7 +101,7 @@
 
         .test-selector {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             margin-top: 30px;
         }
@@ -346,15 +346,27 @@
             <div class="test-selector">
                 <div class="test-card" onclick="selectTest('disc')">
                     <h3>DISC</h3>
-                    <p>Descubre tu estilo de comportamiento en el entorno laboral. Mide Dominancia, Influencia, Estabilidad y Conciencia. (30 preguntas)</p>
+                    <p>Estilo de comportamiento laboral. (30 preguntas, ~7 min)</p>
                 </div>
                 <div class="test-card" onclick="selectTest('big5')">
                     <h3>Big Five</h3>
-                    <p>Explora tus dimensiones centrales de personalidad a través de Apertura, Responsabilidad, Extraversión, Amabilidad y Estabilidad Emocional. (50 preguntas)</p>
+                    <p>Rasgos de personalidad fundamentales. (50 preguntas, ~12 min)</p>
                 </div>
                 <div class="test-card" onclick="selectTest('mbti')">
                     <h3>MBTI</h3>
-                    <p>Identifica tu tipo de personalidad Myers-Briggs optimizado para el contexto laboral. Predice fortalezas y áreas de desarrollo profesional. (60 preguntas)</p>
+                    <p>Tipo de personalidad Myers-Briggs. (60 preguntas, ~15 min)</p>
+                </div>
+                <div class="test-card" onclick="selectTest('allport')">
+                    <h3>📊 Allport</h3>
+                    <p>Valores y motivaciones personales. (40 preguntas, ~10 min)</p>
+                </div>
+                <div class="test-card" onclick="selectTest('terman')">
+                    <h3>🧠 Terman</h3>
+                    <p>Capacidades cognitivas y razonamiento. (35 preguntas, ~10 min)</p>
+                </div>
+                <div class="test-card" onclick="selectTest('competencias')">
+                    <h3>💼 Competencias</h3>
+                    <p>Habilidades laborales clave. (70 preguntas, ~15 min)</p>
                 </div>
             </div>
 
@@ -455,7 +467,10 @@
                 document.getElementById('testTitle').textContent = 
                     selectedTest === 'disc' ? 'Evaluación DISC' : 
                     selectedTest === 'big5' ? 'Evaluación Big Five' : 
-                    'Evaluación MBTI';
+                    selectedTest === 'mbti' ? 'Evaluación MBTI' :
+                    selectedTest === 'allport' ? 'Test de Valores Allport' :
+                    selectedTest === 'terman' ? 'Test de Razonamiento Terman' :
+                    'Evaluación de Competencias';
                 
                 showScreen('questions');
                 renderQuestion();
@@ -672,6 +687,93 @@
                             ${data.results.type[3] === 'J' ? 'Prefieres estructura y planificación' : 'Prefieres flexibilidad y adaptación'}
                         </p>
                     </div>
+                `;
+            } else if (data.test_type === 'allport') {
+                container.innerHTML = `
+                    <div class="dominant-result">
+                        <h2>Tu Valor Dominante: ${data.results.value_names[data.results.dominant]}</h2>
+                        <p>${data.results.description}</p>
+                    </div>
+                    
+                    ${Object.entries(data.results.percentages).map(([value, percentage]) => `
+                        <div class="result-card">
+                            <div class="result-header">
+                                <strong>${data.results.value_names[value]}</strong>
+                                <span>${percentage}%</span>
+                            </div>
+                            <div class="result-bar">
+                                <div class="result-bar-fill" style="width: ${percentage}%">
+                                    ${percentage}%
+                                </div>
+                            </div>
+                            <p style="margin-top: 8px; font-size: 0.9em; color: #666;">
+                                ${data.results.all_descriptions[value]}
+                            </p>
+                        </div>
+                    `).join('')}
+                `;
+            } else if (data.test_type === 'terman') {
+                container.innerHTML = `
+                    <div class="dominant-result">
+                        <h2>CI Estimado: ${data.results.ci_estimate}</h2>
+                        <h3>Nivel: ${data.results.level}</h3>
+                        <p>${data.results.interpretation}</p>
+                    </div>
+                    
+                    ${Object.entries(data.results.percentages).map(([ability, percentage]) => `
+                        <div class="result-card">
+                            <div class="result-header">
+                                <strong>${data.results.ability_names[ability]}</strong>
+                                <span>${percentage}%</span>
+                            </div>
+                            <div class="result-bar">
+                                <div class="result-bar-fill" style="width: ${percentage}%">
+                                    ${data.results.scores[ability]} pts
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+            } else if (data.test_type === 'competencias') {
+                container.innerHTML = `
+                    <div class="dominant-result">
+                        <h2>Perfil de Competencias Laborales</h2>
+                        <p>Promedio General: ${data.results.promedio_general}%</p>
+                    </div>
+                    
+                    <div class="result-card" style="background: #e8f5e9; border-left: 4px solid #4CAF50;">
+                        <h3 style="color: #2E7D32; margin-bottom: 10px;">✅ Tus Fortalezas (Top 3)</h3>
+                        ${data.results.top_3.map(([comp, perc]) => `
+                            <div style="margin: 8px 0;">
+                                <strong>${comp}:</strong> ${perc}%
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="result-card" style="background: #fff3e0; border-left: 4px solid #FF9800;">
+                        <h3 style="color: #E65100; margin-bottom: 10px;">📈 Áreas de Desarrollo</h3>
+                        ${data.results.areas_mejora.map(([comp, perc]) => `
+                            <div style="margin: 8px 0;">
+                                <strong>${comp}:</strong> ${perc}%
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <h3 style="margin: 25px 0 15px 0; color: #667eea;">Todas tus Competencias:</h3>
+                    
+                    ${Object.entries(data.results.percentages).map(([comp, percentage]) => `
+                        <div class="result-card">
+                            <div class="result-header">
+                                <strong>${data.results.competency_names[comp]}</strong>
+                                <span>${percentage}%</span>
+                            </div>
+                            <div class="result-bar">
+                                <div class="result-bar-fill" style="width: ${percentage}%">
+                                    ${percentage}%
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
                 `;
             }
 

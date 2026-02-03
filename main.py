@@ -137,8 +137,10 @@ BIG5_QUESTIONS = [
     ("Rara vez cuestiono la forma establecida de hacer las cosas.", "O", True),
 ]
 
-# Preguntas MBTI - En Español (60 preguntas para confiabilidad)
-# Diseñadas específicamente para contexto laboral y predicción de desempeño
+
+
+
+# Preguntas MBTI - En Español (60 preguntas)
 MBTI_QUESTIONS = [
     # Extraversión (E) vs Introversión (I) - 15 preguntas
     ("Gano energía interactuando con colegas durante el día de trabajo.", "E", False),
@@ -207,6 +209,208 @@ MBTI_QUESTIONS = [
     ("Me siento satisfecho cuando completo tareas según lo planeado.", "J", False),
     ("Me gusta explorar diferentes enfoques mientras trabajo.", "P", False),
     ("Organizo mi espacio de trabajo de manera sistemática.", "J", False),
+]
+
+# Preguntas ALLPORT (Valores) - 40 preguntas
+ALLPORT_QUESTIONS = [
+    # Teórico (10 preguntas)
+    ("Me motiva descubrir la verdad detrás de las cosas.", "T", False),
+    ("Disfruto analizar problemas desde una perspectiva lógica.", "T", False),
+    ("Prefiero tomar decisiones basadas en datos y hechos verificables.", "T", False),
+    ("Me interesa comprender los principios fundamentales de cómo funcionan las cosas.", "T", False),
+    ("Valoro el conocimiento por encima de las ganancias materiales.", "T", False),
+    ("Dedico tiempo a investigar antes de formar una opinión.", "T", False),
+    ("Me atraen las discusiones filosóficas e intelectuales.", "T", False),
+    ("Prefiero la objetividad sobre las emociones al resolver problemas.", "T", False),
+    ("Busco constantemente aprender cosas nuevas.", "T", False),
+    ("Cuestiono las ideas establecidas para validar su veracidad.", "T", False),
+    
+    # Económico (10 preguntas)
+    ("Me enfoco en la rentabilidad y eficiencia en mi trabajo.", "E", False),
+    ("Valoro las recompensas tangibles por mi esfuerzo.", "E", False),
+    ("Prefiero invertir mi tiempo en actividades que generen retorno económico.", "E", False),
+    ("Considero el costo-beneficio antes de tomar decisiones importantes.", "E", False),
+    ("Me motiva alcanzar la estabilidad financiera.", "E", False),
+    ("Busco oportunidades para maximizar recursos.", "E", False),
+    ("Prefiero soluciones prácticas que generen resultados medibles.", "E", False),
+    ("Valoro la utilidad de las cosas más que su belleza.", "E", False),
+    ("Me interesa el crecimiento económico y la prosperidad.", "E", False),
+    ("Tomo decisiones pensando en el valor que aportan.", "E", False),
+    
+    # Estético (5 preguntas)
+    ("Aprecio la belleza y la armonía en mi entorno.", "A", False),
+    ("Me inspiran las expresiones artísticas y creativas.", "A", False),
+    ("Valoro el diseño y la presentación de las cosas.", "A", False),
+    ("Busco experiencias que estimulen mis sentidos.", "A", False),
+    ("Me importa que mi espacio de trabajo sea estéticamente agradable.", "A", False),
+    
+    # Social (5 preguntas)
+    ("Me motiva ayudar a otros a alcanzar su potencial.", "S", False),
+    ("Valoro las relaciones humanas por encima del éxito material.", "S", False),
+    ("Me satisface contribuir al bienestar de los demás.", "S", False),
+    ("Prefiero trabajar en proyectos que beneficien a la sociedad.", "S", False),
+    ("Dedico tiempo a causas altruistas y de servicio.", "S", False),
+    
+    # Político (5 preguntas)
+    ("Me motiva tener influencia y liderazgo.", "P", False),
+    ("Busco posiciones de autoridad y reconocimiento.", "P", False),
+    ("Valoro el poder para generar cambios importantes.", "P", False),
+    ("Me interesa competir y destacar sobre otros.", "P", False),
+    ("Disfruto dirigir equipos y proyectos estratégicos.", "P", False),
+    
+    # Religioso (5 preguntas)
+    ("Busco un propósito trascendental en mi vida.", "R", False),
+    ("Valoro la conexión con algo más grande que yo mismo.", "R", False),
+    ("Me guían principios éticos y valores profundos.", "R", False),
+    ("Busco coherencia entre mis acciones y mis creencias.", "R", False),
+    ("Me importa el significado espiritual de mi trabajo.", "R", False),
+]
+
+# Preguntas TERMAN (Razonamiento) - 35 preguntas
+TERMAN_QUESTIONS = [
+    # Razonamiento Verbal (10 preguntas)
+    ("Puedo identificar rápidamente sinónimos y antónimos de palabras complejas.", "V", False),
+    ("Comprendo fácilmente textos técnicos y especializados.", "V", False),
+    ("Puedo explicar conceptos abstractos con claridad.", "V", False),
+    ("Identifico rápidamente la idea principal en documentos extensos.", "V", False),
+    ("Tengo facilidad para expresar ideas complejas de forma simple.", "V", False),
+    ("Analizo el significado profundo de los mensajes más allá de lo literal.", "V", False),
+    ("Comprendo analogías y metáforas con facilidad.", "V", False),
+    ("Puedo argumentar diferentes perspectivas de un mismo tema.", "V", False),
+    ("Identifico inconsistencias lógicas en argumentos verbales.", "V", False),
+    ("Aprendo vocabulario nuevo rápidamente.", "V", False),
+    
+    # Razonamiento Lógico-Matemático (10 preguntas)
+    ("Resuelvo problemas numéricos mentalmente con facilidad.", "M", False),
+    ("Identifico patrones en secuencias numéricas rápidamente.", "M", False),
+    ("Comprendo y aplico fórmulas matemáticas sin dificultad.", "M", False),
+    ("Puedo estimar resultados numéricos con precisión.", "M", False),
+    ("Analizo datos estadísticos de forma natural.", "M", False),
+    ("Resuelvo problemas de lógica de manera sistemática.", "M", False),
+    ("Me resulta fácil trabajar con porcentajes y proporciones.", "M", False),
+    ("Identifico relaciones causa-efecto en sistemas complejos.", "M", False),
+    ("Puedo construir argumentos lógicos paso a paso.", "M", False),
+    ("Detecto errores en cálculos o razonamientos numéricos.", "M", False),
+    
+    # Razonamiento Espacial (8 preguntas)
+    ("Visualizo objetos tridimensionales en mi mente fácilmente.", "S", False),
+    ("Me oriento bien en espacios nuevos.", "S", False),
+    ("Puedo imaginar cómo se vería un objeto desde diferentes ángulos.", "S", False),
+    ("Comprendo planos, mapas y diagramas sin dificultad.", "S", False),
+    ("Visualizo el resultado final antes de armar o construir algo.", "S", False),
+    ("Identifico relaciones espaciales entre objetos rápidamente.", "S", False),
+    ("Puedo rotar mentalmente figuras complejas.", "S", False),
+    ("Tengo facilidad para leer e interpretar gráficos.", "S", False),
+    
+    # Comprensión y Análisis (7 preguntas)
+    ("Identifico rápidamente qué información es relevante y cuál no.", "C", False),
+    ("Puedo sintetizar información de múltiples fuentes.", "C", False),
+    ("Analizo problemas desde múltiples perspectivas antes de decidir.", "C", False),
+    ("Identifico suposiciones ocultas en argumentos.", "C", False),
+    ("Puedo anticipar consecuencias de diferentes cursos de acción.", "C", False),
+    ("Integro información nueva con conocimiento previo fácilmente.", "C", False),
+    ("Evalúo la credibilidad de las fuentes de información.", "C", False),
+]
+
+# Preguntas COMPETENCIAS (70 preguntas - 10 competencias clave)
+COMPETENCIAS_QUESTIONS = [
+    # 1. Liderazgo (10 preguntas)
+    ("Tomo la iniciativa para dirigir proyectos y equipos.", "LID", False),
+    ("Inspiro a otros a dar lo mejor de sí mismos.", "LID", False),
+    ("Tomo decisiones difíciles cuando es necesario.", "LID", False),
+    ("Delego tareas de manera efectiva.", "LID", False),
+    ("Mantengo la visión del equipo enfocada en los objetivos.", "LID", False),
+    ("Genero confianza en mi equipo.", "LID", False),
+    ("Motivo a otros incluso en situaciones adversas.", "LID", False),
+    ("Doy retroalimentación constructiva regularmente.", "LID", False),
+    ("Desarrollo el potencial de las personas a mi cargo.", "LID", False),
+    ("Asumo responsabilidad por los resultados del equipo.", "LID", False),
+    
+    # 2. Comunicación (10 preguntas)
+    ("Me expreso con claridad tanto verbalmente como por escrito.", "COM", False),
+    ("Adapto mi comunicación según la audiencia.", "COM", False),
+    ("Escucho activamente antes de responder.", "COM", False),
+    ("Hago presentaciones efectivas y persuasivas.", "COM", False),
+    ("Comunico ideas complejas de forma comprensible.", "COM", False),
+    ("Manejo conversaciones difíciles con diplomacia.", "COM", False),
+    ("Hago preguntas que generan claridad.", "COM", False),
+    ("Sintetizo información de manera concisa.", "COM", False),
+    ("Leo e interpreto correctamente el lenguaje no verbal.", "COM", False),
+    ("Doy seguimiento efectivo a compromisos comunicados.", "COM", False),
+    
+    # 3. Trabajo en Equipo (8 preguntas)
+    ("Colaboro efectivamente con personas de diferentes áreas.", "TEQ", False),
+    ("Contribuyo al logro de objetivos comunes.", "TEQ", False),
+    ("Apoyo a mis compañeros cuando lo necesitan.", "TEQ", False),
+    ("Resuelvo conflictos constructivamente.", "TEQ", False),
+    ("Comparto información y conocimiento libremente.", "TEQ", False),
+    ("Acepto y valoro opiniones diferentes a las mías.", "TEQ", False),
+    ("Mantengo una actitud positiva en el equipo.", "TEQ", False),
+    ("Construyo relaciones de confianza con colegas.", "TEQ", False),
+    
+    # 4. Adaptabilidad (8 preguntas)
+    ("Me ajusto rápidamente a cambios en prioridades.", "ADA", False),
+    ("Mantengo efectividad en ambientes de incertidumbre.", "ADA", False),
+    ("Aprendo nuevas habilidades con facilidad.", "ADA", False),
+    ("Veo los cambios como oportunidades.", "ADA", False),
+    ("Modifico mi enfoque cuando las circunstancias lo requieren.", "ADA", False),
+    ("Trabajo efectivamente con diferentes estilos de trabajo.", "ADA", False),
+    ("Manejo múltiples proyectos simultáneamente.", "ADA", False),
+    ("Me recupero rápidamente de contratiempos.", "ADA", False),
+    
+    # 5. Pensamiento Crítico (8 preguntas)
+    ("Analizo situaciones desde múltiples perspectivas.", "PEN", False),
+    ("Identifico la raíz de los problemas efectivamente.", "PEN", False),
+    ("Evalúo pros y contras antes de tomar decisiones.", "PEN", False),
+    ("Cuestiono suposiciones para validar ideas.", "PEN", False),
+    ("Distingo entre hechos y opiniones.", "PEN", False),
+    ("Aplico lógica para resolver problemas complejos.", "PEN", False),
+    ("Anticipo consecuencias de diferentes alternativas.", "PEN", False),
+    ("Sintetizo información de fuentes diversas.", "PEN", False),
+    
+    # 6. Orientación a Resultados (8 preguntas)
+    ("Establezco metas ambiciosas y las alcanzo.", "RES", False),
+    ("Mantengo el enfoque hasta completar tareas.", "RES", False),
+    ("Supero obstáculos para lograr objetivos.", "RES", False),
+    ("Mido mi progreso constantemente.", "RES", False),
+    ("Priorizo actividades de alto impacto.", "RES", False),
+    ("Cumplo plazos consistentemente.", "RES", False),
+    ("Busco formas de mejorar la eficiencia.", "RES", False),
+    ("Asumo responsabilidad por mis resultados.", "RES", False),
+    
+    # 7. Inteligencia Emocional (8 preguntas)
+    ("Reconozco y gestiono mis emociones efectivamente.", "IE", False),
+    ("Comprendo cómo se sienten los demás.", "IE", False),
+    ("Manejo el estrés de manera saludable.", "IE", False),
+    ("Mantengo la calma en situaciones de presión.", "IE", False),
+    ("Entiendo cómo mis acciones afectan a otros.", "IE", False),
+    ("Adapto mi respuesta emocional según el contexto.", "IE", False),
+    ("Construyo rapport fácilmente con otros.", "IE", False),
+    ("Uso las emociones de forma productiva.", "IE", False),
+    
+    # 8. Creatividad e Innovación (6 preguntas)
+    ("Genero ideas originales para resolver problemas.", "CRE", False),
+    ("Propongo mejoras a procesos existentes.", "CRE", False),
+    ("Encuentro soluciones no convencionales.", "CRE", False),
+    ("Combino ideas de diferentes áreas creativamente.", "CRE", False),
+    ("Experimento con nuevos enfoques.", "CRE", False),
+    ("Visualizo posibilidades que otros no ven.", "CRE", False),
+    
+    # 9. Planificación y Organización (6 preguntas)
+    ("Planifico mi trabajo de manera sistemática.", "PLN", False),
+    ("Establezco prioridades claras.", "PLN", False),
+    ("Organizo recursos eficientemente.", "PLN", False),
+    ("Anticipo necesidades futuras.", "PLN", False),
+    ("Gestiono mi tiempo efectivamente.", "PLN", False),
+    ("Mantengo sistemas organizados de trabajo.", "PLN", False),
+    
+    # 10. Negociación (6 preguntas)
+    ("Logro acuerdos beneficiosos para todas las partes.", "NEG", False),
+    ("Persuado a otros con argumentos sólidos.", "NEG", False),
+    ("Identifico intereses comunes en negociaciones.", "NEG", False),
+    ("Manejo objeciones constructivamente.", "NEG", False),
+    ("Cierro acuerdos de manera efectiva.", "NEG", False),
+    ("Mantengo relaciones positivas durante negociaciones.", "NEG", False),
 ]
 
 class TestAnswers(BaseModel):
@@ -383,6 +587,99 @@ def calculate_mbti(answers: List[int]) -> Dict:
         }
     }
 
+
+def calculate_allport(answers: List[int]) -> Dict:
+    scores = {"T": 0, "E": 0, "A": 0, "S": 0, "P": 0, "R": 0}
+    
+    for i, score in enumerate(answers):
+        value = ALLPORT_QUESTIONS[i][1]
+        scores[value] += score
+    
+    max_scores = {"T": 50, "E": 50, "A": 25, "S": 25, "P": 25, "R": 25}
+    percentages = {k: round((v/max_scores[k])*100, 1) for k, v in scores.items()}
+    dominant = max(scores, key=scores.get)
+    
+    value_names = {
+        "T": "Teórico", "E": "Económico", "A": "Estético",
+        "S": "Social", "P": "Político", "R": "Religioso"
+    }
+    
+    descriptions = {
+        "T": "Valoras la verdad, el conocimiento y el pensamiento lógico.",
+        "E": "Priorizas la utilidad, la eficiencia y los resultados prácticos.",
+        "A": "Aprecias la belleza, la armonía y las expresiones creativas.",
+        "S": "Te motiva ayudar a otros y contribuir al bienestar común.",
+        "P": "Buscas influencia, liderazgo y poder.",
+        "R": "Buscas significado trascendental y coherencia con principios profundos."
+    }
+    
+    return {
+        "scores": scores, "percentages": percentages, "dominant": dominant,
+        "value_names": value_names, "description": descriptions[dominant],
+        "all_descriptions": descriptions
+    }
+
+def calculate_terman(answers: List[int]) -> Dict:
+    scores = {"V": 0, "M": 0, "S": 0, "C": 0}
+    
+    for i, score in enumerate(answers):
+        ability = TERMAN_QUESTIONS[i][1]
+        scores[ability] += score
+    
+    max_scores = {"V": 50, "M": 50, "S": 40, "C": 35}
+    percentages = {k: round((v/max_scores[k])*100, 1) for k, v in scores.items()}
+    total_percentage = sum(percentages.values()) / 4
+    ci_estimate = round(85 + (total_percentage * 0.30))
+    
+    ability_names = {
+        "V": "Razonamiento Verbal", "M": "Razonamiento Lógico-Matemático",
+        "S": "Razonamiento Espacial", "C": "Comprensión y Análisis"
+    }
+    
+    level = "Superior" if ci_estimate >= 110 else "Promedio Alto" if ci_estimate >= 100 else "Promedio"
+    
+    return {
+        "scores": scores, "percentages": percentages, "ci_estimate": ci_estimate,
+        "level": level, "ability_names": ability_names,
+        "interpretation": f"Nivel {level} de razonamiento (CI estimado: {ci_estimate})."
+    }
+
+def calculate_competencias(answers: List[int]) -> Dict:
+    scores = {
+        "LID": 0, "COM": 0, "TEQ": 0, "ADA": 0, "PEN": 0,
+        "RES": 0, "IE": 0, "CRE": 0, "PLN": 0, "NEG": 0
+    }
+    
+    for i, score in enumerate(answers):
+        competency = COMPETENCIAS_QUESTIONS[i][1]
+        scores[competency] += score
+    
+    max_scores = {
+        "LID": 50, "COM": 50, "TEQ": 40, "ADA": 40, "PEN": 40,
+        "RES": 40, "IE": 40, "CRE": 30, "PLN": 30, "NEG": 30
+    }
+    
+    percentages = {k: round((v/max_scores[k])*100, 1) for k, v in scores.items()}
+    
+    competency_names = {
+        "LID": "Liderazgo", "COM": "Comunicación", "TEQ": "Trabajo en Equipo",
+        "ADA": "Adaptabilidad", "PEN": "Pensamiento Crítico",
+        "RES": "Orientación a Resultados", "IE": "Inteligencia Emocional",
+        "CRE": "Creatividad e Innovación", "PLN": "Planificación y Organización",
+        "NEG": "Negociación"
+    }
+    
+    top_3 = sorted(percentages.items(), key=lambda x: x[1], reverse=True)[:3]
+    areas_mejora = sorted(percentages.items(), key=lambda x: x[1])[:3]
+    
+    return {
+        "scores": scores, "percentages": percentages,
+        "competency_names": competency_names,
+        "top_3": [(competency_names[k], v) for k, v in top_3],
+        "areas_mejora": [(competency_names[k], v) for k, v in areas_mejora],
+        "promedio_general": round(sum(percentages.values()) / len(percentages), 1)
+    }
+
 @app.get("/api/questions/{test_type}")
 async def get_questions(test_type: str):
     if test_type == "disc":
@@ -391,6 +688,12 @@ async def get_questions(test_type: str):
         return {"questions": [q[0] for q in BIG5_QUESTIONS]}
     elif test_type == "mbti":
         return {"questions": [q[0] for q in MBTI_QUESTIONS]}
+    elif test_type == "allport":
+        return {"questions": [q[0] for q in ALLPORT_QUESTIONS]}
+    elif test_type == "terman":
+        return {"questions": [q[0] for q in TERMAN_QUESTIONS]}
+    elif test_type == "competencias":
+        return {"questions": [q[0] for q in COMPETENCIAS_QUESTIONS]}
     else:
         raise HTTPException(status_code=400, detail="Tipo de prueba inválido")
 
@@ -408,6 +711,18 @@ async def submit_test(data: TestAnswers):
         if len(data.answers) != len(MBTI_QUESTIONS):
             raise HTTPException(status_code=400, detail="Número inválido de respuestas")
         result = calculate_mbti(data.answers)
+    elif data.test_type == "allport":
+        if len(data.answers) != len(ALLPORT_QUESTIONS):
+            raise HTTPException(status_code=400, detail="Número inválido de respuestas")
+        result = calculate_allport(data.answers)
+    elif data.test_type == "terman":
+        if len(data.answers) != len(TERMAN_QUESTIONS):
+            raise HTTPException(status_code=400, detail="Número inválido de respuestas")
+        result = calculate_terman(data.answers)
+    elif data.test_type == "competencias":
+        if len(data.answers) != len(COMPETENCIAS_QUESTIONS):
+            raise HTTPException(status_code=400, detail="Número inválido de respuestas")
+        result = calculate_competencias(data.answers)
     else:
         raise HTTPException(status_code=400, detail="Tipo de prueba inválido")
     
@@ -441,6 +756,34 @@ async def submit_test(data: TestAnswers):
                 "percentages": result["percentages"],
                 "dominant_trait": result["type"],
                 "description": result["description"]
+            }
+        elif data.test_type == "allport":
+            results_data = {
+                "participant_id": participant_id,
+                "test_type": data.test_type,
+                "scores": result["scores"],
+                "percentages": result["percentages"],
+                "dominant_trait": result["dominant"],
+                "description": result["description"]
+            }
+        elif data.test_type == "terman":
+            results_data = {
+                "participant_id": participant_id,
+                "test_type": data.test_type,
+                "scores": result["scores"],
+                "percentages": result["percentages"],
+                "dominant_trait": f"CI: {result['ci_estimate']}",
+                "description": result["interpretation"]
+            }
+        elif data.test_type == "competencias":
+            top_comp = result["top_3"][0][0] if result["top_3"] else "N/A"
+            results_data = {
+                "participant_id": participant_id,
+                "test_type": data.test_type,
+                "scores": result["scores"],
+                "percentages": result["percentages"],
+                "dominant_trait": top_comp,
+                "description": f"Promedio general: {result['promedio_general']}%"
             }
         else:
             results_data = {
@@ -480,6 +823,11 @@ async def get_participants():
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
     with open("index.html", "r", encoding="utf-8") as f:
+        return f.read()
+
+@app.get("/dashboard", response_class=HTMLResponse)
+async def read_dashboard():
+    with open("dashboard.html", "r", encoding="utf-8") as f:
         return f.read()
 
 if __name__ == "__main__":
