@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, EmailStr
-from typing import List, Dict
+from typing import List, Dict, Optional
 import uvicorn
 import httpx
 from datetime import datetime
@@ -26,6 +26,20 @@ HEADERS = {
     "Authorization": f"Bearer {SUPABASE_KEY}",
     "Content-Type": "application/json",
     "Prefer": "return=representation"
+}
+
+# Configuración de posiciones
+POSITIONS = {
+    "almacen": {
+        "name": "Almacén",
+        "tests": ["disc", "big5", "mbti", "allport", "terman", "competencias"],
+        "description": "Evaluación para posición de Almacén"
+    },
+    "ventas_mostrador": {
+        "name": "Ventas a Mostrador",
+        "tests": ["disc", "big5", "mbti", "allport", "terman", "competencias"],
+        "description": "Evaluación para posición de Ventas a Mostrador"
+    }
 }
 
 # Preguntas DISC - En Español
@@ -136,9 +150,6 @@ BIG5_QUESTIONS = [
     ("Me estreso fácilmente por plazos ajustados.", "N", True),
     ("Rara vez cuestiono la forma establecida de hacer las cosas.", "O", True),
 ]
-
-
-
 
 # Preguntas MBTI - En Español (60 preguntas)
 MBTI_QUESTIONS = [
@@ -417,6 +428,7 @@ class TestAnswers(BaseModel):
     name: str
     email: EmailStr
     phone: str
+    position: str  # NUEVO: campo de posición
     test_type: str
     answers: List[int]
 
@@ -509,8 +521,6 @@ def calculate_mbti(answers: List[int]) -> Dict:
         trait = MBTI_QUESTIONS[i][1]
         is_reverse = MBTI_QUESTIONS[i][2]
         
-        # Convertir escala Likert (1-5) a puntaje
-        # 1,2 = fuerte en dirección opuesta, 3 = neutral, 4,5 = fuerte en esta dirección
         if is_reverse:
             adjusted_score = 6 - score
         else:
@@ -586,7 +596,6 @@ def calculate_mbti(answers: List[int]) -> Dict:
             "lifestyle": "Juicio" if mbti_type[3] == "J" else "Percepción"
         }
     }
-
 
 def calculate_allport(answers: List[int]) -> Dict:
     scores = {"T": 0, "E": 0, "A": 0, "S": 0, "P": 0, "R": 0}
@@ -680,8 +689,24 @@ def calculate_competencias(answers: List[int]) -> Dict:
         "promedio_general": round(sum(percentages.values()) / len(percentages), 1)
     }
 
+# ========== NUEVOS ENDPOINTS ESPECÍFICOS POR POSICIÓN ==========
+
+@app.get("/api/position/{position_key}")
+async def get_position_info(position_key: str):
+    """Obtiene información de una posición específica"""
+    if position_key not in POSITIONS:
+        raise HTTPException(status_code=404, detail="Posición no encontrada")
+    return POSITIONS[position_key]
+
 @app.get("/api/questions/{test_type}")
-async def get_questions(test_type: str):
+async def get_questions(test_type: str, position: Optional[str] = None):
+    """Obtiene preguntas de un test específico, opcionalmente validando por posición"""
+    if position and position not in POSITIONS:
+        raise HTTPException(status_code=400, detail="Posición inválida")
+    
+    if position and test_type not in POSITIONS[position]["tests"]:
+        raise HTTPException(status_code=400, detail=f"Este test no está disponible para la posición {POSITIONS[position]['name']}")
+    
     if test_type == "disc":
         return {"questions": [q[0] for q in DISC_QUESTIONS]}
     elif test_type == "big5":
@@ -699,6 +724,16 @@ async def get_questions(test_type: str):
 
 @app.post("/api/submit")
 async def submit_test(data: TestAnswers):
+    """Envía respuestas de una prueba (ahora con campo position)"""
+    # Validar que la posición existe
+    if data.position not in POSITIONS:
+        raise HTTPException(status_code=400, detail="Posición inválida")
+    
+    # Validar que el test es apropiado para la posición
+    if data.test_type not in POSITIONS[data.position]["tests"]:
+        raise HTTPException(status_code=400, detail=f"Este test no está disponible para {POSITIONS[data.position]['name']}")
+    
+    # Calcular resultados según el tipo de test
     if data.test_type == "disc":
         if len(data.answers) != len(DISC_QUESTIONS):
             raise HTTPException(status_code=400, detail="Número inválido de respuestas")
@@ -726,11 +761,12 @@ async def submit_test(data: TestAnswers):
     else:
         raise HTTPException(status_code=400, detail="Tipo de prueba inválido")
     
-    # Guardar en Supabase
+    # Guardar en Supabase con el campo position
     participant_data = {
         "name": data.name,
         "email": data.email,
         "phone": data.phone,
+        "position": data.position,  # NUEVO: campo position
         "test_type": data.test_type,
         "submitted_at": datetime.utcnow().isoformat()
     }
@@ -747,7 +783,7 @@ async def submit_test(data: TestAnswers):
         }
         await save_to_supabase("answers", answers_data)
         
-        # Guardar resultados - adaptar según el tipo
+        # Guardar resultados
         if data.test_type == "mbti":
             results_data = {
                 "participant_id": participant_id,
@@ -804,21 +840,49 @@ async def submit_test(data: TestAnswers):
         "name": data.name,
         "email": data.email,
         "phone": data.phone,
+        "position": data.position,
         "test_type": data.test_type,
         "results": result
     }
 
 @app.get("/api/participants")
-async def get_participants():
-    """Obtiene todos los participantes"""
+async def get_participants(position: Optional[str] = None):
+    """Obtiene todos los participantes, opcionalmente filtrados por posición"""
     async with httpx.AsyncClient() as client:
-        response = await client.get(
-            f"{SUPABASE_URL}/rest/v1/participants?select=*,results(*)",
-            headers=HEADERS
-        )
+        url = f"{SUPABASE_URL}/rest/v1/participants?select=*,results(*)"
+        
+        if position:
+            if position not in POSITIONS:
+                raise HTTPException(status_code=400, detail="Posición inválida")
+            url += f"&position=eq.{position}"
+        
+        response = await client.get(url, headers=HEADERS)
+        
         if response.status_code == 200:
             return response.json()
         raise HTTPException(status_code=500, detail="Error obteniendo participantes")
+
+# ========== ENDPOINTS DE LANDING PAGES POR POSICIÓN ==========
+
+@app.get("/almacen", response_class=HTMLResponse)
+async def almacen_page():
+    """Página de evaluación para posición de Almacén"""
+    try:
+        with open("almacen.html", "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Página no encontrada")
+
+@app.get("/ventas-mostrador", response_class=HTMLResponse)
+async def ventas_mostrador_page():
+    """Página de evaluación para posición de Ventas a Mostrador"""
+    try:
+        with open("ventas_mostrador.html", "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Página no encontrada")
+
+# ========== ENDPOINTS ORIGINALES ==========
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():

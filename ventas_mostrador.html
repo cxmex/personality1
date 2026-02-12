@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación - Ventas a Mostrador</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .position-badge {
+            display: inline-block;
+            background: #f5576c;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .description {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #f5576c;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .info-box h3 {
+            color: #f5576c;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .test-list {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+        
+        .test-list li {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .test-list li:before {
+            content: "✓";
+            color: #f5576c;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus {
+            outline: none;
+            border-color: #f5576c;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 87, 108, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #f5576c;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Evaluación de Personalidad</h1>
+        <span class="position-badge">🛍️ Ventas a Mostrador</span>
+        
+        <p class="description">
+            Bienvenido a la evaluación para la posición de <strong>Ventas a Mostrador</strong>. 
+            Esta evaluación nos ayudará a conocer mejor tus habilidades y características 
+            profesionales para atención al cliente.
+        </p>
+        
+        <div class="info-box">
+            <h3>📋 Evaluaciones incluidas:</h3>
+            <ul class="test-list">
+                <li>DISC - Estilo de trabajo y comunicación</li>
+                <li>Big Five - Rasgos de personalidad</li>
+                <li>MBTI - Tipo de personalidad Myers-Briggs</li>
+                <li>Allport - Valores personales</li>
+                <li>Terman - Razonamiento y habilidades cognitivas</li>
+                <li>Competencias - Habilidades profesionales</li>
+            </ul>
+        </div>
+        
+        <form id="startForm">
+            <div class="form-group">
+                <label for="name">Nombre completo</label>
+                <input type="text" id="name" name="name" required placeholder="María García">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Correo electrónico</label>
+                <input type="email" id="email" name="email" required placeholder="maria@ejemplo.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Teléfono</label>
+                <input type="tel" id="phone" name="phone" required placeholder="5512345678">
+            </div>
+            
+            <button type="submit" class="btn" id="startBtn">
+                Comenzar Evaluación
+            </button>
+        </form>
+        
+        <div id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 10px; color: #f5576c;">Cargando evaluación...</p>
+        </div>
+    </div>
+    
+    <script>
+        const POSITION = 'ventas_mostrador';
+        const AVAILABLE_TESTS = ['disc', 'big5', 'mbti', 'allport', 'terman', 'competencias'];
+        
+        let userData = {};
+        let currentTestIndex = 0;
+        let currentQuestionIndex = 0;
+        let currentQuestions = [];
+        let currentAnswers = [];
+        
+        document.getElementById('startForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            userData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                position: POSITION
+            };
+            
+            // Ocultar formulario y mostrar loading
+            document.getElementById('startForm').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+            
+            // Cargar primer test
+            await loadTest(AVAILABLE_TESTS[currentTestIndex]);
+        });
+        
+        async function loadTest(testType) {
+            try {
+                const response = await fetch(`/api/questions/${testType}?position=${POSITION}`);
+                const data = await response.json();
+                
+                currentQuestions = data.questions;
+                currentAnswers = [];
+                currentQuestionIndex = 0;
+                
+                // Ocultar loading
+                document.getElementById('loading').style.display = 'none';
+                
+                // Mostrar interfaz de preguntas (necesitas implementar esto)
+                showQuestion();
+                
+            } catch (error) {
+                console.error('Error cargando test:', error);
+                alert('Error al cargar la evaluación. Por favor intenta de nuevo.');
+            }
+        }
+        
+        function showQuestion() {
+            // AQUÍ IMPLEMENTA TU INTERFAZ DE PREGUNTAS
+            // Ejemplo básico:
+            const container = document.querySelector('.container');
+            container.innerHTML = `
+                <h2>Test ${currentTestIndex + 1} de ${AVAILABLE_TESTS.length}</h2>
+                <h3>Pregunta ${currentQuestionIndex + 1} de ${currentQuestions.length}</h3>
+                <p style="margin: 20px 0; font-size: 18px;">${currentQuestions[currentQuestionIndex]}</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 10px; margin: 20px 0;">
+                    <button class="btn" onclick="answerQuestion(1)">1 - Totalmente en desacuerdo</button>
+                    <button class="btn" onclick="answerQuestion(2)">2 - En desacuerdo</button>
+                    <button class="btn" onclick="answerQuestion(3)">3 - Neutral</button>
+                    <button class="btn" onclick="answerQuestion(4)">4 - De acuerdo</button>
+                    <button class="btn" onclick="answerQuestion(5)">5 - Totalmente de acuerdo</button>
+                </div>
+            `;
+        }
+        
+        async function answerQuestion(answer) {
+            currentAnswers.push(answer);
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex < currentQuestions.length) {
+                showQuestion();
+            } else {
+                // Test completado, enviar respuestas
+                await submitTest();
+            }
+        }
+        
+        async function submitTest() {
+            const testType = AVAILABLE_TESTS[currentTestIndex];
+            
+            const submitData = {
+                ...userData,
+                test_type: testType,
+                answers: currentAnswers
+            };
+            
+            try {
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(submitData)
+                });
+                
+                const result = await response.json();
+                console.log('Resultados:', result);
+                
+                // Pasar al siguiente test
+                currentTestIndex++;
+                
+                if (currentTestIndex < AVAILABLE_TESTS.length) {
+                    await loadTest(AVAILABLE_TESTS[currentTestIndex]);
+                } else {
+                    // Todas las evaluaciones completadas
+                    showCompletion();
+                }
+                
+            } catch (error) {
+                console.error('Error enviando respuestas:', error);
+                alert('Error al enviar las respuestas. Por favor intenta de nuevo.');
+            }
+        }
+        
+        function showCompletion() {
+            const container = document.querySelector('.container');
+            container.innerHTML = `
+                <h1>¡Evaluación Completada!</h1>
+                <p style="margin: 20px 0; text-align: center; font-size: 18px;">
+                    Gracias por completar la evaluación. Tus resultados han sido guardados exitosamente.
+                </p>
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn" onclick="location.href='/'">
+                        Regresar al inicio
+                    </button>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

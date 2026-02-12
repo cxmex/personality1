@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación - Almacén</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 650px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .position-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .description {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .test-option {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid #e0e0e0;
+            display: block;
+            transition: all 0.3s;
+        }
+        
+        .test-option:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+        
+        .test-option input[type="radio"] {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        
+        .test-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+        
+        .test-description {
+            font-size: 13px;
+            color: #666;
+            display: block;
+            margin-top: 5px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            margin-top: 10px;
+        }
+        
+        .btn-secondary:hover {
+            box-shadow: 0 10px 20px rgba(108, 117, 125, 0.4);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+        }
+        
+        .question-number {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            color: #333;
+            margin: 20px 0;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        
+        .likert-scale {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .likert-option {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-size: 15px;
+        }
+        
+        .likert-option:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+        
+        .likert-option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .completion-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- PASO 1: Información y Selección de Test -->
+        <div id="step1">
+            <h1>Evaluación de Personalidad</h1>
+            <span class="position-badge">📦 Almacén</span>
+            
+            <p class="description">
+                Bienvenido a la evaluación para la posición de <strong>Almacén</strong>. 
+                Por favor ingresa tus datos y selecciona <strong>una evaluación</strong> para realizar.
+            </p>
+            
+            <form id="infoForm">
+                <div class="form-group">
+                    <label for="name">Nombre completo *</label>
+                    <input type="text" id="name" required placeholder="Juan Pérez">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Correo electrónico *</label>
+                    <input type="email" id="email" required placeholder="juan@ejemplo.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Teléfono *</label>
+                    <input type="tel" id="phone" required placeholder="5512345678">
+                </div>
+                
+                <div class="form-group">
+                    <label>Selecciona una evaluación para realizar *</label>
+                    
+                    <label class="test-option">
+                        <input type="radio" name="test_type" value="disc" required>
+                        <span class="test-title">DISC - Estilo de Trabajo</span>
+                        <span class="test-description">30 preguntas · ~10 minutos · Identifica tu estilo de comunicación</span>
+                    </label>
+                    
+                    <label class="test-option">
+                        <input type="radio" name="test_type" value="big5" required>
+                        <span class="test-title">Big Five - Rasgos de Personalidad</span>
+                        <span class="test-description">50 preguntas · ~15 minutos · Evalúa 5 dimensiones clave</span>
+                    </label>
+                    
+                    <label class="test-option">
+                        <input type="radio" name="test_type" value="mbti" required>
+                        <span class="test-title">MBTI - Tipo de Personalidad Myers-Briggs</span>
+                        <span class="test-description">60 preguntas · ~20 minutos · Descubre tu tipo (ej: INTJ, ESFP)</span>
+                    </label>
+                    
+                    <label class="test-option">
+                        <input type="radio" name="test_type" value="allport" required>
+                        <span class="test-title">Allport - Valores Personales</span>
+                        <span class="test-description">40 preguntas · ~12 minutos · Identifica tus valores principales</span>
+                    </label>
+                    
+                    <label class="test-option">
+                        <input type="radio" name="test_type" value="terman" required>
+                        <span class="test-title">Terman - Razonamiento Cognitivo</span>
+                        <span class="test-description">35 preguntas · ~15 minutos · Evalúa habilidades de razonamiento</span>
+                    </label>
+                    
+                    <label class="test-option">
+                        <input type="radio" name="test_type" value="competencias" required>
+                        <span class="test-title">Competencias - Habilidades Profesionales</span>
+                        <span class="test-description">70 preguntas · ~20 minutos · Mide 10 competencias laborales</span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn">Comenzar Evaluación</button>
+            </form>
+        </div>
+        
+        <!-- PASO 2: Cargando -->
+        <div id="loading" class="hidden" style="text-align: center;">
+            <div class="spinner"></div>
+            <p style="color: #667eea; font-weight: 500;">Cargando evaluación...</p>
+        </div>
+        
+        <!-- PASO 3: Preguntas -->
+        <div id="step2" class="hidden">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            
+            <p class="question-number" id="questionNumber"></p>
+            <p class="question-text" id="questionText"></p>
+            
+            <div class="likert-scale">
+                <div class="likert-option" onclick="selectAnswer(1)">
+                    <strong>1</strong> - Totalmente en desacuerdo
+                </div>
+                <div class="likert-option" onclick="selectAnswer(2)">
+                    <strong>2</strong> - En desacuerdo
+                </div>
+                <div class="likert-option" onclick="selectAnswer(3)">
+                    <strong>3</strong> - Neutral
+                </div>
+                <div class="likert-option" onclick="selectAnswer(4)">
+                    <strong>4</strong> - De acuerdo
+                </div>
+                <div class="likert-option" onclick="selectAnswer(5)">
+                    <strong>5</strong> - Totalmente de acuerdo
+                </div>
+            </div>
+        </div>
+        
+        <!-- PASO 4: Completado -->
+        <div id="step3" class="hidden" style="text-align: center;">
+            <div class="completion-icon">✓</div>
+            <h1>¡Evaluación Completada!</h1>
+            <p style="margin: 30px 0; font-size: 18px; color: #666;">
+                Gracias <strong id="completedName"></strong>, tus resultados han sido guardados exitosamente.
+            </p>
+            
+            <button class="btn" onclick="location.href='/'">
+                Regresar al Inicio
+            </button>
+            
+            <button class="btn btn-secondary" onclick="location.reload()">
+                Realizar Otra Evaluación
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        const POSITION = 'almacen';
+        
+        let userData = {};
+        let selectedTestType = '';
+        let currentQuestionIndex = 0;
+        let currentQuestions = [];
+        let currentAnswers = [];
+        
+        // Handle form submission
+        document.getElementById('infoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            userData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                position: POSITION
+            };
+            
+            // Get selected test
+            const selectedRadio = document.querySelector('input[name="test_type"]:checked');
+            if (!selectedRadio) {
+                alert('Por favor selecciona una evaluación');
+                return;
+            }
+            selectedTestType = selectedRadio.value;
+            
+            // Hide step 1, show loading
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('loading').classList.remove('hidden');
+            
+            // Load test questions
+            await loadTest();
+        });
+        
+        async function loadTest() {
+            try {
+                const response = await fetch(`/api/questions/${selectedTestType}?position=${POSITION}`);
+                
+                if (!response.ok) {
+                    throw new Error('Error al cargar las preguntas');
+                }
+                
+                const data = await response.json();
+                currentQuestions = data.questions;
+                currentAnswers = [];
+                currentQuestionIndex = 0;
+                
+                // Hide loading, show questions
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('step2').classList.remove('hidden');
+                
+                showQuestion();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al cargar la evaluación. Por favor intenta de nuevo.');
+                location.reload();
+            }
+        }
+        
+        function showQuestion() {
+            const questionNumber = document.getElementById('questionNumber');
+            const questionText = document.getElementById('questionText');
+            const progressFill = document.getElementById('progressFill');
+            
+            // Update question
+            questionNumber.textContent = `Pregunta ${currentQuestionIndex + 1} de ${currentQuestions.length}`;
+            questionText.textContent = currentQuestions[currentQuestionIndex];
+            
+            // Update progress bar
+            const progress = ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
+            progressFill.style.width = progress + '%';
+            
+            // Clear previous selections
+            document.querySelectorAll('.likert-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+        }
+        
+        function selectAnswer(answer) {
+            // Visual feedback
+            document.querySelectorAll('.likert-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            
+            // Save answer
+            currentAnswers.push(answer);
+            currentQuestionIndex++;
+            
+            // Small delay for UX
+            setTimeout(() => {
+                if (currentQuestionIndex < currentQuestions.length) {
+                    showQuestion();
+                } else {
+                    submitTest();
+                }
+            }, 300);
+        }
+        
+        async function submitTest() {
+            // Show loading
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('loading').classList.remove('hidden');
+            
+            const submitData = {
+                ...userData,
+                test_type: selectedTestType,
+                answers: currentAnswers
+            };
+            
+            try {
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(submitData)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Error al enviar las respuestas');
+                }
+                
+                const result = await response.json();
+                console.log('Resultados:', result);
+                
+                // Show completion
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('step3').classList.remove('hidden');
+                document.getElementById('completedName').textContent = userData.name;
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al enviar las respuestas: ' + error.message);
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
