@@ -39,6 +39,11 @@ POSITIONS = {
         "name": "Ventas a Mostrador",
         "tests": ["disc", "big5", "mbti", "allport", "terman", "competencias"],
         "description": "Evaluación para posición de Ventas a Mostrador"
+    },
+    "pueblaventas": {
+        "name": "Ventas a Mostrador",
+        "tests": ["disc", "big5", "mbti", "allport", "terman", "competencias"],
+        "description": "Evaluación para posición de Ventas a Mostrador"
     }
 }
 
@@ -878,6 +883,15 @@ async def ventas_mostrador_page():
     """Página de evaluación para posición de Ventas a Mostrador"""
     try:
         with open("ventas_mostrador.html", "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Página no encontrada")
+
+@app.get("/pueblaventas", response_class=HTMLResponse)
+async def pueblaventas_page():
+    """Página de evaluación para posición de Ventas Puebla"""
+    try:
+        with open("pueblaventas.html", "r", encoding="utf-8") as f:
             return f.read()
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="Página no encontrada")
