@@ -1115,6 +1115,99 @@ async def ranking_page():
         raise HTTPException(status_code=404, detail="Página no encontrada")
 
 
+# ========== FOLLOW-UP INTERVIEW ==========
+
+FOLLOWUP_QUESTIONS = [
+    "Cuentame de alguna ocasion en que cometiste un error en el trabajo y nadie se entero. Que hiciste?",
+    "Has tenido alguna vez un desacuerdo con una regla o politica de tu trabajo? Que hiciste al respecto?",
+    "Alguna vez un jefe te pidio hacer algo con lo que no te sentias comodo? Que paso?",
+    "Si ahora mismo llamara a tus dos ultimos jefes, que diria cada uno que es tu mayor area de mejora?",
+    "Alguna vez viste a un companero robar o hacer trampa en el trabajo? Que hiciste?",
+    "Cuentame de una ocasion en que tuviste que darle malas noticias a un cliente o a tu jefe. Como lo manejaste?",
+    "Describeme el periodo mas estresante que hayas vivido en un trabajo. Como te afecto y como lo superaste?",
+    "Cuentame de una situacion donde un cliente fue completamente irrazonable o grosero. Que sentiste en ese momento y que hiciste?",
+    "Has tenido algun conflicto con un companero de trabajo? De que se trato y como se resolvio?",
+    "Que hace falta para que tengas un mal dia en el trabajo?",
+    "Alguna vez dejaste un trabajo de manera impulsiva o sin tener otro empleo asegurado? Que paso?",
+    "Cual es el atajo etico mas tentador que has visto en un ambiente de ventas o tienda? Como lo manejaste?",
+    "Si al cierre de tu turno notaras que falta dinero en la caja y tu fuiste el ultimo en usarla, que harias exactamente?",
+    "Alguna vez te han despedido o pedido que te retires de un trabajo? Que paso?",
+    "Que haces fuera del trabajo para desconectarte y recargar energia?",
+    "Cuanto tiempo es lo mas que te has quedado en un solo empleo y por que decidiste irte?",
+]
+
+FOLLOWUP_PROBES = [
+    "Y que paso despues?",
+    "Como te hizo sentir eso?",
+    "Harias lo mismo hoy?",
+    "Cuentame mas sobre esa parte.",
+    "Que aprendiste de eso?",
+]
+
+class FollowUpLogin(BaseModel):
+    email: EmailStr
+    phone: str
+
+class FollowUpAnswer(BaseModel):
+    email: str
+    question: str
+    answer: str
+    question_index: int
+    question_type: str  # "main" or "followup"
+
+@app.post("/api/followup/login")
+async def followup_login(data: FollowUpLogin):
+    """Valida que el candidato exista en participants usando email + phone"""
+    async with httpx.AsyncClient() as client:
+        url = (
+            f"{SUPABASE_URL}/rest/v1/participants"
+            f"?email=eq.{data.email}&phone=eq.{data.phone}"
+            f"&select=name,email,phone,position&limit=1"
+        )
+        response = await client.get(url, headers=HEADERS)
+        if response.status_code != 200:
+            raise HTTPException(status_code=500, detail="Error de servidor")
+        rows = response.json()
+        if not rows:
+            raise HTTPException(status_code=401, detail="Credenciales incorrectas")
+        return {
+            "name": rows[0]["name"],
+            "email": rows[0]["email"],
+            "position": rows[0].get("position", ""),
+        }
+
+@app.post("/api/followup/answer")
+async def followup_save_answer(data: FollowUpAnswer):
+    """Guarda una respuesta de la entrevista de seguimiento"""
+    record = {
+        "participant_email": data.email,
+        "question": data.question,
+        "answer": data.answer,
+        "question_index": data.question_index,
+        "question_type": data.question_type,
+        "created_at": datetime.utcnow().isoformat(),
+    }
+    try:
+        await save_to_supabase("follow_up_answers", record)
+    except Exception as e:
+        print(f"Error guardando follow-up: {e}")
+    return {"status": "ok"}
+
+@app.get("/api/followup/questions")
+async def followup_questions():
+    """Retorna las preguntas de la entrevista"""
+    return {"questions": FOLLOWUP_QUESTIONS, "probes": FOLLOWUP_PROBES}
+
+@app.get("/follow-up", response_class=HTMLResponse)
+async def followup_page():
+    """Pagina de entrevista de seguimiento"""
+    try:
+        with open("followup.html", "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Pagina no encontrada")
+
+
 # ========== ENDPOINTS DE LANDING PAGES POR POSICIÓN ==========
 
 @app.get("/almacen", response_class=HTMLResponse)

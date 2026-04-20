@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrevista de Seguimiento</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Login ── */
+        .login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 100;
+        }
+        .login-overlay.hidden { display: none; }
+        .login-box {
+            background: white; padding: 40px; border-radius: 20px;
+            width: 90%; max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .login-box h1 { color: #0f3460; text-align: center; margin-bottom: 8px; font-size: 1.6em; }
+        .login-box p { text-align: center; color: #888; margin-bottom: 28px; font-size: 0.95em; }
+        .login-box .field { margin-bottom: 18px; }
+        .login-box label { display: block; font-weight: 600; color: #333; margin-bottom: 6px; font-size: 0.9em; }
+        .login-box input {
+            width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0;
+            border-radius: 10px; font-size: 15px; transition: border-color 0.3s;
+        }
+        .login-box input:focus { outline: none; border-color: #0f3460; }
+        .login-btn {
+            width: 100%; padding: 14px; border: none; border-radius: 10px;
+            background: linear-gradient(135deg, #0f3460, #1a4a7a); color: white;
+            font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.2s;
+        }
+        .login-btn:hover { transform: translateY(-2px); }
+        .login-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .login-error { color: #c62828; text-align: center; margin-top: 12px; font-size: 0.9em; display: none; }
+
+        /* ── Chat layout ── */
+        .chat-header {
+            background: #0f3460; color: white; padding: 16px 24px;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .chat-header .avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: #1a4a7a; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2em;
+        }
+        .chat-header .info h2 { font-size: 1.1em; }
+        .chat-header .info span { font-size: 0.8em; opacity: 0.7; }
+
+        .chat-body {
+            flex: 1; overflow-y: auto; padding: 20px 16px;
+            display: flex; flex-direction: column; gap: 12px;
+        }
+
+        .msg {
+            max-width: 80%; padding: 12px 16px; border-radius: 16px;
+            font-size: 0.95em; line-height: 1.5; animation: msgIn 0.3s ease;
+        }
+        @keyframes msgIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .msg-bot {
+            background: white; color: #333; align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .msg-user {
+            background: #0f3460; color: white; align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: none; align-self: flex-start;
+            background: white; padding: 12px 20px; border-radius: 16px;
+            border-bottom-left-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .typing-indicator span {
+            display: inline-block; width: 8px; height: 8px; background: #ccc;
+            border-radius: 50%; margin: 0 2px; animation: typingDot 1.4s infinite;
+        }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingDot { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+
+        .chat-input {
+            padding: 12px 16px; background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex; gap: 10px;
+        }
+        .chat-input textarea {
+            flex: 1; padding: 12px 16px; border: 2px solid #e0e0e0;
+            border-radius: 24px; font-size: 15px; font-family: inherit;
+            resize: none; min-height: 48px; max-height: 120px;
+            transition: border-color 0.3s;
+        }
+        .chat-input textarea:focus { outline: none; border-color: #0f3460; }
+        .chat-input textarea:disabled { background: #f5f5f5; }
+        .send-btn {
+            width: 48px; height: 48px; border-radius: 50%; border: none;
+            background: #0f3460; color: white; font-size: 1.3em;
+            cursor: pointer; transition: background 0.2s; flex-shrink: 0;
+        }
+        .send-btn:hover { background: #1a4a7a; }
+        .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .progress-bar {
+            height: 4px; background: #e0e0e0;
+        }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, #0f3460, #1a4a7a);
+            transition: width 0.4s ease; width: 0%;
+        }
+
+        .finished-banner {
+            display: none; text-align: center; padding: 30px;
+            background: #e8f5e9; margin: 16px; border-radius: 16px;
+        }
+        .finished-banner h2 { color: #2e7d32; margin-bottom: 8px; }
+        .finished-banner p { color: #555; line-height: 1.6; }
+
+        @media (max-width: 600px) {
+            .msg { max-width: 90%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Login -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-box">
+            <h1>Entrevista de Seguimiento</h1>
+            <p>Ingresa con los datos que usaste en tu evaluacion</p>
+            <form id="loginForm">
+                <div class="field">
+                    <label>Correo electronico</label>
+                    <input type="email" id="loginEmail" required placeholder="tu@email.com">
+                </div>
+                <div class="field">
+                    <label>Numero de telefono</label>
+                    <input type="tel" id="loginPhone" required placeholder="5512345678">
+                </div>
+                <button type="submit" class="login-btn" id="loginBtn">Iniciar Entrevista</button>
+                <div class="login-error" id="loginError"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Chat -->
+    <div class="chat-header">
+        <div class="avatar">RH</div>
+        <div class="info">
+            <h2>Entrevista de Seguimiento</h2>
+            <span id="headerProgress">Pregunta 1 de 16</span>
+        </div>
+    </div>
+
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="chat-body" id="chatBody">
+        <div class="typing-indicator" id="typingIndicator">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <div class="finished-banner" id="finishedBanner">
+        <h2>Entrevista Completada</h2>
+        <p>Gracias por sus respuestas, le haremos una llamada si su perfil cumple con los requisitos de nuestra vacante.</p>
+    </div>
+
+    <div class="chat-input" id="chatInput">
+        <textarea id="userInput" placeholder="Escribe tu respuesta..." rows="1" disabled></textarea>
+        <button class="send-btn" id="sendBtn" disabled onclick="sendAnswer()">&#10148;</button>
+    </div>
+
+    <script>
+        let userData = null;
+        let questions = [];
+        let probes = [];
+        let currentQ = 0;
+        let waitingForFollowUp = false;
+        let currentFollowUpProbe = '';
+        let inputReady = false;
+
+        // ── Login ──
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const phone = document.getElementById('loginPhone').value.trim();
+            const errEl = document.getElementById('loginError');
+            const btn = document.getElementById('loginBtn');
+
+            errEl.style.display = 'none';
+            btn.disabled = true;
+            btn.textContent = 'Verificando...';
+
+            try {
+                const res = await fetch('/api/followup/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, phone })
+                });
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.detail || 'Error');
+                }
+
+                userData = await res.json();
+                userData.email = email;
+
+                // Load questions
+                const qRes = await fetch('/api/followup/questions');
+                const qData = await qRes.json();
+                questions = qData.questions;
+                probes = qData.probes;
+
+                // Start chat
+                document.getElementById('loginOverlay').classList.add('hidden');
+                startChat();
+
+            } catch (err) {
+                errEl.textContent = err.message === 'Credenciales incorrectas'
+                    ? 'No encontramos tu registro. Verifica tu correo y telefono.'
+                    : 'Error de conexion. Intenta de nuevo.';
+                errEl.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Iniciar Entrevista';
+            }
+        });
+
+        // ── Chat ──
+        function startChat() {
+            setTimeout(() => {
+                addBotMsg(`Hola ${userData.name.split(' ')[0]}, gracias por tomarte el tiempo para esta entrevista. Te hare algunas preguntas sobre tus experiencias laborales. No hay respuestas correctas o incorrectas, solo quiero conocerte mejor.`);
+                setTimeout(() => {
+                    addBotMsg('Toma el tiempo que necesites para responder cada pregunta.');
+                    setTimeout(() => askMainQuestion(), 1500);
+                }, 2000);
+            }, 800);
+        }
+
+        function askMainQuestion() {
+            if (currentQ >= questions.length) {
+                finishInterview();
+                return;
+            }
+            updateProgress();
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                addBotMsg(questions[currentQ]);
+                enableInput();
+            }, 1200);
+        }
+
+        function askFollowUp() {
+            const probe = probes[Math.floor(Math.random() * probes.length)];
+            currentFollowUpProbe = probe;
+            waitingForFollowUp = true;
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                addBotMsg(probe);
+                enableInput();
+            }, 1000);
+        }
+
+        async function sendAnswer() {
+            const input = document.getElementById('userInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            disableInput();
+            addUserMsg(text);
+            input.value = '';
+            autoResize(input);
+
+            // Save to DB
+            const questionText = waitingForFollowUp ? currentFollowUpProbe : questions[currentQ];
+            const qType = waitingForFollowUp ? 'followup' : 'main';
+
+            fetch('/api/followup/answer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: userData.email,
+                    question: questionText,
+                    answer: text,
+                    question_index: currentQ,
+                    question_type: qType,
+                })
+            }).catch(err => console.error('Error saving:', err));
+
+            if (waitingForFollowUp) {
+                // Follow-up done, move to next main question
+                waitingForFollowUp = false;
+                currentQ++;
+                setTimeout(() => askMainQuestion(), 1200);
+            } else {
+                // Main question answered, ask follow-up
+                setTimeout(() => askFollowUp(), 1000);
+            }
+        }
+
+        function finishInterview() {
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                addBotMsg('Gracias por sus respuestas, le haremos una llamada si su perfil cumple con los requisitos de nuestra vacante.');
+                document.getElementById('chatInput').style.display = 'none';
+                document.getElementById('finishedBanner').style.display = 'block';
+                document.getElementById('progressFill').style.width = '100%';
+                document.getElementById('headerProgress').textContent = 'Completada';
+            }, 1500);
+        }
+
+        // ── UI helpers ──
+        function addBotMsg(text) {
+            const div = document.createElement('div');
+            div.className = 'msg msg-bot';
+            div.textContent = text;
+            const body = document.getElementById('chatBody');
+            body.insertBefore(div, document.getElementById('typingIndicator'));
+            scrollBottom();
+        }
+
+        function addUserMsg(text) {
+            const div = document.createElement('div');
+            div.className = 'msg msg-user';
+            div.textContent = text;
+            const body = document.getElementById('chatBody');
+            body.insertBefore(div, document.getElementById('typingIndicator'));
+            scrollBottom();
+        }
+
+        function showTyping() {
+            document.getElementById('typingIndicator').style.display = 'block';
+            scrollBottom();
+        }
+        function hideTyping() {
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+
+        function enableInput() {
+            inputReady = true;
+            const input = document.getElementById('userInput');
+            input.disabled = false;
+            document.getElementById('sendBtn').disabled = false;
+            input.focus();
+        }
+        function disableInput() {
+            inputReady = false;
+            document.getElementById('userInput').disabled = true;
+            document.getElementById('sendBtn').disabled = true;
+        }
+
+        function updateProgress() {
+            const pct = ((currentQ) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = pct + '%';
+            document.getElementById('headerProgress').textContent = `Pregunta ${currentQ + 1} de ${questions.length}`;
+        }
+
+        function scrollBottom() {
+            const body = document.getElementById('chatBody');
+            setTimeout(() => { body.scrollTop = body.scrollHeight; }, 50);
+        }
+
+        // Auto-resize textarea
+        const input = document.getElementById('userInput');
+        input.addEventListener('input', () => autoResize(input));
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (inputReady && input.value.trim()) sendAnswer();
+            }
+        });
+
+        function autoResize(el) {
+            el.style.height = 'auto';
+            el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+        }
+    </script>
+</body>
+</html>
