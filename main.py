@@ -7,6 +7,11 @@ import uvicorn
 import httpx
 from datetime import datetime, date
 from collections import defaultdict
+import os
+import json
+import re as re_module
+
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 
 app = FastAPI(title="API de Evaluación de Personalidad")
 
@@ -1203,6 +1208,228 @@ async def followup_page():
     """Pagina de entrevista de seguimiento"""
     try:
         with open("followup.html", "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Pagina no encontrada")
+
+
+# ========== AI INTERVIEW AGENT ==========
+
+INTERVIEW_SYSTEM_PROMPT = """Eres un entrevistador de Recursos Humanos profesional pero cercano. Conduces entrevistas de seguimiento para candidatos de retail/ventas.
+
+REGLAS:
+- Habla en español, de tu, casual pero profesional
+- NUNCA reveles que estas puntuando al candidato
+- Haz UNA pregunta a la vez
+- Adapta tus follow-ups a lo que realmente dijo el candidato — si fue vago, presiona con gentileza; si dio un buen ejemplo, reconocelo brevemente y sigue
+- NO repitas preguntas que ya cubriste
+- Cubre estos temas (no uses estos nombres con el candidato):
+
+HONESTIDAD: errores en el trabajo, desacuerdos con reglas/politicas, cuando un jefe pidio algo incomodo, que dirian sus ultimos jefes de su area de mejora, si vio robo o trampa, dar malas noticias
+ESTABILIDAD EMOCIONAL: periodo mas estresante, cliente irrazonable, conflicto con companeros, que causa un mal dia, dejar trabajo impulsivamente
+CONDUCTA: atajos eticos en ventas, faltante de caja, despidos, que hace para desconectar, tiempo maximo en un empleo
+
+Debes cubrir al menos 10 temas diferentes. Cuando hayas cubierto suficientes temas, cierra la entrevista.
+
+RESPONDE SIEMPRE en JSON valido con esta estructura exacta:
+{
+  "message": "lo que le dices al candidato",
+  "scores": null,
+  "done": false,
+  "topics_covered": 0
+}
+
+Para el campo "scores", despues de CADA respuesta del candidato (no en tu primer saludo), evalua:
+{
+  "honesty": 1-10,
+  "emotional_stability": 1-10,
+  "accountability": 1-10,
+  "risk_flags": 0-5,
+  "specificity": 1-5
+}
+
+Cuando hayas cubierto al menos 10 temas, pon "done": true y "message" debe ser EXACTAMENTE:
+"Gracias por sus respuestas, le haremos una llamada si su perfil cumple con los requisitos de nuestra vacante."
+
+En el mensaje final, incluye tambien "analysis":
+{
+  "recommendation": "strong_yes|yes|maybe|no|strong_no",
+  "strengths": ["fortaleza1", "fortaleza2", "fortaleza3"],
+  "concerns": ["preocupacion1", "preocupacion2", "preocupacion3"],
+  "suggested_questions": ["pregunta para entrevista presencial 1", "pregunta 2"]
+}
+"""
+
+class InterviewChatRequest(BaseModel):
+    session_id: str
+    email: str
+    messages: List[Dict]  # [{"role": "user"/"assistant", "content": "..."}]
+
+@app.post("/api/interview/start")
+async def interview_start(data: FollowUpLogin):
+    """Inicia sesion de entrevista AI — valida credenciales y crea sesion"""
+    # Validate candidate
+    async with httpx.AsyncClient() as client:
+        url = (
+            f"{SUPABASE_URL}/rest/v1/participants"
+            f"?email=eq.{data.email}&phone=eq.{data.phone}"
+            f"&select=name,email,phone,position&limit=1"
+        )
+        response = await client.get(url, headers=HEADERS)
+        if response.status_code != 200:
+            raise HTTPException(status_code=500, detail="Error de servidor")
+        rows = response.json()
+        if not rows:
+            raise HTTPException(status_code=401, detail="Credenciales incorrectas")
+
+    candidate = rows[0]
+    session_id = f"{data.email}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+
+    # Create session in DB
+    session_data = {
+        "session_id": session_id,
+        "participant_email": data.email,
+        "participant_name": candidate["name"],
+        "variant": "ai",
+        "started_at": datetime.utcnow().isoformat(),
+        "status": "active",
+    }
+    try:
+        await save_to_supabase("interview_sessions", session_data)
+    except Exception as e:
+        print(f"Error creating session: {e}")
+
+    return {
+        "session_id": session_id,
+        "name": candidate["name"],
+        "email": data.email,
+    }
+
+
+@app.post("/api/interview/chat")
+async def interview_chat(data: InterviewChatRequest):
+    """Envia mensaje al agente Claude y obtiene respuesta + scores"""
+    if not ANTHROPIC_API_KEY:
+        raise HTTPException(status_code=500, detail="ANTHROPIC_API_KEY no configurada")
+
+    # Build messages for Claude
+    claude_messages = []
+    for m in data.messages:
+        claude_messages.append({"role": m["role"], "content": m["content"]})
+
+    async with httpx.AsyncClient(timeout=60.0) as client:
+        response = await client.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={
+                "x-api-key": ANTHROPIC_API_KEY,
+                "anthropic-version": "2023-06-01",
+                "content-type": "application/json",
+            },
+            json={
+                "model": "claude-sonnet-4-20250514",
+                "max_tokens": 1024,
+                "system": INTERVIEW_SYSTEM_PROMPT,
+                "messages": claude_messages,
+            },
+        )
+
+        if response.status_code != 200:
+            print(f"Claude API error: {response.status_code} {response.text}")
+            raise HTTPException(status_code=500, detail="Error con el agente de entrevista")
+
+        result = response.json()
+        raw_text = result["content"][0]["text"]
+
+    # Parse JSON from Claude response
+    try:
+        parsed = json.loads(raw_text)
+    except json.JSONDecodeError:
+        # Try to extract JSON from the response
+        json_match = re_module.search(r'\{[\s\S]*\}', raw_text)
+        if json_match:
+            parsed = json.loads(json_match.group())
+        else:
+            parsed = {"message": raw_text, "scores": None, "done": False, "topics_covered": 0}
+
+    bot_message = parsed.get("message", "")
+    scores = parsed.get("scores")
+    done = parsed.get("done", False)
+    analysis = parsed.get("analysis")
+    topics_covered = parsed.get("topics_covered", 0)
+
+    # Save the last user message + bot response + scores
+    if data.messages and data.messages[-1]["role"] == "user":
+        user_msg = data.messages[-1]["content"]
+        word_count = len(user_msg.split())
+
+        msg_record = {
+            "session_id": data.session_id,
+            "participant_email": data.email,
+            "role": "user",
+            "content": user_msg,
+            "word_count": word_count,
+            "scores": json.dumps(scores) if scores else None,
+            "created_at": datetime.utcnow().isoformat(),
+        }
+        try:
+            await save_to_supabase("interview_messages", msg_record)
+        except Exception as e:
+            print(f"Error saving user msg: {e}")
+
+    # Save bot message
+    bot_record = {
+        "session_id": data.session_id,
+        "participant_email": data.email,
+        "role": "assistant",
+        "content": bot_message,
+        "word_count": 0,
+        "scores": None,
+        "created_at": datetime.utcnow().isoformat(),
+    }
+    try:
+        await save_to_supabase("interview_messages", bot_record)
+    except Exception as e:
+        print(f"Error saving bot msg: {e}")
+
+    # If done, save final analysis and update session
+    if done and analysis:
+        score_record = {
+            "session_id": data.session_id,
+            "participant_email": data.email,
+            "recommendation": analysis.get("recommendation", ""),
+            "strengths": json.dumps(analysis.get("strengths", []), ensure_ascii=False),
+            "concerns": json.dumps(analysis.get("concerns", []), ensure_ascii=False),
+            "suggested_questions": json.dumps(analysis.get("suggested_questions", []), ensure_ascii=False),
+            "created_at": datetime.utcnow().isoformat(),
+        }
+        try:
+            await save_to_supabase("interview_scores", score_record)
+        except Exception as e:
+            print(f"Error saving scores: {e}")
+
+        # Update session status
+        try:
+            async with httpx.AsyncClient() as client:
+                await client.patch(
+                    f"{SUPABASE_URL}/rest/v1/interview_sessions?session_id=eq.{data.session_id}",
+                    headers=HEADERS,
+                    json={"status": "completed", "completed_at": datetime.utcnow().isoformat()},
+                )
+        except Exception as e:
+            print(f"Error updating session: {e}")
+
+    return {
+        "message": bot_message,
+        "done": done,
+        "topics_covered": topics_covered,
+    }
+
+
+@app.get("/interview", response_class=HTMLResponse)
+async def interview_page():
+    """Pagina de entrevista con agente AI"""
+    try:
+        with open("interview.html", "r", encoding="utf-8") as f:
             return f.read()
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="Pagina no encontrada")
