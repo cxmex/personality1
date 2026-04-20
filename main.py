@@ -5,7 +5,8 @@ from pydantic import BaseModel, EmailStr
 from typing import List, Dict, Optional
 import uvicorn
 import httpx
-from datetime import datetime
+from datetime import datetime, date
+from collections import defaultdict
 
 app = FastAPI(title="API de Evaluación de Personalidad")
 
@@ -866,6 +867,253 @@ async def get_participants(position: Optional[str] = None):
         if response.status_code == 200:
             return response.json()
         raise HTTPException(status_code=500, detail="Error obteniendo participantes")
+
+# ========== RANKING ENGINE ==========
+
+ROLE_PROFILES = {
+    "ventas_mostrador": {
+        "label": "Ventas a Mostrador",
+        "competencias_weights": {
+            "COM": 0.18, "NEG": 0.16, "IE": 0.14, "RES": 0.13,
+            "ADA": 0.10, "TEQ": 0.10, "LID": 0.07, "PEN": 0.06,
+            "PLN": 0.03, "CRE": 0.03,
+        },
+        "disc_ideal": {"D": 0.30, "I": 0.40, "S": 0.15, "C": 0.15},
+        "ci_minimum": 103,
+        "competencias_weight": 0.65,
+        "disc_weight": 0.15,
+        "ci_weight": 0.20,
+    },
+    "almacen": {
+        "label": "Almacén",
+        "competencias_weights": {
+            "PLN": 0.20, "RES": 0.16, "TEQ": 0.14, "ADA": 0.12,
+            "PEN": 0.10, "COM": 0.08, "IE": 0.07, "LID": 0.05,
+            "NEG": 0.04, "CRE": 0.04,
+        },
+        "disc_ideal": {"D": 0.20, "I": 0.15, "S": 0.40, "C": 0.25},
+        "ci_minimum": 100,
+        "competencias_weight": 0.65,
+        "disc_weight": 0.15,
+        "ci_weight": 0.20,
+    },
+    "pueblaventas": {
+        "label": "Ventas Mostrador (Puebla)",
+        "competencias_weights": {
+            "COM": 0.18, "NEG": 0.16, "IE": 0.14, "RES": 0.13,
+            "ADA": 0.10, "TEQ": 0.10, "LID": 0.07, "PEN": 0.06,
+            "PLN": 0.03, "CRE": 0.03,
+        },
+        "disc_ideal": {"D": 0.30, "I": 0.40, "S": 0.15, "C": 0.15},
+        "ci_minimum": 103,
+        "competencias_weight": 0.65,
+        "disc_weight": 0.15,
+        "ci_weight": 0.20,
+    },
+    "gerente": {
+        "label": "Gerente de Ventas",
+        "competencias_weights": {
+            "LID": 0.22, "PLN": 0.18, "COM": 0.12, "NEG": 0.10,
+            "ADA": 0.10, "RES": 0.10, "IE": 0.08, "PEN": 0.05,
+            "TEQ": 0.03, "CRE": 0.02,
+        },
+        "disc_ideal": {"D": 0.40, "I": 0.20, "S": 0.15, "C": 0.25},
+        "ci_minimum": 107,
+        "competencias_weight": 0.60,
+        "disc_weight": 0.15,
+        "ci_weight": 0.25,
+    },
+}
+
+def _score_competencias(pct: dict, profile: dict) -> float:
+    weights = profile["competencias_weights"]
+    total, wsum = 0.0, 0.0
+    for k, w in weights.items():
+        if k in pct:
+            total += pct[k] * w
+            wsum += w
+    return (total / wsum) / 100 if wsum > 0 else 0.0
+
+def _score_disc(pct: dict, profile: dict) -> float:
+    ideal = profile["disc_ideal"]
+    total = sum(pct.values()) or 1
+    cand = {k: v / total for k, v in pct.items()}
+    error = sum(abs(cand.get(k, 0) - ideal.get(k, 0)) for k in "DISC") / 2
+    return max(0.0, 1.0 - error)
+
+def _score_ci(ci: int, profile: dict) -> tuple:
+    """Returns (score 0-1, disqualified bool)"""
+    if ci < profile["ci_minimum"]:
+        return 0.0, True
+    return min(1.0, (ci - 100) / 15), False
+
+def _rank_candidates(rows: list, role: str) -> list:
+    """
+    rows: list of participant dicts with nested results from Supabase.
+    Groups by email, builds composite score, returns ranked list.
+    """
+    profile = ROLE_PROFILES.get(role, ROLE_PROFILES["ventas_mostrador"])
+
+    # Group test results by candidate email
+    grouped = defaultdict(lambda: {"tests": {}, "info": {}})
+    for row in rows:
+        email = row["email"]
+        grouped[email]["info"] = {
+            "name": row["name"], "email": email,
+            "phone": row.get("phone", ""), "position": row.get("position", ""),
+            "first_submitted": row.get("submitted_at", ""),
+        }
+        # Keep the earliest submission date
+        existing = grouped[email]["info"].get("first_submitted", "")
+        if existing and row.get("submitted_at", "") < existing:
+            grouped[email]["info"]["first_submitted"] = row["submitted_at"]
+
+        tt = row.get("test_type", "")
+        if row.get("results") and len(row["results"]) > 0:
+            grouped[email]["tests"][tt] = row["results"][0]
+
+    ranked = []
+    cw = profile["competencias_weight"]
+    dw = profile["disc_weight"]
+    tw = profile["ci_weight"]
+
+    for email, data in grouped.items():
+        tests = data["tests"]
+        info = data["info"]
+        disqualified = False
+        dq_reason = ""
+        breakdown = {}
+
+        # --- Competencias ---
+        comp_score = 0.0
+        if "competencias" in tests:
+            pct = tests["competencias"].get("percentages", {})
+            comp_score = _score_competencias(pct, profile)
+        breakdown["competencias"] = round(comp_score * 100, 1)
+
+        # --- DISC ---
+        disc_score = 0.5
+        if "disc" in tests:
+            pct = tests["disc"].get("percentages") or tests["disc"].get("scores", {})
+            if pct:
+                disc_score = _score_disc(pct, profile)
+        breakdown["disc_fit"] = round(disc_score * 100, 1)
+
+        # --- Terman / CI ---
+        ci_score_val = 0.5
+        ci_raw = None
+        if "terman" in tests:
+            desc = tests["terman"].get("description", "")
+            dom = tests["terman"].get("dominant_trait", "")
+            # CI is stored as "CI: 112" in dominant_trait or in description
+            ci_str = dom.replace("CI:", "").strip() if "CI" in dom else ""
+            if ci_str.isdigit():
+                ci_raw = int(ci_str)
+            else:
+                import re
+                m = re.search(r'CI[:\s]*(\d+)', desc)
+                if m:
+                    ci_raw = int(m.group(1))
+            if ci_raw:
+                ci_score_val, disqualified = _score_ci(ci_raw, profile)
+                if disqualified:
+                    dq_reason = f"CI {ci_raw} < mínimo {profile['ci_minimum']}"
+        breakdown["ci"] = ci_raw
+        breakdown["ci_score"] = round(ci_score_val * 100, 1)
+
+        # --- Final composite ---
+        final = (comp_score * cw + disc_score * dw + ci_score_val * tw) * 100
+        breakdown["final"] = round(final, 1)
+        breakdown["disqualified"] = disqualified
+        breakdown["dq_reason"] = dq_reason
+
+        # How many of the 3 tests were completed
+        tests_done = sum(1 for t in ["disc", "terman", "competencias"] if t in tests)
+
+        ranked.append({
+            **info,
+            "tests_completed": tests_done,
+            "final_score": round(final, 1),
+            "disqualified": disqualified,
+            "dq_reason": dq_reason,
+            "breakdown": breakdown,
+        })
+
+    ranked.sort(key=lambda x: (x["disqualified"], -x["final_score"]))
+    return ranked
+
+
+@app.get("/api/ranking")
+async def get_ranking(
+    role: Optional[str] = None,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+):
+    """Obtiene el ranking de candidatos para un puesto, con filtros de fecha"""
+    if role and role not in ROLE_PROFILES:
+        raise HTTPException(status_code=400, detail="Rol inválido")
+
+    async with httpx.AsyncClient() as client:
+        url = f"{SUPABASE_URL}/rest/v1/participants?select=*,results(*)&order=submitted_at.desc"
+
+        # Filter by position (unless role is gerente — score everyone against gerente profile)
+        if role and role != "gerente":
+            url += f"&position=eq.{role}"
+
+        if date_from:
+            url += f"&submitted_at=gte.{date_from}T00:00:00"
+        if date_to:
+            url += f"&submitted_at=lte.{date_to}T23:59:59"
+
+        response = await client.get(url, headers=HEADERS)
+        if response.status_code != 200:
+            raise HTTPException(status_code=500, detail="Error obteniendo datos")
+
+        rows = response.json()
+
+    use_role = role or "ventas_mostrador"
+    ranked = _rank_candidates(rows, use_role)
+
+    # Benchmarks
+    scores = [c["final_score"] for c in ranked if not c["disqualified"] and c["tests_completed"] >= 2]
+    avg_all = round(sum(scores) / len(scores), 1) if scores else 0
+
+    # This month benchmark
+    now = datetime.utcnow()
+    month_start = now.replace(day=1).strftime("%Y-%m-%d")
+    month_scores = [
+        c["final_score"] for c in ranked
+        if not c["disqualified"]
+        and c["tests_completed"] >= 2
+        and c.get("first_submitted", "") >= month_start
+    ]
+    avg_month = round(sum(month_scores) / len(month_scores), 1) if month_scores else 0
+
+    return {
+        "role": use_role,
+        "role_label": ROLE_PROFILES[use_role]["label"],
+        "candidates": ranked,
+        "benchmarks": {
+            "total_candidates": len(ranked),
+            "qualified": len([c for c in ranked if not c["disqualified"]]),
+            "disqualified": len([c for c in ranked if c["disqualified"]]),
+            "avg_score_all": avg_all,
+            "avg_score_month": avg_month,
+            "month_candidates": len(month_scores),
+        },
+        "available_roles": {k: v["label"] for k, v in ROLE_PROFILES.items()},
+    }
+
+
+@app.get("/ranking", response_class=HTMLResponse)
+async def ranking_page():
+    """Página de ranking de candidatos"""
+    try:
+        with open("ranking.html", "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Página no encontrada")
+
 
 # ========== ENDPOINTS DE LANDING PAGES POR POSICIÓN ==========
 

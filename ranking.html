@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking de Candidatos</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 { font-size: 2em; }
+        .header p { opacity: 0.8; margin-top: 4px; }
+        .header-links a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.7;
+            margin-left: 20px;
+            font-size: 0.9em;
+        }
+        .header-links a:hover { opacity: 1; }
+
+        /* ── Filters ── */
+        .filters {
+            background: white;
+            padding: 20px 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: end;
+        }
+        .filter-group { display: flex; flex-direction: column; gap: 4px; }
+        .filter-group label { font-size: 0.8em; font-weight: 600; color: #666; text-transform: uppercase; }
+        .filter-group select,
+        .filter-group input {
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            min-width: 170px;
+        }
+        .filter-group select:focus,
+        .filter-group input:focus { outline: none; border-color: #0f3460; }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .btn-primary { background: #0f3460; color: white; }
+        .btn-primary:hover { background: #1a4a7a; }
+        .btn-export { background: #4CAF50; color: white; }
+        .btn-export:hover { background: #45a049; }
+
+        /* ── Benchmark cards ── */
+        .benchmarks {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .bench-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .bench-card .label { font-size: 0.8em; color: #888; text-transform: uppercase; font-weight: 600; }
+        .bench-card .value { font-size: 2em; font-weight: bold; margin-top: 6px; }
+        .bench-card .sub { font-size: 0.8em; color: #999; margin-top: 4px; }
+        .color-blue  .value { color: #0f3460; }
+        .color-green .value { color: #2e7d32; }
+        .color-orange .value { color: #e65100; }
+        .color-red   .value { color: #c62828; }
+        .color-purple .value { color: #6a1b9a; }
+
+        .trend-up   { color: #2e7d32; }
+        .trend-down { color: #c62828; }
+
+        /* ── Table ─��� */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: #0f3460; color: white; }
+        th { padding: 14px 16px; text-align: left; font-weight: 600; font-size: 0.85em; text-transform: uppercase; cursor: pointer; user-select: none; }
+        th:hover { background: #1a4a7a; }
+        td { padding: 14px 16px; border-bottom: 1px solid #f0f0f0; font-size: 0.95em; }
+        tr:hover { background: #f8f9fa; }
+        tr.disqualified { opacity: 0.5; }
+
+        .rank-num {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        .rank-1 { background: #FFD700; color: #333; }
+        .rank-2 { background: #C0C0C0; color: #333; }
+        .rank-3 { background: #CD7F32; color: white; }
+        .rank-other { background: #e8eaf6; color: #333; }
+
+        .score-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .score-bar-bg {
+            flex: 1;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            min-width: 80px;
+        }
+        .score-bar-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.8s ease;
+        }
+        .score-text { font-weight: bold; min-width: 50px; text-align: right; }
+
+        .tier-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        .tier-a { background: #e8f5e9; color: #2e7d32; }
+        .tier-b { background: #e3f2fd; color: #1565c0; }
+        .tier-c { background: #fff3e0; color: #e65100; }
+        .tier-d { background: #fce4ec; color: #c62828; }
+        .tier-dq { background: #f5f5f5; color: #999; }
+
+        .tests-dots { display: flex; gap: 4px; }
+        .dot {
+            width: 10px; height: 10px; border-radius: 50%;
+        }
+        .dot-done { background: #4CAF50; }
+        .dot-missing { background: #e0e0e0; }
+
+        .empty-state { text-align: center; padding: 60px; color: #999; }
+        .loading { text-align: center; padding: 40px; color: #666; }
+
+        /* ── Detail modal ── */
+        .modal-overlay {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1000; overflow-y: auto;
+        }
+        .modal {
+            background: white; max-width: 700px; margin: 40px auto; padding: 30px;
+            border-radius: 15px; position: relative;
+        }
+        .modal-close {
+            position: absolute; top: 12px; right: 16px; font-size: 1.8em;
+            cursor: pointer; color: #999; background: none; border: none;
+        }
+        .modal-close:hover { color: #333; }
+        .breakdown-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px;
+        }
+        .bd-card {
+            background: #f8f9fa; padding: 14px; border-radius: 8px;
+            border-left: 4px solid #0f3460;
+        }
+        .bd-card .bd-label { font-size: 0.8em; color: #666; text-transform: uppercase; }
+        .bd-card .bd-value { font-size: 1.4em; font-weight: bold; color: #0f3460; }
+
+        @media (max-width: 768px) {
+            .header { flex-direction: column; gap: 10px; }
+            .filters { flex-direction: column; }
+            .benchmarks { grid-template-columns: repeat(2, 1fr); }
+            .breakdown-grid { grid-template-columns: 1fr; }
+            table { font-size: 0.85em; }
+            td, th { padding: 10px 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>Ranking de Candidatos</h1>
+            <p>Puntuacion compuesta: CI (techo cognitivo) + Competencias (nivel actual) + DISC (estilo)</p>
+        </div>
+        <div class="header-links">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/">Inicio</a>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+        <div class="filter-group">
+            <label>Puesto</label>
+            <select id="roleSelect">
+                <option value="">Cargando...</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Desde</label>
+            <input type="date" id="dateFrom">
+        </div>
+        <div class="filter-group">
+            <label>Hasta</label>
+            <input type="date" id="dateTo">
+        </div>
+        <button class="btn btn-primary" onclick="loadRanking()">Aplicar</button>
+        <button class="btn btn-export" onclick="exportCSV()">Exportar CSV</button>
+    </div>
+
+    <!-- Benchmarks -->
+    <div class="benchmarks">
+        <div class="bench-card color-blue">
+            <div class="label">Candidatos</div>
+            <div class="value" id="bTotal">-</div>
+            <div class="sub" id="bQualified"></div>
+        </div>
+        <div class="bench-card color-green">
+            <div class="label">Promedio General</div>
+            <div class="value" id="bAvgAll">-</div>
+            <div class="sub">todos los candidatos</div>
+        </div>
+        <div class="bench-card color-purple">
+            <div class="label">Promedio Este Mes</div>
+            <div class="value" id="bAvgMonth">-</div>
+            <div class="sub" id="bMonthCount"></div>
+        </div>
+        <div class="bench-card color-orange">
+            <div class="label">Tendencia</div>
+            <div class="value" id="bTrend">-</div>
+            <div class="sub">mes vs. general</div>
+        </div>
+        <div class="bench-card color-red">
+            <div class="label">Descalificados</div>
+            <div class="value" id="bDisq">-</div>
+            <div class="sub">CI bajo minimo</div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+        <div id="loading" class="loading"><p>Selecciona un puesto y da clic en Aplicar</p></div>
+        <div id="emptyState" class="empty-state" style="display:none;">
+            <h3>No hay candidatos para este filtro</h3>
+        </div>
+        <table id="rankTable" style="display:none;">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Candidato</th>
+                    <th>Telefono</th>
+                    <th>Tests</th>
+                    <th onclick="sortBy('final_score')">Score</th>
+                    <th>Tier</th>
+                    <th>Fecha</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="rankBody"></tbody>
+        </table>
+    </div>
+
+    <!-- Detail modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        let rankingData = null;
+        let sortField = 'final_score';
+        let sortAsc = false;
+
+        // ── Init ──
+        (async function init() {
+            // Load available roles from a quick call
+            try {
+                const res = await fetch('/api/ranking?role=ventas_mostrador&date_from=2099-01-01');
+                const data = await res.json();
+                const sel = document.getElementById('roleSelect');
+                sel.innerHTML = '';
+                for (const [key, label] of Object.entries(data.available_roles)) {
+                    const opt = document.createElement('option');
+                    opt.value = key;
+                    opt.textContent = label;
+                    sel.appendChild(opt);
+                }
+                sel.value = 'ventas_mostrador';
+            } catch(e) {
+                console.error(e);
+            }
+        })();
+
+        async function loadRanking() {
+            const role = document.getElementById('roleSelect').value;
+            const from = document.getElementById('dateFrom').value;
+            const to   = document.getElementById('dateTo').value;
+
+            let url = `/api/ranking?role=${role}`;
+            if (from) url += `&date_from=${from}`;
+            if (to)   url += `&date_to=${to}`;
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('loading').innerHTML = '<p>Cargando ranking...</p>';
+            document.getElementById('rankTable').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'none';
+
+            try {
+                const res = await fetch(url);
+                rankingData = await res.json();
+                renderBenchmarks(rankingData.benchmarks);
+                renderTable(rankingData.candidates);
+            } catch(e) {
+                document.getElementById('loading').innerHTML = '<p style="color:red;">Error cargando datos</p>';
+            }
+        }
+
+        function renderBenchmarks(b) {
+            document.getElementById('bTotal').textContent = b.total_candidates;
+            document.getElementById('bQualified').textContent = `${b.qualified} calificados`;
+            document.getElementById('bAvgAll').textContent = b.avg_score_all > 0 ? b.avg_score_all + '%' : '-';
+            document.getElementById('bAvgMonth').textContent = b.avg_score_month > 0 ? b.avg_score_month + '%' : '-';
+            document.getElementById('bMonthCount').textContent = `${b.month_candidates} candidatos`;
+            document.getElementById('bDisq').textContent = b.disqualified;
+
+            const trend = document.getElementById('bTrend');
+            if (b.avg_score_all > 0 && b.avg_score_month > 0) {
+                const diff = (b.avg_score_month - b.avg_score_all).toFixed(1);
+                const sign = diff >= 0 ? '+' : '';
+                trend.textContent = sign + diff + '%';
+                trend.className = `value ${diff >= 0 ? 'trend-up' : 'trend-down'}`;
+            } else {
+                trend.textContent = '-';
+            }
+        }
+
+        function renderTable(candidates) {
+            document.getElementById('loading').style.display = 'none';
+
+            if (!candidates || candidates.length === 0) {
+                document.getElementById('emptyState').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('rankTable').style.display = 'table';
+            const tbody = document.getElementById('rankBody');
+            let rank = 0;
+
+            tbody.innerHTML = candidates.map(c => {
+                if (!c.disqualified) rank++;
+                const r = c.disqualified ? '-' : rank;
+                const rankClass = r === 1 ? 'rank-1' : r === 2 ? 'rank-2' : r === 3 ? 'rank-3' : 'rank-other';
+
+                const score = c.final_score;
+                const barColor = score >= 80 ? '#2e7d32' : score >= 65 ? '#1565c0' : score >= 50 ? '#e65100' : '#c62828';
+                const tier = c.disqualified ? 'DQ' : score >= 80 ? 'A' : score >= 65 ? 'B' : score >= 50 ? 'C' : 'D';
+                const tierClass = c.disqualified ? 'tier-dq' : `tier-${tier.toLowerCase()}`;
+
+                const tests = ['terman','competencias','disc'];
+                const dots = tests.map(t => {
+                    // Check if test was completed by looking at breakdown
+                    const done = (t === 'terman' && c.breakdown.ci !== null) ||
+                                 (t === 'competencias' && c.breakdown.competencias > 0) ||
+                                 (t === 'disc' && c.breakdown.disc_fit !== 50);
+                    return `<span class="dot ${done ? 'dot-done' : 'dot-missing'}" title="${t}"></span>`;
+                }).join('');
+
+                const date = c.first_submitted
+                    ? new Date(c.first_submitted).toLocaleDateString('es-MX', {day:'numeric', month:'short', year:'numeric'})
+                    : '-';
+
+                return `
+                    <tr class="${c.disqualified ? 'disqualified' : ''}">
+                        <td><span class="rank-num ${c.disqualified ? 'tier-dq' : rankClass}">${r}</span></td>
+                        <td>
+                            <strong>${c.name}</strong><br>
+                            <span style="font-size:0.85em;color:#888;">${c.email}</span>
+                        </td>
+                        <td>${c.phone || '-'}</td>
+                        <td>
+                            <div class="tests-dots">${dots}</div>
+                            <span style="font-size:0.75em;color:#999;">${c.tests_completed}/3</span>
+                        </td>
+                        <td>
+                            <div class="score-bar">
+                                <div class="score-bar-bg">
+                                    <div class="score-bar-fill" style="width:${Math.min(score,100)}%;background:${barColor};"></div>
+                                </div>
+                                <span class="score-text">${score}%</span>
+                            </div>
+                        </td>
+                        <td><span class="tier-badge ${tierClass}">${tier}</span></td>
+                        <td>${date}</td>
+                        <td><button class="btn btn-primary" style="padding:6px 12px;font-size:0.8em;" onclick='showDetail(${JSON.stringify(c).replace(/'/g, "\\'")})'>Detalle</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function sortBy(field) {
+            if (!rankingData) return;
+            if (sortField === field) sortAsc = !sortAsc;
+            else { sortField = field; sortAsc = false; }
+
+            rankingData.candidates.sort((a, b) => {
+                const va = a[field], vb = b[field];
+                return sortAsc ? va - vb : vb - va;
+            });
+            renderTable(rankingData.candidates);
+        }
+
+        function showDetail(c) {
+            const bd = c.breakdown;
+            document.getElementById('modalBody').innerHTML = `
+                <h2 style="margin-bottom:4px;">${c.name}</h2>
+                <p style="color:#888;margin-bottom:20px;">${c.email} &middot; ${c.phone || 'Sin telefono'}</p>
+                ${c.disqualified ? `<div style="background:#fce4ec;padding:12px;border-radius:8px;margin-bottom:16px;color:#c62828;font-weight:600;">Descalificado: ${c.dq_reason}</div>` : ''}
+
+                <h3 style="margin-bottom:12px;">Score Final: <span style="color:#0f3460;font-size:1.3em;">${c.final_score}%</span></h3>
+
+                <div class="breakdown-grid">
+                    <div class="bd-card">
+                        <div class="bd-label">Competencias (65%)</div>
+                        <div class="bd-value">${bd.competencias}%</div>
+                    </div>
+                    <div class="bd-card" style="border-left-color:#e65100;">
+                        <div class="bd-label">DISC Fit (15%)</div>
+                        <div class="bd-value">${bd.disc_fit}%</div>
+                    </div>
+                    <div class="bd-card" style="border-left-color:#6a1b9a;">
+                        <div class="bd-label">CI Estimado (20%)</div>
+                        <div class="bd-value">${bd.ci !== null ? bd.ci : 'N/A'}</div>
+                    </div>
+                    <div class="bd-card" style="border-left-color:#2e7d32;">
+                        <div class="bd-label">CI Score</div>
+                        <div class="bd-value">${bd.ci_score}%</div>
+                    </div>
+                </div>
+
+                <p style="margin-top:20px;font-size:0.85em;color:#999;">Tests completados: ${c.tests_completed}/3</p>
+            `;
+            document.getElementById('modalOverlay').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
+        }
+        window.onclick = function(e) {
+            if (e.target === document.getElementById('modalOverlay')) closeModal();
+        };
+
+        function exportCSV() {
+            if (!rankingData || !rankingData.candidates.length) return;
+            const headers = ['Rank','Nombre','Email','Telefono','Score','Tier','Competencias','DISC Fit','CI','CI Score','Tests','Descalificado','Razon','Fecha'];
+            let rank = 0;
+            const rows = rankingData.candidates.map(c => {
+                if (!c.disqualified) rank++;
+                const r = c.disqualified ? 'DQ' : rank;
+                const tier = c.disqualified ? 'DQ' : c.final_score >= 80 ? 'A' : c.final_score >= 65 ? 'B' : c.final_score >= 50 ? 'C' : 'D';
+                return [
+                    r, c.name, c.email, c.phone || '',
+                    c.final_score, tier,
+                    c.breakdown.competencias, c.breakdown.disc_fit,
+                    c.breakdown.ci || '', c.breakdown.ci_score,
+                    c.tests_completed,
+                    c.disqualified ? 'Si' : 'No',
+                    c.dq_reason || '',
+                    c.first_submitted ? new Date(c.first_submitted).toLocaleDateString('es-MX') : ''
+                ];
+            });
+
+            let csv = '\uFEFF' + headers.join(',') + '\n';
+            rows.forEach(row => { csv += row.map(v => `"${v}"`).join(',') + '\n'; });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `ranking_${rankingData.role}_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+    </script>
+</body>
+</html>
