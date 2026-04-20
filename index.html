@@ -344,29 +344,17 @@
 
             <label>Elige tu evaluación:</label>
             <div class="test-selector">
-                <div class="test-card" onclick="selectTest('disc')">
-                    <h3>DISC</h3>
-                    <p>Estilo de comportamiento laboral. (30 preguntas, ~7 min)</p>
-                </div>
-                <div class="test-card" onclick="selectTest('big5')">
-                    <h3>Big Five</h3>
-                    <p>Rasgos de personalidad fundamentales. (50 preguntas, ~12 min)</p>
-                </div>
-                <div class="test-card" onclick="selectTest('mbti')">
-                    <h3>MBTI</h3>
-                    <p>Tipo de personalidad Myers-Briggs. (60 preguntas, ~15 min)</p>
-                </div>
-                <div class="test-card" onclick="selectTest('allport')">
-                    <h3>📊 Allport</h3>
-                    <p>Valores y motivaciones personales. (40 preguntas, ~10 min)</p>
-                </div>
                 <div class="test-card" onclick="selectTest('terman')">
-                    <h3>🧠 Terman</h3>
+                    <h3>Terman</h3>
                     <p>Capacidades cognitivas y razonamiento. (35 preguntas, ~10 min)</p>
                 </div>
                 <div class="test-card" onclick="selectTest('competencias')">
-                    <h3>💼 Competencias</h3>
+                    <h3>Competencias</h3>
                     <p>Habilidades laborales clave. (70 preguntas, ~15 min)</p>
+                </div>
+                <div class="test-card" onclick="selectTest('disc')">
+                    <h3>DISC</h3>
+                    <p>Estilo de comportamiento laboral. (30 preguntas, ~7 min)</p>
                 </div>
             </div>
 
@@ -553,6 +541,7 @@
                         name: userName,
                         email: userEmail,
                         phone: userPhone,
+                        position: 'ventas_mostrador',
                         test_type: selectedTest,
                         answers: answers
                     })

@@ -32,17 +32,17 @@ HEADERS = {
 POSITIONS = {
     "almacen": {
         "name": "Almacén",
-        "tests": ["disc", "big5", "mbti", "allport", "terman", "competencias"],
+        "tests": ["terman", "competencias", "disc"],
         "description": "Evaluación para posición de Almacén"
     },
     "ventas_mostrador": {
         "name": "Ventas a Mostrador",
-        "tests": ["disc", "big5", "mbti", "allport", "terman", "competencias"],
+        "tests": ["terman", "competencias", "disc"],
         "description": "Evaluación para posición de Ventas a Mostrador"
     },
     "pueblaventas": {
         "name": "Ventas a Mostrador",
-        "tests": ["disc", "big5", "mbti", "allport", "terman", "competencias"],
+        "tests": ["terman", "competencias", "disc"],
         "description": "Evaluación para posición de Ventas a Mostrador"
     }
 }
@@ -895,6 +895,10 @@ async def pueblaventas_page():
             return f.read()
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="Página no encontrada")
+
+@app.get("/api/status")
+async def get_status():
+    return {"status": "ok", "version": "1.0"}
 
 # ========== ENDPOINTS ORIGINALES ==========
 
