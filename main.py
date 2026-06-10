@@ -885,9 +885,11 @@ ROLE_PROFILES = {
         },
         "disc_ideal": {"D": 0.30, "I": 0.40, "S": 0.15, "C": 0.15},
         "ci_minimum": 103,
-        "competencias_weight": 0.65,
-        "disc_weight": 0.15,
-        "ci_weight": 0.20,
+        "competencias_weight": 0.50,
+        "disc_weight": 0.10,
+        "ci_weight": 0.15,
+        "interview_weight": 0.25,
+        "interview_dim_weights": {"honesty": 0.35, "emotional_stability": 0.25, "accountability": 0.30, "specificity": 0.10},
     },
     "almacen": {
         "label": "Almacén",
@@ -898,9 +900,11 @@ ROLE_PROFILES = {
         },
         "disc_ideal": {"D": 0.20, "I": 0.15, "S": 0.40, "C": 0.25},
         "ci_minimum": 100,
-        "competencias_weight": 0.65,
-        "disc_weight": 0.15,
-        "ci_weight": 0.20,
+        "competencias_weight": 0.50,
+        "disc_weight": 0.10,
+        "ci_weight": 0.15,
+        "interview_weight": 0.25,
+        "interview_dim_weights": {"honesty": 0.30, "emotional_stability": 0.30, "accountability": 0.30, "specificity": 0.10},
     },
     "pueblaventas": {
         "label": "Ventas Mostrador (Puebla)",
@@ -911,9 +915,11 @@ ROLE_PROFILES = {
         },
         "disc_ideal": {"D": 0.30, "I": 0.40, "S": 0.15, "C": 0.15},
         "ci_minimum": 103,
-        "competencias_weight": 0.65,
-        "disc_weight": 0.15,
-        "ci_weight": 0.20,
+        "competencias_weight": 0.50,
+        "disc_weight": 0.10,
+        "ci_weight": 0.15,
+        "interview_weight": 0.25,
+        "interview_dim_weights": {"honesty": 0.35, "emotional_stability": 0.25, "accountability": 0.30, "specificity": 0.10},
     },
     "gerente": {
         "label": "Gerente de Ventas",
@@ -924,10 +930,21 @@ ROLE_PROFILES = {
         },
         "disc_ideal": {"D": 0.40, "I": 0.20, "S": 0.15, "C": 0.25},
         "ci_minimum": 107,
-        "competencias_weight": 0.60,
-        "disc_weight": 0.15,
-        "ci_weight": 0.25,
+        "competencias_weight": 0.45,
+        "disc_weight": 0.10,
+        "ci_weight": 0.15,
+        "interview_weight": 0.30,
+        "interview_dim_weights": {"honesty": 0.25, "emotional_stability": 0.20, "accountability": 0.35, "specificity": 0.20},
     },
+}
+
+# Recommendation string → numeric score (0-1)
+RECOMMENDATION_SCORES = {
+    "strong_yes": 1.0,
+    "yes": 0.80,
+    "maybe": 0.50,
+    "no": 0.20,
+    "strong_no": 0.0,
 }
 
 def _score_competencias(pct: dict, profile: dict) -> float:
@@ -952,11 +969,71 @@ def _score_ci(ci: int, profile: dict) -> tuple:
         return 0.0, True
     return min(1.0, (ci - 100) / 15), False
 
-def _rank_candidates(rows: list, role: str) -> list:
+def _score_interview(interview_data: dict, profile: dict) -> tuple:
+    """
+    Builds interview score from per-message AI scores + final recommendation.
+    interview_data: {"msg_scores": [list of score dicts], "recommendation": str}
+    Returns (score 0-1, breakdown dict)
+    """
+    dim_weights = profile.get("interview_dim_weights", {
+        "honesty": 0.30, "emotional_stability": 0.25, "accountability": 0.30, "specificity": 0.15,
+    })
+
+    msg_scores = interview_data.get("msg_scores", [])
+    recommendation = interview_data.get("recommendation", "")
+
+    # Average per-message dimension scores (each 1-10, normalize to 0-1)
+    dim_avgs = {}
+    if msg_scores:
+        for dim in ["honesty", "emotional_stability", "accountability"]:
+            vals = [s.get(dim, 5) for s in msg_scores if s and dim in s]
+            dim_avgs[dim] = (sum(vals) / len(vals)) / 10.0 if vals else 0.5
+        # specificity is 1-5, normalize to 0-1
+        spec_vals = [s.get("specificity", 3) for s in msg_scores if s and "specificity" in s]
+        dim_avgs["specificity"] = (sum(spec_vals) / len(spec_vals)) / 5.0 if spec_vals else 0.5
+        # risk_flags is 0-5 (higher = worse), invert to 0-1 where 1 = no risk
+        risk_vals = [s.get("risk_flags", 0) for s in msg_scores if s and "risk_flags" in s]
+        avg_risk = sum(risk_vals) / len(risk_vals) if risk_vals else 0
+        dim_avgs["risk_penalty"] = avg_risk / 5.0  # 0-1 where 1 = max risk
+    else:
+        dim_avgs = {d: 0.5 for d in dim_weights}
+        dim_avgs["risk_penalty"] = 0.0
+
+    # Weighted dimension score
+    dim_score = sum(dim_avgs.get(d, 0.5) * w for d, w in dim_weights.items())
+
+    # Recommendation bonus (blended 60% dimensions + 40% recommendation)
+    rec_score = RECOMMENDATION_SCORES.get(recommendation, 0.5)
+    if recommendation:
+        final = dim_score * 0.60 + rec_score * 0.40
+    else:
+        final = dim_score
+
+    # Apply risk penalty (each risk flag point reduces score by 4%)
+    risk_penalty = dim_avgs.get("risk_penalty", 0) * 0.20
+    final = max(0.0, final - risk_penalty)
+
+    breakdown = {
+        "honesty": round(dim_avgs.get("honesty", 0) * 100, 1),
+        "emotional_stability": round(dim_avgs.get("emotional_stability", 0) * 100, 1),
+        "accountability": round(dim_avgs.get("accountability", 0) * 100, 1),
+        "specificity": round(dim_avgs.get("specificity", 0) * 100, 1),
+        "risk_flags_avg": round(dim_avgs.get("risk_penalty", 0) * 5, 1),
+        "recommendation": recommendation,
+        "recommendation_score": round(rec_score * 100, 1),
+        "final": round(final * 100, 1),
+    }
+    return final, breakdown
+
+
+def _rank_candidates(rows: list, role: str, interview_map: dict = None) -> list:
     """
     rows: list of participant dicts with nested results from Supabase.
+    interview_map: {email: {"msg_scores": [...], "recommendation": str}}
     Groups by email, builds composite score, returns ranked list.
     """
+    if interview_map is None:
+        interview_map = {}
     profile = ROLE_PROFILES.get(role, ROLE_PROFILES["ventas_mostrador"])
 
     # Group test results by candidate email
@@ -981,6 +1058,7 @@ def _rank_candidates(rows: list, role: str) -> list:
     cw = profile["competencias_weight"]
     dw = profile["disc_weight"]
     tw = profile["ci_weight"]
+    iw = profile.get("interview_weight", 0.0)
 
     for email, data in grouped.items():
         tests = data["tests"]
@@ -1010,7 +1088,6 @@ def _rank_candidates(rows: list, role: str) -> list:
         if "terman" in tests:
             desc = tests["terman"].get("description", "")
             dom = tests["terman"].get("dominant_trait", "")
-            # CI is stored as "CI: 112" in dominant_trait or in description
             ci_str = dom.replace("CI:", "").strip() if "CI" in dom else ""
             if ci_str.isdigit():
                 ci_raw = int(ci_str)
@@ -1026,18 +1103,40 @@ def _rank_candidates(rows: list, role: str) -> list:
         breakdown["ci"] = ci_raw
         breakdown["ci_score"] = round(ci_score_val * 100, 1)
 
+        # --- AI Interview ---
+        interview_score = 0.0
+        has_interview = False
+        interview_breakdown = {}
+        if email in interview_map:
+            has_interview = True
+            interview_score, interview_breakdown = _score_interview(interview_map[email], profile)
+        breakdown["interview"] = interview_breakdown
+        breakdown["has_interview"] = has_interview
+        breakdown["interview_score"] = round(interview_score * 100, 1)
+
         # --- Final composite ---
-        final = (comp_score * cw + disc_score * dw + ci_score_val * tw) * 100
+        # If candidate has interview, use full weights (sum = 1.0)
+        # If no interview, redistribute interview weight proportionally
+        if has_interview:
+            final = (comp_score * cw + disc_score * dw + ci_score_val * tw + interview_score * iw) * 100
+        else:
+            # Redistribute interview weight across other components
+            base = cw + dw + tw
+            final = (comp_score * (cw / base) + disc_score * (dw / base) + ci_score_val * (tw / base)) * 100
+
         breakdown["final"] = round(final, 1)
         breakdown["disqualified"] = disqualified
         breakdown["dq_reason"] = dq_reason
 
-        # How many of the 3 tests were completed
+        # How many of the 4 evaluations were completed
         tests_done = sum(1 for t in ["disc", "terman", "competencias"] if t in tests)
+        if has_interview:
+            tests_done += 1
 
         ranked.append({
             **info,
             "tests_completed": tests_done,
+            "has_interview": has_interview,
             "final_score": round(final, 1),
             "disqualified": disqualified,
             "dq_reason": dq_reason,
@@ -1076,8 +1175,33 @@ async def get_ranking(
 
         rows = response.json()
 
+        # Fetch AI interview scores
+        scores_url = f"{SUPABASE_URL}/rest/v1/interview_scores?select=participant_email,recommendation"
+        scores_resp = await client.get(scores_url, headers=HEADERS)
+        interview_scores_rows = scores_resp.json() if scores_resp.status_code == 200 else []
+
+        # Fetch per-message AI scores
+        msgs_url = f"{SUPABASE_URL}/rest/v1/interview_messages?select=participant_email,scores&role=eq.user&scores=not.is.null"
+        msgs_resp = await client.get(msgs_url, headers=HEADERS)
+        interview_msgs_rows = msgs_resp.json() if msgs_resp.status_code == 200 else []
+
+    # Build interview_map: {email: {"msg_scores": [...], "recommendation": str}}
+    interview_map = defaultdict(lambda: {"msg_scores": [], "recommendation": ""})
+    for row in interview_msgs_rows:
+        email = row.get("participant_email", "")
+        scores_raw = row.get("scores")
+        if email and scores_raw:
+            parsed = json.loads(scores_raw) if isinstance(scores_raw, str) else scores_raw
+            if parsed:
+                interview_map[email]["msg_scores"].append(parsed)
+    for row in interview_scores_rows:
+        email = row.get("participant_email", "")
+        rec = row.get("recommendation", "")
+        if email and rec:
+            interview_map[email]["recommendation"] = rec
+
     use_role = role or "ventas_mostrador"
-    ranked = _rank_candidates(rows, use_role)
+    ranked = _rank_candidates(rows, use_role, dict(interview_map))
 
     # Benchmarks
     scores = [c["final_score"] for c in ranked if not c["disqualified"] and c["tests_completed"] >= 2]
@@ -1467,6 +1591,46 @@ async def pueblaventas_page():
 @app.get("/api/status")
 async def get_status():
     return {"status": "ok", "version": "1.0"}
+
+# ========== RECRUITMENT LANDING ==========
+
+class ApplicantData(BaseModel):
+    name: str
+    email: EmailStr
+    phone: str
+    position: str
+    experience: Optional[str] = None
+    availability: Optional[str] = None
+    source: Optional[str] = "direct"
+    applied_at: Optional[str] = None
+
+@app.post("/api/applicant")
+async def save_applicant(data: ApplicantData):
+    """Saves applicant from recruitment landing page"""
+    record = {
+        "name": data.name,
+        "email": data.email,
+        "phone": data.phone,
+        "position": data.position,
+        "experience": data.experience or "",
+        "availability": data.availability or "",
+        "source": data.source or "direct",
+        "applied_at": data.applied_at or datetime.utcnow().isoformat(),
+    }
+    try:
+        await save_to_supabase("applicants", record)
+    except Exception as e:
+        print(f"Error saving applicant (table may not exist yet): {e}")
+    return {"status": "ok"}
+
+@app.get("/reclutamiento", response_class=HTMLResponse)
+async def reclutamiento_page():
+    """Landing page — Vendedor Digital"""
+    try:
+        with open("reclutamiento.html", "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Pagina no encontrada")
 
 # ========== ENDPOINTS ORIGINALES ==========
 
