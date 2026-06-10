@@ -1632,6 +1632,37 @@ async def reclutamiento_page():
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="Pagina no encontrada")
 
+
+# ========== WEEKLY TEAM FEEDBACK ==========
+
+@app.get("/equipo", response_class=HTMLResponse)
+async def equipo_page():
+    """Cuestionario semanal del equipo"""
+    try:
+        with open("equipo.html", "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Pagina no encontrada")
+
+@app.post("/api/team-feedback")
+async def save_team_feedback(data: dict):
+    """Guarda respuestas del feedback semanal"""
+    try:
+        await save_to_supabase("team_feedback", data)
+    except Exception as e:
+        print(f"Error saving team feedback: {e}")
+    return {"status": "ok"}
+
+@app.get("/api/team-feedback/results")
+async def get_team_feedback_results():
+    """Obtiene todos los resultados del feedback semanal"""
+    async with httpx.AsyncClient() as client:
+        url = f"{SUPABASE_URL}/rest/v1/team_feedback?select=*&order=submitted_at.desc"
+        response = await client.get(url, headers=HEADERS)
+        if response.status_code == 200:
+            return response.json()
+        return []
+
 # ========== ENDPOINTS ORIGINALES ==========
 
 @app.get("/", response_class=HTMLResponse)

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Semanal — Equipo Fundastock</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, 'Segoe UI', system-ui, sans-serif; background: #0f0f13; color: #e0e0e0; min-height: 100vh; }
+
+        .header { background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 32px 16px; text-align: center; border-bottom: 3px solid #8b5cf6; }
+        .header h1 { font-size: 1.4rem; color: #fff; }
+        .header p { font-size: 0.85rem; color: #888; margin-top: 4px; }
+
+        .container { max-width: 500px; margin: 0 auto; padding: 20px 16px; }
+
+        /* Team menu */
+        .team-menu { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 20px 0; }
+        .member-btn {
+            display: flex; align-items: center; gap: 14px;
+            background: #1a1a2e; border: 2px solid #2a2a3e; border-radius: 14px;
+            padding: 16px 18px; cursor: pointer; transition: all 0.2s;
+            text-decoration: none; color: #e0e0e0;
+        }
+        .member-btn:hover, .member-btn:active { border-color: #8b5cf6; background: #1e1e3a; }
+        .member-btn .avatar {
+            width: 44px; height: 44px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; font-weight: 700; color: #fff; flex-shrink: 0;
+        }
+        .member-btn .info h3 { font-size: 1rem; color: #fff; }
+        .member-btn .info p { font-size: 0.75rem; color: #666; }
+        .member-btn .arrow { margin-left: auto; color: #555; font-size: 1.2rem; }
+
+        .anon-note {
+            background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.2);
+            border-radius: 10px; padding: 14px; margin: 16px 0;
+            font-size: 0.8rem; color: #a0a0b8; text-align: center;
+        }
+
+        /* Survey form */
+        .survey { display: none; }
+        .survey.active { display: block; }
+
+        .survey-header {
+            background: #1a1a2e; border-radius: 12px; padding: 16px;
+            margin-bottom: 20px; text-align: center;
+        }
+        .survey-header h2 { font-size: 1.1rem; color: #fff; }
+        .survey-header .week { font-size: 0.8rem; color: #8b5cf6; margin-top: 4px; }
+
+        .q-card {
+            background: #1a1a2e; border: 1px solid #2a2a3e; border-radius: 12px;
+            padding: 18px; margin-bottom: 14px;
+        }
+        .q-card .q-num { font-size: 0.65rem; color: #8b5cf6; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+        .q-card .q-text { font-size: 0.92rem; color: #fff; margin-bottom: 12px; line-height: 1.4; }
+
+        /* Likert scale */
+        .likert { display: flex; gap: 6px; justify-content: space-between; }
+        .likert label {
+            flex: 1; text-align: center; padding: 10px 4px;
+            background: #0f0f13; border: 2px solid #2a2a3e; border-radius: 10px;
+            cursor: pointer; transition: all 0.15s; font-size: 0.75rem; color: #888;
+        }
+        .likert label:hover { border-color: #555; }
+        .likert input { display: none; }
+        .likert input:checked + span { color: #fff; }
+        .likert label:has(input:checked) { border-color: #8b5cf6; background: rgba(139,92,246,0.15); }
+        .likert .num { display: block; font-size: 1.1rem; font-weight: 700; color: inherit; }
+        .likert-labels { display: flex; justify-content: space-between; margin-top: 4px; }
+        .likert-labels span { font-size: 0.65rem; color: #555; }
+
+        /* Text input */
+        .q-textarea {
+            width: 100%; padding: 12px; background: #0f0f13; border: 2px solid #2a2a3e;
+            border-radius: 10px; color: #e0e0e0; font-size: 0.9rem; font-family: inherit;
+            resize: vertical; min-height: 70px;
+        }
+        .q-textarea:focus { outline: none; border-color: #8b5cf6; }
+        .q-textarea::placeholder { color: #444; }
+
+        /* NPS */
+        .nps { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; }
+        .nps label {
+            text-align: center; padding: 10px 0;
+            background: #0f0f13; border: 2px solid #2a2a3e; border-radius: 8px;
+            cursor: pointer; font-size: 0.85rem; font-weight: 700; color: #666;
+            transition: all 0.15s;
+        }
+        .nps label:hover { border-color: #555; }
+        .nps input { display: none; }
+        .nps label:has(input:checked) { border-color: #8b5cf6; background: rgba(139,92,246,0.15); color: #fff; }
+
+        .submit-btn {
+            display: block; width: 100%; padding: 16px; margin-top: 20px;
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            color: #fff; font-size: 1rem; font-weight: 700; border: none;
+            border-radius: 14px; cursor: pointer;
+        }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .back-btn {
+            display: inline-block; padding: 8px 16px; margin-bottom: 16px;
+            background: none; border: 1px solid #333; border-radius: 8px;
+            color: #888; font-size: 0.8rem; cursor: pointer; text-decoration: none;
+        }
+
+        .success-screen { display: none; text-align: center; padding: 60px 20px; }
+        .success-screen .icon { font-size: 3rem; margin-bottom: 16px; }
+        .success-screen h2 { color: #22c55e; margin-bottom: 8px; }
+        .success-screen p { color: #888; font-size: 0.9rem; }
+
+        .admin-link { margin-top: 30px; text-align: center; }
+        .admin-link a { color: #333; font-size: 0.7rem; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Feedback Semanal</h1>
+    <p>Tu opinion es anonima. Se honesto.</p>
+</div>
+
+<div class="container">
+
+    <!-- TEAM MENU -->
+    <div id="menuScreen">
+        <div class="anon-note">
+            🔒 Tus respuestas son <strong>anonimas</strong>. Nadie sabra que contestaste. Solo se usan los promedios del equipo.
+        </div>
+
+        <div class="team-menu">
+            <a class="member-btn" onclick="startSurvey('carlos')">
+                <div class="avatar" style="background:#3b82f6;">C</div>
+                <div class="info"><h3>Carlos</h3><p>Terex 1</p></div>
+                <div class="arrow">→</div>
+            </a>
+            <a class="member-btn" onclick="startSurvey('nayeli')">
+                <div class="avatar" style="background:#ec4899;">N</div>
+                <div class="info"><h3>Nayeli</h3><p>Terex 2</p></div>
+                <div class="arrow">→</div>
+            </a>
+            <a class="member-btn" onclick="startSurvey('luis')">
+                <div class="avatar" style="background:#f59e0b;">L</div>
+                <div class="info"><h3>Luis</h3><p>Terex 1</p></div>
+                <div class="arrow">→</div>
+            </a>
+            <a class="member-btn" onclick="startSurvey('marcos')">
+                <div class="avatar" style="background:#22c55e;">M</div>
+                <div class="info"><h3>Marcos</h3><p>Equipo</p></div>
+                <div class="arrow">→</div>
+            </a>
+            <a class="member-btn" onclick="startSurvey('rocio')">
+                <div class="avatar" style="background:#8b5cf6;">R</div>
+                <div class="info"><h3>Rocio</h3><p>Manager (remoto)</p></div>
+                <div class="arrow">→</div>
+            </a>
+        </div>
+
+        <div class="admin-link"><a href="/api/team-feedback/results">Ver resultados (admin)</a></div>
+    </div>
+
+    <!-- SURVEY FORM -->
+    <div id="surveyScreen" class="survey">
+        <a class="back-btn" onclick="showMenu()">← Regresar</a>
+
+        <div class="survey-header">
+            <h2>Feedback de la semana</h2>
+            <div class="week" id="weekLabel"></div>
+        </div>
+
+        <form id="surveyForm" onsubmit="return submitSurvey(event)">
+
+            <!-- Q1 -->
+            <div class="q-card">
+                <div class="q-num">Seguridad 1/2</div>
+                <div class="q-text">Esta semana, que tan seguro/a te sentiste para decir lo que piensas en el equipo?</div>
+                <div class="likert">
+                    <label><input type="radio" name="q1" value="1" required><span><span class="num">1</span></span></label>
+                    <label><input type="radio" name="q1" value="2"><span><span class="num">2</span></span></label>
+                    <label><input type="radio" name="q1" value="3"><span><span class="num">3</span></span></label>
+                    <label><input type="radio" name="q1" value="4"><span><span class="num">4</span></span></label>
+                    <label><input type="radio" name="q1" value="5"><span><span class="num">5</span></span></label>
+                </div>
+                <div class="likert-labels"><span>Nada seguro</span><span>Totalmente seguro</span></div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="q-card">
+                <div class="q-num">Seguridad 2/2</div>
+                <div class="q-text">Si cometiste un error esta semana, pudiste hablarlo sin miedo?</div>
+                <div class="likert">
+                    <label><input type="radio" name="q2" value="1" required><span><span class="num">1</span></span></label>
+                    <label><input type="radio" name="q2" value="2"><span><span class="num">2</span></span></label>
+                    <label><input type="radio" name="q2" value="3"><span><span class="num">3</span></span></label>
+                    <label><input type="radio" name="q2" value="4"><span><span class="num">4</span></span></label>
+                    <label><input type="radio" name="q2" value="5"><span><span class="num">5</span></span></label>
+                </div>
+                <div class="likert-labels"><span>Lo escondi</span><span>Lo dije abiertamente</span></div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="q-card">
+                <div class="q-num">Voz</div>
+                <div class="q-text">Hay algo que quisiste decir esta semana pero no dijiste?</div>
+                <textarea class="q-textarea" name="q3" placeholder="Si o no. Si quieres, di por que no lo dijiste..."></textarea>
+            </div>
+
+            <!-- Q4 -->
+            <div class="q-card">
+                <div class="q-num">Equipo 1/2</div>
+                <div class="q-text">Que tan bien trabajamos como equipo esta semana?</div>
+                <div class="likert">
+                    <label><input type="radio" name="q4" value="1" required><span><span class="num">1</span></span></label>
+                    <label><input type="radio" name="q4" value="2"><span><span class="num">2</span></span></label>
+                    <label><input type="radio" name="q4" value="3"><span><span class="num">3</span></span></label>
+                    <label><input type="radio" name="q4" value="4"><span><span class="num">4</span></span></label>
+                    <label><input type="radio" name="q4" value="5"><span><span class="num">5</span></span></label>
+                </div>
+                <div class="likert-labels"><span>Cada quien por su lado</span><span>Nos apoyamos y fluyo</span></div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="q-card">
+                <div class="q-num">Equipo 2/2</div>
+                <div class="q-text">Que tan claras tuve mis responsabilidades esta semana?</div>
+                <div class="likert">
+                    <label><input type="radio" name="q5" value="1" required><span><span class="num">1</span></span></label>
+                    <label><input type="radio" name="q5" value="2"><span><span class="num">2</span></span></label>
+                    <label><input type="radio" name="q5" value="3"><span><span class="num">3</span></span></label>
+                    <label><input type="radio" name="q5" value="4"><span><span class="num">4</span></span></label>
+                    <label><input type="radio" name="q5" value="5"><span><span class="num">5</span></span></label>
+                </div>
+                <div class="likert-labels"><span>Nada claras</span><span>Totalmente claras</span></div>
+            </div>
+
+            <!-- Q6 -->
+            <div class="q-card">
+                <div class="q-num">Conflicto</div>
+                <div class="q-text">Hubo algun conflicto o roce esta semana?</div>
+                <div class="likert">
+                    <label><input type="radio" name="q6" value="0" required><span><span class="num">0</span></span></label>
+                    <label><input type="radio" name="q6" value="1"><span><span class="num">1</span></span></label>
+                    <label><input type="radio" name="q6" value="2"><span><span class="num">2</span></span></label>
+                    <label><input type="radio" name="q6" value="3"><span><span class="num">3</span></span></label>
+                    <label><input type="radio" name="q6" value="4"><span><span class="num">4</span></span></label>
+                    <label><input type="radio" name="q6" value="5"><span><span class="num">5</span></span></label>
+                </div>
+                <div class="likert-labels"><span>Cero conflicto</span><span>Conflicto serio</span></div>
+            </div>
+
+            <!-- Q7 -->
+            <div class="q-card">
+                <div class="q-num">Detalle conflicto</div>
+                <div class="q-text">Si hubo roce, de que se trato? (sin nombres, solo el tema)</div>
+                <textarea class="q-textarea" name="q7" placeholder="Turnos, responsabilidades, trato, comunicacion..."></textarea>
+            </div>
+
+            <!-- Q8 -->
+            <div class="q-card">
+                <div class="q-num">Reconocimiento</div>
+                <div class="q-text">Me senti valorado/a por mi trabajo esta semana?</div>
+                <div class="likert">
+                    <label><input type="radio" name="q8" value="1" required><span><span class="num">1</span></span></label>
+                    <label><input type="radio" name="q8" value="2"><span><span class="num">2</span></span></label>
+                    <label><input type="radio" name="q8" value="3"><span><span class="num">3</span></span></label>
+                    <label><input type="radio" name="q8" value="4"><span><span class="num">4</span></span></label>
+                    <label><input type="radio" name="q8" value="5"><span><span class="num">5</span></span></label>
+                </div>
+                <div class="likert-labels"><span>Nadie noto lo que hice</span><span>Me senti valorado/a</span></div>
+            </div>
+
+            <!-- Q9 -->
+            <div class="q-card">
+                <div class="q-num">Reconoce a alguien</div>
+                <div class="q-text">Quien del equipo hizo algo que quieras reconocer? Que hizo?</div>
+                <textarea class="q-textarea" name="q9" placeholder="Nombre y que hizo (se concreto)..."></textarea>
+            </div>
+
+            <!-- Q10 -->
+            <div class="q-card">
+                <div class="q-num">Mejora</div>
+                <div class="q-text">Que es UNA cosa que podriamos cambiar para que la proxima semana sea mejor?</div>
+                <textarea class="q-textarea" name="q10" placeholder="Una sola cosa, la mas importante..." required></textarea>
+            </div>
+
+            <!-- Q11 NPS -->
+            <div class="q-card">
+                <div class="q-num">Recomendacion</div>
+                <div class="q-text">Del 1 al 10, que tanto recomendarias este equipo como lugar para trabajar?</div>
+                <div class="nps">
+                    <label><input type="radio" name="q11" value="1" required>1</label>
+                    <label><input type="radio" name="q11" value="2">2</label>
+                    <label><input type="radio" name="q11" value="3">3</label>
+                    <label><input type="radio" name="q11" value="4">4</label>
+                    <label><input type="radio" name="q11" value="5">5</label>
+                    <label><input type="radio" name="q11" value="6">6</label>
+                    <label><input type="radio" name="q11" value="7">7</label>
+                    <label><input type="radio" name="q11" value="8">8</label>
+                    <label><input type="radio" name="q11" value="9">9</label>
+                    <label><input type="radio" name="q11" value="10">10</label>
+                </div>
+                <div class="likert-labels"><span>No lo recomendaria</span><span>Lo recomendaria mucho</span></div>
+            </div>
+
+            <!-- Q12 -->
+            <div class="q-card">
+                <div class="q-num">Libre (opcional)</div>
+                <div class="q-text">Algo mas que quieras compartir?</div>
+                <textarea class="q-textarea" name="q12" placeholder="Lo que sea..."></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn" id="sendBtn">Enviar feedback</button>
+        </form>
+    </div>
+
+    <!-- SUCCESS -->
+    <div id="successScreen" class="success-screen">
+        <div class="icon">✅</div>
+        <h2>Gracias por tu feedback</h2>
+        <p>Tus respuestas son anonimas y nos ayudan a mejorar como equipo.</p>
+        <p style="margin-top:20px; color:#555; font-size:0.8rem;">Puedes cerrar esta pagina.</p>
+    </div>
+
+</div>
+
+<script>
+let currentMember = '';
+
+function getWeekLabel() {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 1);
+    const week = Math.ceil(((now - start) / 86400000 + start.getDay() + 1) / 7);
+    return `Semana ${week} — ${now.toLocaleDateString('es-MX', {month: 'long', day: 'numeric', year: 'numeric'})}`;
+}
+
+function startSurvey(member) {
+    currentMember = member;
+    document.getElementById('menuScreen').style.display = 'none';
+    document.getElementById('surveyScreen').classList.add('active');
+    document.getElementById('weekLabel').textContent = getWeekLabel();
+    window.scrollTo(0, 0);
+}
+
+function showMenu() {
+    document.getElementById('menuScreen').style.display = 'block';
+    document.getElementById('surveyScreen').classList.remove('active');
+    document.getElementById('surveyForm').reset();
+    window.scrollTo(0, 0);
+}
+
+async function submitSurvey(e) {
+    e.preventDefault();
+    const btn = document.getElementById('sendBtn');
+    btn.textContent = 'Enviando...';
+    btn.disabled = true;
+
+    const form = document.getElementById('surveyForm');
+    const fd = new FormData(form);
+
+    const data = {
+        member: currentMember,
+        week: getWeekLabel(),
+        submitted_at: new Date().toISOString(),
+        q1_safety_speak: parseInt(fd.get('q1')) || null,
+        q2_safety_errors: parseInt(fd.get('q2')) || null,
+        q3_suppressed_voice: fd.get('q3') || '',
+        q4_team_cohesion: parseInt(fd.get('q4')) || null,
+        q5_role_clarity: parseInt(fd.get('q5')) || null,
+        q6_conflict_level: parseInt(fd.get('q6')) || null,
+        q7_conflict_topic: fd.get('q7') || '',
+        q8_recognition: parseInt(fd.get('q8')) || null,
+        q9_peer_recognition: fd.get('q9') || '',
+        q10_improvement: fd.get('q10') || '',
+        q11_team_nps: parseInt(fd.get('q11')) || null,
+        q12_open: fd.get('q12') || '',
+    };
+
+    try {
+        await fetch('/api/team-feedback', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data),
+        });
+    } catch(err) { console.log('save err:', err); }
+
+    document.getElementById('surveyScreen').classList.remove('active');
+    document.getElementById('successScreen').style.display = 'block';
+    window.scrollTo(0, 0);
+    return false;
+}
+</script>
+</body>
+</html>
