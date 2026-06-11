@@ -792,33 +792,34 @@ async function finishGame() {
     const totalDuration = Date.now() - gameStartTime;
 
     // --- D Score: Balloon Risk ---
+    // FIX: lowered pump ceiling from 12 to 6 (realistic range), boosted risk weight
     const avgPumps = balloonData.pumps.length > 0 ? balloonData.pumps.reduce((a, b) => a + b, 0) / balloonData.pumps.length : 0;
     const popRate = balloonData.pumps.length > 0 ? balloonData.popped / balloonData.pumps.length : 0;
     const avgDecisionTime = balloonData.decisionTimes.length > 0 ? balloonData.decisionTimes.reduce((a, b) => a + b, 0) / balloonData.decisionTimes.length : 5000;
-    // Higher pumps + faster decisions = higher D
-    const riskRaw = Math.min(avgPumps / 12, 1); // normalize to 0-1 (12 pumps = max)
-    const speedFactor = Math.max(0, 1 - avgDecisionTime / 5000); // faster = higher
-    const dRaw = riskRaw * 0.7 + speedFactor * 0.15 + popRate * 0.15;
+    const riskRaw = Math.min(avgPumps / 6, 1); // 6 pumps = max (was 12 — too high)
+    const speedFactor = Math.max(0, 1 - avgDecisionTime / 4000); // faster threshold
+    const boldnessFactor = popRate > 0 ? Math.min(popRate * 1.5, 1) : 0; // popping = boldness, not failure
+    const dRaw = riskRaw * 0.50 + speedFactor * 0.25 + boldnessFactor * 0.25;
 
     // --- I Score: Social choices ---
+    // FIX: increased speed bonus range, added reaction time differential (faster on social = natural tendency)
     const socialPct = socialData.totalChoices > 0 ? socialData.socialChoices / socialData.totalChoices : 0.5;
     const socialAvgRT = socialData.decisionTimes.length > 0 ? socialData.decisionTimes.reduce((a, b) => a + b, 0) / socialData.decisionTimes.length : 5000;
-    const socialSpeedBonus = Math.max(0, (1 - socialAvgRT / 8000) * 0.2);
-    const iRaw = socialPct * 0.8 + socialSpeedBonus;
+    const socialSpeedBonus = Math.max(0, (1 - socialAvgRT / 6000) * 0.3);
+    const iRaw = socialPct * 0.70 + socialSpeedBonus;
 
     // --- S Score: Sequence consistency ---
+    // FIX: reduced accuracy weight (was inflating S for anyone decent at memory)
     const seqAccuracy = sequenceData.total > 0 ? sequenceData.correct / sequenceData.total : 0;
-    // Consistency: how stable accuracy is as speed increases
-    let consistencyIndex = 1;
+    let consistencyIndex = 0.5; // default to middle instead of 1.0
     if (sequenceData.accuracyByRound.length >= 4) {
         const firstHalf = sequenceData.accuracyByRound.slice(0, 4);
         const secondHalf = sequenceData.accuracyByRound.slice(4);
         const firstAvg = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
         const secondAvg = secondHalf.length > 0 ? secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length : firstAvg;
         const drop = Math.max(0, firstAvg - secondAvg);
-        consistencyIndex = Math.max(0, 1 - drop);
+        consistencyIndex = Math.max(0, 1 - drop * 2); // amplify drops
     }
-    // Timing consistency (low SD = higher S)
     let timingConsistency = 0.5;
     if (sequenceData.responseTimes.length > 1) {
         const mean = sequenceData.responseTimes.reduce((a, b) => a + b, 0) / sequenceData.responseTimes.length;
@@ -826,16 +827,21 @@ async function finishGame() {
         const sd = Math.sqrt(variance);
         timingConsistency = Math.max(0, 1 - sd / (mean || 1));
     }
-    const sRaw = seqAccuracy * 0.4 + consistencyIndex * 0.35 + timingConsistency * 0.25;
+    const sRaw = seqAccuracy * 0.30 + consistencyIndex * 0.40 + timingConsistency * 0.30;
 
     // --- C Score: Detail accuracy ---
+    // FIX: added penalty for speed (C people take time, rushing = not C)
     const detailAccuracy = detailData.totalDiffs > 0 ? detailData.correctFinds / detailData.totalDiffs : 0;
     const thoroughness = detailData.totalDiffs > 0 ? (detailData.correctFinds) / (detailData.correctFinds + detailData.missedDiffs + 0.001) : 0;
     const precision = (detailData.correctFinds + detailData.falsePositives) > 0 ? detailData.correctFinds / (detailData.correctFinds + detailData.falsePositives) : 0;
-    const cRaw = detailAccuracy * 0.35 + thoroughness * 0.30 + precision * 0.35;
+    const detailAvgRT = detailData.responseTimes && detailData.responseTimes.length > 0 ?
+        detailData.responseTimes.reduce((a, b) => a + b, 0) / detailData.responseTimes.length : 5000;
+    // Methodical slowness bonus: taking time = C trait (but cap it)
+    const methodicalBonus = Math.min(detailAvgRT / 12000, 1) * 0.15;
+    const cRaw = detailAccuracy * 0.30 + thoroughness * 0.25 + precision * 0.30 + methodicalBonus;
 
-    // Scale to 25-40 range
-    function scaleScore(raw) { return Math.round(25 + Math.min(raw, 1) * 15); }
+    // Scale to 15-40 range (FIX: lowered floor from 25 to 15 for more differentiation)
+    function scaleScore(raw) { return Math.round(15 + Math.min(raw, 1) * 25); }
 
     const rawScores = { D: scaleScore(dRaw), I: scaleScore(iRaw), S: scaleScore(sRaw), C: scaleScore(cRaw) };
     const total = rawScores.D + rawScores.I + rawScores.S + rawScores.C;
