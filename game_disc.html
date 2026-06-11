@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego DISC — Evaluacion de Comportamiento</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+        /* Registration */
+        .register-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .register-card { background: #1e293b; border-radius: 16px; padding: 40px; max-width: 440px; width: 100%; }
+        .register-card h1 { font-size: 1.5rem; margin-bottom: 8px; color: #60a5fa; }
+        .register-card p { font-size: 0.9rem; color: #94a3b8; margin-bottom: 24px; line-height: 1.5; }
+        .register-card input { width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; font-size: 1rem; margin-bottom: 12px; outline: none; }
+        .register-card input:focus { border-color: #60a5fa; }
+        .register-card select { width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; font-size: 1rem; margin-bottom: 16px; outline: none; }
+        .btn-primary { width: 100%; padding: 14px; border-radius: 8px; border: none; background: #3b82f6; color: white; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-primary:disabled { background: #475569; cursor: not-allowed; }
+
+        /* Game container */
+        .game-screen { display: none; min-height: 100vh; }
+        .game-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; background: #1e293b; border-bottom: 1px solid #334155; }
+        .game-header .mini-game-label { font-size: 0.85rem; color: #60a5fa; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .game-header .progress { font-size: 0.85rem; color: #94a3b8; }
+        .game-header .timer { font-size: 1.1rem; font-weight: 700; color: #fbbf24; font-variant-numeric: tabular-nums; }
+
+        .game-area { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(100vh - 60px); padding: 24px; }
+
+        /* Mini-game styles */
+        .challenge-card { background: #1e293b; border-radius: 16px; padding: 32px; max-width: 600px; width: 100%; text-align: center; }
+        .challenge-card h2 { font-size: 1.3rem; margin-bottom: 8px; color: #f1f5f9; }
+        .challenge-card .instruction { font-size: 0.9rem; color: #94a3b8; margin-bottom: 24px; line-height: 1.5; }
+
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .option-btn { padding: 16px; border-radius: 12px; border: 2px solid #334155; background: #0f172a; color: #e2e8f0; font-size: 1rem; cursor: pointer; transition: all 0.15s; font-weight: 500; text-align: left; line-height: 1.4; }
+        .option-btn:hover { border-color: #60a5fa; background: #1e293b; transform: scale(1.02); }
+        .option-btn.selected { border-color: #3b82f6; background: #1e3a5f; color: #93c5fd; }
+        .option-btn:disabled { cursor: default; opacity: 0.7; }
+
+        /* Balloon game */
+        .balloon-container { position: relative; height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; margin: 20px 0; }
+        .balloon { width: 80px; height: 100px; background: radial-gradient(circle at 35% 35%, #f87171, #dc2626);
+            border-radius: 50% 50% 50% 50% / 45% 45% 55% 55%;
+            transition: width 0.15s, height 0.15s; position: relative; display: flex; align-items: center; justify-content: center; }
+        .balloon::after { content: ''; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 14px solid #dc2626; }
+        .balloon-string { width: 2px; height: 40px; background: #94a3b8; }
+        .balloon-points { font-size: 1.5rem; font-weight: 700; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.5); z-index: 1; }
+        .balloon-pop { font-size: 4rem; animation: popAnim 0.5s ease-out; }
+        @keyframes popAnim { 0% { transform: scale(1); opacity:1; } 100% { transform: scale(2); opacity:0; } }
+
+        .balloon-actions { display: flex; gap: 12px; margin-top: 16px; }
+        .btn-pump { padding: 14px 32px; border-radius: 12px; border: none; background: #ef4444; color: white; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.1s; }
+        .btn-pump:hover { background: #dc2626; transform: scale(1.05); }
+        .btn-pump:active { transform: scale(0.95); }
+        .btn-cashout { padding: 14px 32px; border-radius: 12px; border: 2px solid #22c55e; background: transparent; color: #22c55e; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.1s; }
+        .btn-cashout:hover { background: #052e16; }
+
+        .round-info { display: flex; gap: 24px; margin-bottom: 16px; }
+        .round-stat { text-align: center; }
+        .round-stat .stat-num { font-size: 1.5rem; font-weight: 700; color: #fbbf24; }
+        .round-stat .stat-lbl { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; }
+
+        /* Sequence game */
+        .sequence-display { display: flex; gap: 12px; justify-content: center; margin: 20px 0; min-height: 60px; align-items: center; flex-wrap: wrap; }
+        .seq-circle { width: 48px; height: 48px; border-radius: 50%; transition: all 0.3s; opacity: 0.3; transform: scale(0.8); }
+        .seq-circle.active { opacity: 1; transform: scale(1); box-shadow: 0 0 20px rgba(255,255,255,0.3); }
+        .seq-circle.clickable { cursor: pointer; opacity: 0.7; border: 3px solid #334155; }
+        .seq-circle.clickable:hover { opacity: 1; transform: scale(1.1); }
+        .seq-circle.clicked { opacity: 1; transform: scale(1); border-color: white !important; }
+        .seq-circle.wrong-click { animation: shake 0.3s; border-color: #ef4444 !important; }
+        @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+        .color-palette { display: flex; gap: 12px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+
+        /* Detail game grids */
+        .detail-grids { display: flex; gap: 24px; justify-content: center; align-items: start; flex-wrap: wrap; margin: 16px 0; }
+        .emoji-grid { display: grid; gap: 4px; }
+        .emoji-cell { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
+            border-radius: 8px; border: 2px solid #334155; background: #0f172a; cursor: pointer; transition: all 0.15s; user-select: none; }
+        .emoji-cell:hover { border-color: #60a5fa; background: #1e293b; }
+        .emoji-cell.marked { border-color: #fbbf24; background: #1e293b; box-shadow: 0 0 8px rgba(251,191,36,0.3); }
+        .emoji-cell.correct-diff { border-color: #22c55e; background: #052e16; }
+        .emoji-cell.missed-diff { border-color: #ef4444; background: #2a0a0a; }
+        .emoji-cell.false-positive { border-color: #f97316; background: #431407; }
+        .emoji-cell.not-clickable { cursor: default; }
+        .grid-label { text-align: center; font-size: 0.8rem; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .timer-bar { width: 100%; height: 6px; background: #334155; border-radius: 3px; margin: 12px 0; overflow: hidden; }
+        .timer-bar-fill { height: 100%; background: #fbbf24; border-radius: 3px; transition: width 0.1s linear; }
+        .timer-bar-fill.urgent { background: #ef4444; }
+
+        .submit-btn { margin-top: 16px; padding: 12px 32px; border-radius: 12px; border: none; background: #3b82f6; color: white; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        .submit-btn:hover { background: #2563eb; }
+
+        /* Transition */
+        .transition-screen { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; text-align: center; }
+        .transition-screen h2 { font-size: 1.8rem; margin-bottom: 12px; color: #60a5fa; }
+        .transition-screen p { font-size: 1rem; color: #94a3b8; margin-bottom: 24px; max-width: 400px; line-height: 1.6; }
+        .transition-screen .emoji-big { font-size: 4rem; margin-bottom: 16px; }
+        .countdown { font-size: 4rem; font-weight: 700; color: #fbbf24; margin: 24px 0; }
+
+        /* Results */
+        .results-screen { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
+        .results-card { background: #1e293b; border-radius: 16px; padding: 40px; max-width: 500px; width: 100%; text-align: center; }
+        .results-card h2 { font-size: 1.5rem; margin-bottom: 24px; color: #60a5fa; }
+        .result-bar { margin: 12px 0; text-align: left; }
+        .result-bar .label { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 4px; }
+        .result-bar .bar { height: 14px; background: #0f172a; border-radius: 7px; overflow: hidden; }
+        .result-bar .bar-fill { height: 100%; border-radius: 7px; transition: width 1s ease; }
+        .bar-fill.d-bar { background: #ef4444; }
+        .bar-fill.i-bar { background: #fbbf24; }
+        .bar-fill.s-bar { background: #22c55e; }
+        .bar-fill.c-bar { background: #3b82f6; }
+
+        .dominant-badge { display: inline-block; padding: 12px 32px; border-radius: 12px; font-size: 1.4rem; font-weight: 700; margin: 20px 0; }
+        .dominant-badge.D { background: #2a0a0a; border: 2px solid #ef4444; color: #ef4444; }
+        .dominant-badge.I { background: #2a1f00; border: 2px solid #fbbf24; color: #fbbf24; }
+        .dominant-badge.S { background: #052e16; border: 2px solid #22c55e; color: #22c55e; }
+        .dominant-badge.C { background: #0a1a2e; border: 2px solid #3b82f6; color: #3b82f6; }
+
+        .trait-desc { color: #94a3b8; font-size: 0.95rem; line-height: 1.6; margin: 12px 0 20px; padding: 0 8px; }
+
+        .behavioral-stats { margin-top: 24px; padding-top: 20px; border-top: 1px solid #334155; text-align: left; }
+        .behavioral-stats h3 { font-size: 0.9rem; color: #94a3b8; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.85rem; }
+        .stat-row .stat-label { color: #94a3b8; }
+        .stat-row .stat-value { color: #e2e8f0; font-weight: 600; }
+
+        @media (max-width: 480px) {
+            .challenge-card { padding: 20px; }
+            .emoji-cell { width: 44px; height: 44px; font-size: 1.3rem; }
+            .seq-circle { width: 40px; height: 40px; }
+            .balloon-container { height: 240px; }
+            .detail-grids { gap: 12px; }
+            .option-btn { font-size: 0.9rem; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== REGISTRATION ===== -->
+<div class="register-screen" id="registerScreen">
+    <div class="register-card">
+        <h1>🎯 Juego DISC de Comportamiento</h1>
+        <p>4 mini-juegos interactivos que miden tu perfil de comportamiento DISC a traves de tareas reales. Toma ~7 minutos. No hay respuestas correctas o incorrectas — solo juega de forma natural.</p>
+        <input type="text" id="regName" placeholder="Nombre completo" required>
+        <input type="email" id="regEmail" placeholder="Email" required>
+        <input type="tel" id="regPhone" placeholder="Telefono">
+        <select id="regPosition">
+            <option value="">Selecciona posicion...</option>
+            <option value="almacen">Almacen</option>
+            <option value="ventas_mostrador">Ventas a Mostrador</option>
+            <option value="pueblaventas">Puebla Ventas</option>
+            <option value="internal_team">Equipo Interno (correlacion)</option>
+        </select>
+        <button class="btn-primary" id="startBtn" onclick="startGame()">Comenzar Juego</button>
+    </div>
+</div>
+
+<!-- ===== GAME AREA ===== -->
+<div class="game-screen" id="gameScreen">
+    <div class="game-header">
+        <span class="mini-game-label" id="miniGameLabel">Riesgo</span>
+        <span class="progress" id="progressLabel">1/5</span>
+        <span class="timer" id="timerLabel">0:00</span>
+    </div>
+    <div class="game-area" id="gameArea"></div>
+</div>
+
+<!-- ===== TRANSITION ===== -->
+<div class="transition-screen" id="transitionScreen">
+    <div class="emoji-big" id="transEmoji">🎈</div>
+    <h2 id="transTitle">Siguiente Juego</h2>
+    <p id="transDesc">Descripcion del juego.</p>
+    <div class="countdown" id="transCountdown">3</div>
+</div>
+
+<!-- ===== RESULTS ===== -->
+<div class="results-screen" id="resultsScreen">
+    <div class="results-card" id="resultsCard"></div>
+</div>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const SUPABASE_URL = 'https://gbkhkbfbarsnpbdkxzii.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdia2hrYmZiYXJzbnBiZGt4emlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQzODAzNzMsImV4cCI6MjA0OTk1NjM3M30.mcOcC2GVEu_wD3xNBzSCC3MwDck3CIdmz4D8adU-bpI';
+const HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+
+// Auto-fill from URL params (when coming from /games menu)
+const urlParams = new URLSearchParams(window.location.search);
+const prefillEmail = urlParams.get('email');
+window.addEventListener('DOMContentLoaded', () => {
+    if (prefillEmail) {
+        document.getElementById('regEmail').value = prefillEmail;
+        document.getElementById('regEmail').readOnly = true;
+        document.getElementById('regEmail').style.opacity = '0.7';
+    }
+});
+
+// ============================================================
+// STATE
+// ============================================================
+let player = {};
+let sessionId = null;
+let gameStartTime = 0;
+let events = [];
+let currentMiniGame = 0;
+let miniGameTimer = null;
+let miniGameStartTime = 0;
+
+const miniGames = ['balloon', 'social', 'sequence', 'detail'];
+const miniGameLabels = {
+    balloon: { name: 'Globo de Riesgo', dim: 'D', icon: '🎈', desc: 'Infla el globo para ganar puntos, pero cuidado — puede explotar. Tu decides cuando parar.' },
+    social:  { name: 'Decisiones Sociales', dim: 'I', icon: '🤝', desc: 'Elige como actuarias en situaciones laborales reales. No hay respuestas correctas.' },
+    sequence:{ name: 'Secuencia de Colores', dim: 'S', icon: '🔵', desc: 'Memoriza y repite secuencias de colores. La velocidad va aumentando.' },
+    detail:  { name: 'Encuentra Diferencias', dim: 'C', icon: '🔍', desc: 'Compara dos cuadriculas y encuentra las diferencias. Tienes tiempo limitado.' }
+};
+
+// Per-mini-game raw data
+let balloonData = { pumps: [], popped: 0, cashouts: 0, totalBanked: 0, decisionTimes: [] };
+let socialData = { socialChoices: 0, totalChoices: 0, decisionTimes: [] };
+let sequenceData = { correct: 0, total: 0, responseTimes: [], accuracyByRound: [] };
+let detailData = { correctFinds: 0, missedDiffs: 0, falsePositives: 0, totalDiffs: 0, roundTimes: [] };
+
+// ============================================================
+// GAME FLOW
+// ============================================================
+
+async function startGame() {
+    const name = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const phone = document.getElementById('regPhone').value.trim();
+    const position = document.getElementById('regPosition').value;
+
+    if (!name || !email) { alert('Nombre y email son requeridos'); return; }
+
+    player = { name, email, phone, position };
+    gameStartTime = Date.now();
+
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/game_sessions`, {
+            method: 'POST', headers: HEADERS,
+            body: JSON.stringify({
+                email, name, phone, position,
+                game_type: 'game_disc',
+                test_equivalent: 'disc',
+                user_agent: navigator.userAgent,
+                screen_width: screen.width,
+                screen_height: screen.height,
+                status: 'in_progress'
+            })
+        });
+        const data = await res.json();
+        if (data && data[0]) sessionId = data[0].id;
+    } catch (e) { console.warn('Session save failed:', e); }
+
+    document.getElementById('registerScreen').style.display = 'none';
+    showTransition(0);
+}
+
+function showTransition(mgIndex) {
+    currentMiniGame = mgIndex;
+    const mg = miniGames[mgIndex];
+    const info = miniGameLabels[mg];
+
+    document.getElementById('gameScreen').style.display = 'none';
+    const ts = document.getElementById('transitionScreen');
+    ts.style.display = 'flex';
+    document.getElementById('transEmoji').textContent = info.icon;
+    document.getElementById('transTitle').textContent = info.name;
+    document.getElementById('transDesc').textContent = info.desc;
+
+    let count = 3;
+    document.getElementById('transCountdown').textContent = count;
+    const iv = setInterval(() => {
+        count--;
+        if (count <= 0) {
+            clearInterval(iv);
+            ts.style.display = 'none';
+            startMiniGame(mgIndex);
+        } else {
+            document.getElementById('transCountdown').textContent = count;
+        }
+    }, 1000);
+}
+
+function startMiniGame(mgIndex) {
+    const gs = document.getElementById('gameScreen');
+    gs.style.display = 'block';
+    miniGameStartTime = Date.now();
+
+    const mg = miniGames[mgIndex];
+    const info = miniGameLabels[mg];
+    document.getElementById('miniGameLabel').textContent = `${info.icon} ${info.name}`;
+
+    clearInterval(miniGameTimer);
+    miniGameTimer = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - miniGameStartTime) / 1000);
+        const m = Math.floor(elapsed / 60);
+        const s = elapsed % 60;
+        document.getElementById('timerLabel').textContent = `${m}:${s.toString().padStart(2, '0')}`;
+    }, 200);
+
+    if (mg === 'balloon') startBalloonGame();
+    else if (mg === 'social') startSocialGame();
+    else if (mg === 'sequence') startSequenceGame();
+    else if (mg === 'detail') startDetailGame();
+}
+
+function endMiniGame() {
+    clearInterval(miniGameTimer);
+    currentMiniGame++;
+    if (currentMiniGame < miniGames.length) {
+        showTransition(currentMiniGame);
+    } else {
+        finishGame();
+    }
+}
+
+// ============================================================
+// MINI-GAME 1: BALLOON RISK (D - Dominance)
+// ============================================================
+
+function startBalloonGame() {
+    balloonData = { pumps: [], popped: 0, cashouts: 0, totalBanked: 0, decisionTimes: [] };
+    runBalloonRound(0, 5);
+}
+
+function runBalloonRound(round, totalRounds) {
+    if (round >= totalRounds) return endMiniGame();
+
+    document.getElementById('progressLabel').textContent = `Ronda ${round + 1}/${totalRounds}`;
+
+    let pumps = 0;
+    let roundPoints = 0;
+    let popProb = 0.05;
+    let roundStartTime = Date.now();
+    let lastActionTime = Date.now();
+
+    function renderBalloon() {
+        const size = 80 + pumps * 12;
+        const area = document.getElementById('gameArea');
+        area.innerHTML = `
+            <div class="challenge-card">
+                <h2>🎈 Ronda ${round + 1} de ${totalRounds}</h2>
+                <div class="instruction">Cada bombeo suma puntos, pero el globo puede explotar. ¡Tu decides cuando parar!</div>
+                <div class="round-info">
+                    <div class="round-stat"><div class="stat-num">${roundPoints}</div><div class="stat-lbl">Puntos ronda</div></div>
+                    <div class="round-stat"><div class="stat-num">${balloonData.totalBanked}</div><div class="stat-lbl">Total guardado</div></div>
+                    <div class="round-stat"><div class="stat-num">${Math.round(popProb * 100)}%</div><div class="stat-lbl">Riesgo</div></div>
+                </div>
+                <div class="balloon-container">
+                    <div class="balloon" style="width:${size}px; height:${size * 1.2}px;" id="balloonEl">
+                        <span class="balloon-points">${roundPoints}</span>
+                    </div>
+                    <div class="balloon-string"></div>
+                </div>
+                <div class="balloon-actions">
+                    <button class="btn-pump" id="pumpBtn">💨 Bombear (+${3 + pumps})</button>
+                    <button class="btn-cashout" id="cashBtn">💰 Guardar ${roundPoints}</button>
+                </div>
+            </div>`;
+
+        document.getElementById('pumpBtn').onclick = () => {
+            const now = Date.now();
+            balloonData.decisionTimes.push(now - lastActionTime);
+            lastActionTime = now;
+            pumps++;
+            roundPoints += 2 + pumps;
+            popProb += 0.05;
+
+            if (Math.random() < popProb) {
+                // POP
+                balloonData.pumps.push(pumps);
+                balloonData.popped++;
+                recordEvent('balloon', round, 'D', now - roundStartTime, { pumps, popped: true, pointsLost: roundPoints }, false);
+
+                const area = document.getElementById('gameArea');
+                area.querySelector('.balloon-container').innerHTML = '<div class="balloon-pop">💥</div>';
+                area.querySelector('.balloon-actions').innerHTML = `<p style="color:#ef4444; font-weight:700; font-size:1.2rem;">¡Exploto! Perdiste ${roundPoints} puntos</p>`;
+
+                setTimeout(() => runBalloonRound(round + 1, totalRounds), 1500);
+            } else {
+                renderBalloon();
+            }
+        };
+
+        document.getElementById('cashBtn').onclick = () => {
+            const now = Date.now();
+            balloonData.decisionTimes.push(now - lastActionTime);
+            balloonData.pumps.push(pumps);
+            balloonData.cashouts++;
+            balloonData.totalBanked += roundPoints;
+            recordEvent('balloon', round, 'D', now - roundStartTime, { pumps, popped: false, banked: roundPoints }, true);
+
+            const area = document.getElementById('gameArea');
+            area.querySelector('.balloon-actions').innerHTML = `<p style="color:#22c55e; font-weight:700; font-size:1.2rem;">¡Guardaste ${roundPoints} puntos!</p>`;
+            setTimeout(() => runBalloonRound(round + 1, totalRounds), 1200);
+        };
+    }
+
+    renderBalloon();
+}
+
+// ============================================================
+// MINI-GAME 2: SOCIAL INFLUENCE (I - Influence)
+// ============================================================
+
+const socialScenarios = [
+    { situation: 'Te asignan un nuevo proyecto importante.',
+      social: 'Reunir al equipo para una lluvia de ideas', solo: 'Planificar a solas primero y luego presentar el plan' },
+    { situation: 'Descubres un error critico en el sistema.',
+      social: 'Avisar al equipo inmediatamente para resolverlo juntos', solo: 'Investigar el problema tu mismo antes de informar' },
+    { situation: 'La meta de ventas del mes es muy dificil de alcanzar.',
+      social: 'Motivar al equipo con una reunion energetica', solo: 'Crear un plan detallado individual paso a paso' },
+    { situation: 'Un companero nuevo no entiende un proceso.',
+      social: 'Sentarte con el y explicarle personalmente', solo: 'Enviarle la documentacion por escrito' },
+    { situation: 'Hay un conflicto entre dos miembros del equipo.',
+      social: 'Organizar una conversacion grupal para resolverlo', solo: 'Hablar con cada uno por separado y mediar discretamente' },
+    { situation: 'Necesitas aprender una herramienta nueva para el trabajo.',
+      social: 'Buscar a alguien que la domine y aprender juntos', solo: 'Seguir un tutorial en linea a tu propio ritmo' },
+    { situation: 'El jefe pide ideas para mejorar la productividad.',
+      social: 'Proponer una sesion de brainstorming con todo el equipo', solo: 'Escribir un reporte con tus propias ideas y enviarlo' },
+    { situation: 'Tienes que entregar un reporte urgente y hay mucho trabajo.',
+      social: 'Pedir ayuda a un companero para dividir la carga', solo: 'Quedarte extra para terminarlo solo y asegurar calidad' }
+];
+
+function startSocialGame() {
+    socialData = { socialChoices: 0, totalChoices: 0, decisionTimes: [] };
+    showSocialScenario(0);
+}
+
+function showSocialScenario(index) {
+    if (index >= socialScenarios.length) return endMiniGame();
+
+    const sc = socialScenarios[index];
+    document.getElementById('progressLabel').textContent = `${index + 1}/${socialScenarios.length}`;
+    const choiceStartTime = Date.now();
+
+    // Randomize order of options
+    const socialFirst = Math.random() > 0.5;
+    const opt1 = socialFirst ? { text: sc.social, isSocial: true } : { text: sc.solo, isSocial: false };
+    const opt2 = socialFirst ? { text: sc.solo, isSocial: false } : { text: sc.social, isSocial: true };
+
+    document.getElementById('gameArea').innerHTML = `
+        <div class="challenge-card">
+            <h2>Situacion Laboral</h2>
+            <div class="instruction" style="font-size:1.05rem; color:#cbd5e1; margin-bottom:28px;">${sc.situation}</div>
+            <p style="color:#94a3b8; font-size:0.85rem; margin-bottom:16px;">¿Que harias naturalmente?</p>
+            <div class="options-grid" style="grid-template-columns: 1fr;">
+                <button class="option-btn" id="socialOpt1">${opt1.text}</button>
+                <button class="option-btn" id="socialOpt2">${opt2.text}</button>
+            </div>
+        </div>`;
+
+    document.getElementById('socialOpt1').onclick = () => handleSocialChoice(index, opt1.isSocial, choiceStartTime);
+    document.getElementById('socialOpt2').onclick = () => handleSocialChoice(index, opt2.isSocial, choiceStartTime);
+}
+
+function handleSocialChoice(index, isSocial, startTime) {
+    const rt = Date.now() - startTime;
+    socialData.totalChoices++;
+    socialData.decisionTimes.push(rt);
+    if (isSocial) socialData.socialChoices++;
+
+    // Visual feedback
+    const buttons = document.querySelectorAll('.option-btn');
+    buttons.forEach(b => { b.disabled = true; b.style.opacity = '0.5'; });
+    event.target.style.opacity = '1';
+    event.target.classList.add('selected');
+
+    recordEvent('social', index, 'I', rt, { chose_social: isSocial }, isSocial);
+
+    setTimeout(() => showSocialScenario(index + 1), 700);
+}
+
+// ============================================================
+// MINI-GAME 3: PATTERN CONSISTENCY (S - Steadiness)
+// ============================================================
+
+const SEQ_COLORS = [
+    { name: 'rojo', bg: '#ef4444', emoji: '🔴' },
+    { name: 'azul', bg: '#3b82f6', emoji: '🔵' },
+    { name: 'verde', bg: '#22c55e', emoji: '🟢' },
+    { name: 'amarillo', bg: '#fbbf24', emoji: '🟡' },
+    { name: 'morado', bg: '#a855f7', emoji: '🟣' },
+    { name: 'naranja', bg: '#f97316', emoji: '🟠' }
+];
+
+function startSequenceGame() {
+    sequenceData = { correct: 0, total: 0, responseTimes: [], accuracyByRound: [] };
+    runSequenceRound(0, 8);
+}
+
+function runSequenceRound(round, totalRounds) {
+    if (round >= totalRounds) return endMiniGame();
+
+    const seqLength = Math.min(3 + Math.floor(round / 2), 6);
+    const showDelay = Math.max(800 - round * 60, 400); // Gets faster each round
+
+    // Generate random sequence
+    const sequence = [];
+    for (let i = 0; i < seqLength; i++) {
+        sequence.push(Math.floor(Math.random() * SEQ_COLORS.length));
+    }
+
+    document.getElementById('progressLabel').textContent = `${round + 1}/${totalRounds}`;
+
+    // Phase 1: Show sequence
+    const area = document.getElementById('gameArea');
+    area.innerHTML = `
+        <div class="challenge-card">
+            <h2>Memoriza la Secuencia</h2>
+            <div class="instruction">Observa el orden de los colores</div>
+            <div class="sequence-display" id="seqDisplay">
+                ${sequence.map((c, i) => `<div class="seq-circle" id="seqC${i}" style="background:${SEQ_COLORS[c].bg};"></div>`).join('')}
+            </div>
+            <p style="color:#94a3b8; font-size:0.85rem; margin-top:12px;">Ronda ${round + 1} — ${seqLength} colores — velocidad ${round + 1}</p>
+        </div>`;
+
+    // Animate: highlight one at a time
+    let showIdx = 0;
+    const showInterval = setInterval(() => {
+        // Clear previous
+        document.querySelectorAll('.seq-circle').forEach(c => c.classList.remove('active'));
+        if (showIdx < sequence.length) {
+            document.getElementById(`seqC${showIdx}`).classList.add('active');
+            showIdx++;
+        } else {
+            clearInterval(showInterval);
+            setTimeout(() => showSequenceInput(round, totalRounds, sequence), 500);
+        }
+    }, showDelay);
+}
+
+function showSequenceInput(round, totalRounds, sequence) {
+    const area = document.getElementById('gameArea');
+    const roundStartTime = Date.now();
+    let playerSeq = [];
+    let clickTimes = [];
+
+    area.innerHTML = `
+        <div class="challenge-card">
+            <h2>Repite la Secuencia</h2>
+            <div class="instruction">Haz clic en los colores en el mismo orden</div>
+            <div class="sequence-display" id="playerSeqDisplay">
+                ${sequence.map((_, i) => `<div class="seq-circle" style="background:#334155; width:40px; height:40px;" id="playerSlot${i}"></div>`).join('')}
+            </div>
+            <div class="color-palette" id="colorPalette">
+                ${SEQ_COLORS.map((c, i) => `<div class="seq-circle clickable" style="background:${c.bg}; width:52px; height:52px; border:3px solid #334155;" id="palC${i}" data-color="${i}"></div>`).join('')}
+            </div>
+        </div>`;
+
+    document.querySelectorAll('#colorPalette .seq-circle').forEach(el => {
+        el.onclick = function() {
+            const colorIdx = parseInt(this.dataset.color);
+            const pos = playerSeq.length;
+            if (pos >= sequence.length) return;
+
+            clickTimes.push(Date.now() - (clickTimes.length > 0 ? clickTimes[clickTimes.length - 1] + roundStartTime : roundStartTime));
+            playerSeq.push(colorIdx);
+
+            // Fill slot
+            const slot = document.getElementById(`playerSlot${pos}`);
+            slot.style.background = SEQ_COLORS[colorIdx].bg;
+            slot.classList.add('clicked');
+
+            // Check if complete
+            if (playerSeq.length >= sequence.length) {
+                const rt = Date.now() - roundStartTime;
+                let correctCount = 0;
+                for (let i = 0; i < sequence.length; i++) {
+                    if (playerSeq[i] === sequence[i]) correctCount++;
+                }
+                const isCorrect = correctCount === sequence.length;
+                const accuracy = correctCount / sequence.length;
+
+                sequenceData.total++;
+                sequenceData.responseTimes.push(rt);
+                sequenceData.accuracyByRound.push(accuracy);
+                if (isCorrect) sequenceData.correct++;
+
+                // Visual feedback
+                for (let i = 0; i < sequence.length; i++) {
+                    const slot = document.getElementById(`playerSlot${i}`);
+                    if (playerSeq[i] === sequence[i]) {
+                        slot.style.border = '3px solid #22c55e';
+                    } else {
+                        slot.style.border = '3px solid #ef4444';
+                        slot.classList.add('wrong-click');
+                    }
+                }
+                document.querySelectorAll('#colorPalette .seq-circle').forEach(el => el.style.pointerEvents = 'none');
+
+                const instruction = document.querySelector('.instruction');
+                instruction.textContent = isCorrect ? '¡Perfecto!' : `${correctCount}/${sequence.length} correctos`;
+                instruction.style.color = isCorrect ? '#22c55e' : '#fbbf24';
+
+                recordEvent('sequence', round, 'S', rt, { sequence, playerSeq, accuracy }, isCorrect);
+
+                setTimeout(() => runSequenceRound(round + 1, totalRounds), 1000);
+            }
+        };
+    });
+}
+
+// ============================================================
+// MINI-GAME 4: DETAIL ACCURACY (C - Conscientiousness)
+// ============================================================
+
+const EMOJI_POOL = ['🍎', '🍊', '🍋', '🍇', '🍓', '🌟', '🔥', '💧', '🌙', '⚡', '🎵', '🎨', '📦', '🔑', '💎', '🏆', '🎯', '🌺', '🍀', '🦋'];
+
+function startDetailGame() {
+    detailData = { correctFinds: 0, missedDiffs: 0, falsePositives: 0, totalDiffs: 0, roundTimes: [] };
+    runDetailRound(0, 6);
+}
+
+function runDetailRound(round, totalRounds) {
+    if (round >= totalRounds) return endMiniGame();
+
+    const gridSize = 4;
+    const numDiffs = Math.min(2 + Math.floor(round / 2), 4);
+    detailData.totalDiffs += numDiffs;
+
+    // Generate base grid
+    const baseGrid = [];
+    for (let i = 0; i < gridSize * gridSize; i++) {
+        baseGrid.push(EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)]);
+    }
+
+    // Create modified grid with differences
+    const modGrid = [...baseGrid];
+    const diffPositions = [];
+    const usedPositions = new Set();
+    while (diffPositions.length < numDiffs) {
+        const pos = Math.floor(Math.random() * gridSize * gridSize);
+        if (usedPositions.has(pos)) continue;
+        usedPositions.add(pos);
+        let newEmoji;
+        do { newEmoji = EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)]; } while (newEmoji === baseGrid[pos]);
+        modGrid[pos] = newEmoji;
+        diffPositions.push(pos);
+    }
+
+    document.getElementById('progressLabel').textContent = `${round + 1}/${totalRounds}`;
+
+    const roundStartTime = Date.now();
+    const timeLimit = 15000;
+    let markedCells = new Set();
+    let roundEnded = false;
+
+    function renderDetailRound() {
+        const area = document.getElementById('gameArea');
+        area.innerHTML = `
+            <div class="challenge-card" style="max-width:700px;">
+                <h2>Encuentra las ${numDiffs} Diferencias</h2>
+                <div class="instruction">Haz clic en las celdas del lado derecho que sean diferentes</div>
+                <div class="timer-bar"><div class="timer-bar-fill" id="detailTimerBar" style="width:100%"></div></div>
+                <div class="detail-grids">
+                    <div>
+                        <div class="grid-label">Original</div>
+                        <div class="emoji-grid" style="grid-template-columns: repeat(${gridSize}, 1fr);">
+                            ${baseGrid.map((e, i) => `<div class="emoji-cell not-clickable">${e}</div>`).join('')}
+                        </div>
+                    </div>
+                    <div>
+                        <div class="grid-label">Modificado (clic aqui)</div>
+                        <div class="emoji-grid" style="grid-template-columns: repeat(${gridSize}, 1fr);" id="modGrid">
+                            ${modGrid.map((e, i) => `<div class="emoji-cell" data-pos="${i}" id="modCell${i}">${e}</div>`).join('')}
+                        </div>
+                    </div>
+                </div>
+                <p style="color:#94a3b8; font-size:0.85rem; margin-top:8px;">Marcadas: <span id="markedCount">0</span> / ${numDiffs}</p>
+                <button class="submit-btn" id="detailSubmit">Confirmar Seleccion</button>
+            </div>`;
+
+        // Click handler for mod grid cells
+        document.querySelectorAll('#modGrid .emoji-cell').forEach(cell => {
+            cell.onclick = function() {
+                if (roundEnded) return;
+                const pos = parseInt(this.dataset.pos);
+                if (markedCells.has(pos)) {
+                    markedCells.delete(pos);
+                    this.classList.remove('marked');
+                } else {
+                    markedCells.add(pos);
+                    this.classList.add('marked');
+                }
+                document.getElementById('markedCount').textContent = markedCells.size;
+            };
+        });
+
+        document.getElementById('detailSubmit').onclick = () => {
+            if (!roundEnded) evaluateDetailRound();
+        };
+
+        // Timer
+        const timerInterval = setInterval(() => {
+            if (roundEnded) { clearInterval(timerInterval); return; }
+            const elapsed = Date.now() - roundStartTime;
+            const remaining = Math.max(0, 1 - elapsed / timeLimit);
+            const bar = document.getElementById('detailTimerBar');
+            if (bar) {
+                bar.style.width = (remaining * 100) + '%';
+                if (remaining < 0.25) bar.classList.add('urgent');
+            }
+            if (elapsed >= timeLimit) {
+                clearInterval(timerInterval);
+                if (!roundEnded) evaluateDetailRound();
+            }
+        }, 100);
+    }
+
+    function evaluateDetailRound() {
+        roundEnded = true;
+        const rt = Date.now() - roundStartTime;
+        detailData.roundTimes.push(rt);
+
+        let correct = 0;
+        let missed = 0;
+        let falsePos = 0;
+
+        // Show results on grid
+        for (let i = 0; i < gridSize * gridSize; i++) {
+            const cell = document.getElementById(`modCell${i}`);
+            const isDiff = diffPositions.includes(i);
+            const isMarked = markedCells.has(i);
+
+            cell.style.pointerEvents = 'none';
+
+            if (isDiff && isMarked) {
+                cell.classList.add('correct-diff');
+                correct++;
+            } else if (isDiff && !isMarked) {
+                cell.classList.add('missed-diff');
+                missed++;
+            } else if (!isDiff && isMarked) {
+                cell.classList.add('false-positive');
+                falsePos++;
+            }
+        }
+
+        detailData.correctFinds += correct;
+        detailData.missedDiffs += missed;
+        detailData.falsePositives += falsePos;
+
+        recordEvent('detail', round, 'C', rt, { diffPositions, marked: [...markedCells], correct, missed, falsePos }, correct === numDiffs && falsePos === 0);
+
+        const submitBtn = document.getElementById('detailSubmit');
+        submitBtn.textContent = `${correct}/${numDiffs} correctas${falsePos > 0 ? ` — ${falsePos} error(es)` : ''}`;
+        submitBtn.disabled = true;
+        submitBtn.style.background = correct === numDiffs ? '#22c55e' : '#f59e0b';
+
+        setTimeout(() => runDetailRound(round + 1, totalRounds), 1500);
+    }
+
+    renderDetailRound();
+}
+
+// ============================================================
+// EVENT RECORDING
+// ============================================================
+
+function recordEvent(miniGame, eventIndex, dimension, reactionTime, response, correct) {
+    events.push({
+        session_id: sessionId,
+        mini_game: miniGame,
+        event_type: 'response',
+        event_index: eventIndex,
+        timestamp_ms: Date.now() - gameStartTime,
+        reaction_time_ms: reactionTime,
+        response: response,
+        correct: correct,
+        dimension: dimension,
+        hesitation_ms: null,
+        attempts: 1
+    });
+}
+
+// ============================================================
+// FINISH & SCORE
+// ============================================================
+
+async function finishGame() {
+    document.getElementById('gameScreen').style.display = 'none';
+    const totalDuration = Date.now() - gameStartTime;
+
+    // --- D Score: Balloon Risk ---
+    const avgPumps = balloonData.pumps.length > 0 ? balloonData.pumps.reduce((a, b) => a + b, 0) / balloonData.pumps.length : 0;
+    const popRate = balloonData.pumps.length > 0 ? balloonData.popped / balloonData.pumps.length : 0;
+    const avgDecisionTime = balloonData.decisionTimes.length > 0 ? balloonData.decisionTimes.reduce((a, b) => a + b, 0) / balloonData.decisionTimes.length : 5000;
+    // Higher pumps + faster decisions = higher D
+    const riskRaw = Math.min(avgPumps / 12, 1); // normalize to 0-1 (12 pumps = max)
+    const speedFactor = Math.max(0, 1 - avgDecisionTime / 5000); // faster = higher
+    const dRaw = riskRaw * 0.7 + speedFactor * 0.15 + popRate * 0.15;
+
+    // --- I Score: Social choices ---
+    const socialPct = socialData.totalChoices > 0 ? socialData.socialChoices / socialData.totalChoices : 0.5;
+    const socialAvgRT = socialData.decisionTimes.length > 0 ? socialData.decisionTimes.reduce((a, b) => a + b, 0) / socialData.decisionTimes.length : 5000;
+    const socialSpeedBonus = Math.max(0, (1 - socialAvgRT / 8000) * 0.2);
+    const iRaw = socialPct * 0.8 + socialSpeedBonus;
+
+    // --- S Score: Sequence consistency ---
+    const seqAccuracy = sequenceData.total > 0 ? sequenceData.correct / sequenceData.total : 0;
+    // Consistency: how stable accuracy is as speed increases
+    let consistencyIndex = 1;
+    if (sequenceData.accuracyByRound.length >= 4) {
+        const firstHalf = sequenceData.accuracyByRound.slice(0, 4);
+        const secondHalf = sequenceData.accuracyByRound.slice(4);
+        const firstAvg = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
+        const secondAvg = secondHalf.length > 0 ? secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length : firstAvg;
+        const drop = Math.max(0, firstAvg - secondAvg);
+        consistencyIndex = Math.max(0, 1 - drop);
+    }
+    // Timing consistency (low SD = higher S)
+    let timingConsistency = 0.5;
+    if (sequenceData.responseTimes.length > 1) {
+        const mean = sequenceData.responseTimes.reduce((a, b) => a + b, 0) / sequenceData.responseTimes.length;
+        const variance = sequenceData.responseTimes.reduce((sum, t) => sum + Math.pow(t - mean, 2), 0) / sequenceData.responseTimes.length;
+        const sd = Math.sqrt(variance);
+        timingConsistency = Math.max(0, 1 - sd / (mean || 1));
+    }
+    const sRaw = seqAccuracy * 0.4 + consistencyIndex * 0.35 + timingConsistency * 0.25;
+
+    // --- C Score: Detail accuracy ---
+    const detailAccuracy = detailData.totalDiffs > 0 ? detailData.correctFinds / detailData.totalDiffs : 0;
+    const thoroughness = detailData.totalDiffs > 0 ? (detailData.correctFinds) / (detailData.correctFinds + detailData.missedDiffs + 0.001) : 0;
+    const precision = (detailData.correctFinds + detailData.falsePositives) > 0 ? detailData.correctFinds / (detailData.correctFinds + detailData.falsePositives) : 0;
+    const cRaw = detailAccuracy * 0.35 + thoroughness * 0.30 + precision * 0.35;
+
+    // Scale to 25-40 range
+    function scaleScore(raw) { return Math.round(25 + Math.min(raw, 1) * 15); }
+
+    const rawScores = { D: scaleScore(dRaw), I: scaleScore(iRaw), S: scaleScore(sRaw), C: scaleScore(cRaw) };
+    const total = rawScores.D + rawScores.I + rawScores.S + rawScores.C;
+    const percentages = {
+        D: Math.round(rawScores.D / total * 1000) / 10,
+        I: Math.round(rawScores.I / total * 1000) / 10,
+        S: Math.round(rawScores.S / total * 1000) / 10,
+        C: Math.round(rawScores.C / total * 1000) / 10
+    };
+
+    // Dominant trait
+    let dominant = 'D';
+    let maxScore = rawScores.D;
+    for (const t of ['I', 'S', 'C']) { if (rawScores[t] > maxScore) { maxScore = rawScores[t]; dominant = t; } }
+
+    const traitDescriptions = {
+        D: 'Dominancia — Eres una persona orientada a resultados, directa y decidida. Tomas riesgos calculados y actuas con rapidez. Te motivan los retos y la autoridad.',
+        I: 'Influencia — Eres una persona sociable, entusiasta y persuasiva. Prefieres trabajar en equipo y motivas a los demas. Te motivan el reconocimiento y las relaciones.',
+        S: 'Estabilidad — Eres una persona paciente, consistente y confiable. Mantienes la calma bajo presion y eres un gran apoyo para el equipo. Te motivan la seguridad y la armonia.',
+        C: 'Cumplimiento — Eres una persona analitica, precisa y orientada al detalle. Buscas la calidad y la exactitud en todo. Te motivan los estandares altos y el orden.'
+    };
+
+    const description = traitDescriptions[dominant];
+
+    // Behavioral metrics
+    const allRTs = events.filter(e => e.reaction_time_ms).map(e => e.reaction_time_ms);
+    const avgRT = allRTs.length > 0 ? Math.round(allRTs.reduce((a, b) => a + b, 0) / allRTs.length) : 0;
+
+    const behavioralMetrics = {
+        risk_tolerance: Math.round(dRaw * 100) / 100,
+        social_orientation: Math.round(socialPct * 100) / 100,
+        consistency_index: Math.round(consistencyIndex * 100) / 100,
+        detail_accuracy: Math.round(detailAccuracy * 100) / 100,
+        avg_reaction_time_ms: avgRT,
+        total_duration_ms: totalDuration,
+        avg_pumps: Math.round(avgPumps * 10) / 10,
+        pop_rate: Math.round(popRate * 100) / 100,
+        timing_consistency: Math.round(timingConsistency * 100) / 100,
+        false_positive_rate: (detailData.correctFinds + detailData.falsePositives) > 0 ? Math.round(detailData.falsePositives / (detailData.correctFinds + detailData.falsePositives) * 100) / 100 : 0
+    };
+
+    // Save to Supabase
+    try {
+        if (events.length > 0 && sessionId) {
+            await fetch(`${SUPABASE_URL}/rest/v1/game_events`, {
+                method: 'POST', headers: HEADERS,
+                body: JSON.stringify(events)
+            });
+        }
+
+        const resultData = {
+            session_id: sessionId,
+            email: player.email,
+            game_type: 'game_disc',
+            test_equivalent: 'disc',
+            scores: rawScores,
+            percentages: percentages,
+            dominant_trait: dominant,
+            description: description,
+            behavioral_metrics: behavioralMetrics
+        };
+
+        await fetch(`${SUPABASE_URL}/rest/v1/game_results`, {
+            method: 'POST', headers: HEADERS,
+            body: JSON.stringify(resultData)
+        });
+
+        if (sessionId) {
+            await fetch(`${SUPABASE_URL}/rest/v1/game_sessions?id=eq.${sessionId}`, {
+                method: 'PATCH', headers: HEADERS,
+                body: JSON.stringify({ status: 'completed', completed_at: new Date().toISOString(), duration_ms: totalDuration })
+            });
+        }
+    } catch (e) { console.warn('Save failed:', e); }
+
+    showResults(rawScores, percentages, dominant, description, behavioralMetrics);
+}
+
+function showResults(scores, percentages, dominant, description, bm) {
+    const rs = document.getElementById('resultsScreen');
+    rs.style.display = 'flex';
+
+    const dimNames = { D: 'Dominancia', I: 'Influencia', S: 'Estabilidad', C: 'Cumplimiento' };
+    const dimEmojis = { D: '🔴', I: '🟡', S: '🟢', C: '🔵' };
+    const barClasses = { D: 'd-bar', I: 'i-bar', S: 's-bar', C: 'c-bar' };
+
+    let barsHTML = '';
+    for (const dim of ['D', 'I', 'S', 'C']) {
+        barsHTML += `
+            <div class="result-bar">
+                <div class="label"><span>${dimEmojis[dim]} ${dimNames[dim]}</span><span>${scores[dim]} (${percentages[dim]}%)</span></div>
+                <div class="bar"><div class="bar-fill ${barClasses[dim]}" data-dim="${dim}" style="width: 0%"></div></div>
+            </div>`;
+    }
+
+    document.getElementById('resultsCard').innerHTML = `
+        <h2>🎯 Tu Perfil DISC</h2>
+        <div class="dominant-badge ${dominant}">${dimEmojis[dominant]} ${dimNames[dominant]}</div>
+        <p class="trait-desc">${description}</p>
+        ${barsHTML}
+        <div class="behavioral-stats">
+            <h3>📊 Metricas Conductuales</h3>
+            <div class="stat-row"><span class="stat-label">Tolerancia al riesgo</span><span class="stat-value">${Math.round(bm.risk_tolerance * 100)}%</span></div>
+            <div class="stat-row"><span class="stat-label">Orientacion social</span><span class="stat-value">${Math.round(bm.social_orientation * 100)}%</span></div>
+            <div class="stat-row"><span class="stat-label">Indice de consistencia</span><span class="stat-value">${Math.round(bm.consistency_index * 100)}%</span></div>
+            <div class="stat-row"><span class="stat-label">Precision en detalles</span><span class="stat-value">${Math.round(bm.detail_accuracy * 100)}%</span></div>
+            <div class="stat-row"><span class="stat-label">Tiempo de reaccion promedio</span><span class="stat-value">${(bm.avg_reaction_time_ms / 1000).toFixed(1)}s</span></div>
+            <div class="stat-row"><span class="stat-label">Bombeos promedio (globo)</span><span class="stat-value">${bm.avg_pumps}</span></div>
+            <div class="stat-row"><span class="stat-label">Consistencia temporal</span><span class="stat-value">${Math.round(bm.timing_consistency * 100)}%</span></div>
+            <div class="stat-row"><span class="stat-label">Duracion total</span><span class="stat-value">${Math.round(bm.total_duration_ms / 1000)}s</span></div>
+        </div>
+    `;
+
+    // Animate bars
+    setTimeout(() => {
+        document.querySelectorAll('.bar-fill').forEach(bar => {
+            const dim = bar.dataset.dim;
+            if (dim) bar.style.width = percentages[dim] * 2.5 + '%'; // Scale for visual (25% * 2.5 = 62.5% bar width)
+        });
+    }, 200);
+}
+</script>
+</body>
+</html>

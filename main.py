@@ -1675,5 +1675,134 @@ async def read_dashboard():
     with open("dashboard.html", "r", encoding="utf-8") as f:
         return f.read()
 
+# ========== GAME-BASED ASSESSMENTS ==========
+
+@app.get("/games", response_class=HTMLResponse)
+async def games_menu():
+    with open("games.html", "r", encoding="utf-8") as f:
+        return f.read()
+
+@app.get("/game/terman", response_class=HTMLResponse)
+async def game_terman():
+    with open("game_terman.html", "r", encoding="utf-8") as f:
+        return f.read()
+
+@app.get("/game/disc", response_class=HTMLResponse)
+async def game_disc():
+    with open("game_disc.html", "r", encoding="utf-8") as f:
+        return f.read()
+
+@app.get("/game/competencias", response_class=HTMLResponse)
+async def game_competencias():
+    with open("game_competencias.html", "r", encoding="utf-8") as f:
+        return f.read()
+
+@app.get("/game/big5", response_class=HTMLResponse)
+async def game_big5():
+    with open("game_big5.html", "r", encoding="utf-8") as f:
+        return f.read()
+
+@app.get("/api/correlations/{email}")
+async def get_correlations(email: str):
+    """Compare game vs questionnaire vs interview scores for a given email"""
+    async with httpx.AsyncClient() as client:
+        # Get questionnaire results
+        q_url = f"{SUPABASE_URL}/rest/v1/participants?email=eq.{email}&select=*,results(*)"
+        q_resp = await client.get(q_url, headers=HEADERS)
+        questionnaire_data = q_resp.json() if q_resp.status_code == 200 else []
+
+        # Get game results
+        g_url = f"{SUPABASE_URL}/rest/v1/game_results?email=eq.{email}&select=*"
+        g_resp = await client.get(g_url, headers=HEADERS)
+        game_data = g_resp.json() if g_resp.status_code == 200 else []
+
+        # Get interview scores
+        i_url = f"{SUPABASE_URL}/rest/v1/interview_scores?participant_email=eq.{email}&select=*"
+        i_resp = await client.get(i_url, headers=HEADERS)
+        interview_data = i_resp.json() if i_resp.status_code == 200 else []
+
+        # Build correlation report
+        correlations = {}
+        test_types = set()
+
+        # Index questionnaire results by test_type
+        q_by_type = {}
+        for p in questionnaire_data:
+            if 'results' in p:
+                for r in (p['results'] if isinstance(p['results'], list) else [p['results']]):
+                    if r and 'test_type' in r:
+                        q_by_type[r['test_type']] = r
+                        test_types.add(r['test_type'])
+
+        # Index game results by test_equivalent
+        g_by_type = {}
+        for g in game_data:
+            if 'test_equivalent' in g:
+                g_by_type[g['test_equivalent']] = g
+                test_types.add(g['test_equivalent'])
+
+        # Compute per-test correlations
+        for tt in test_types:
+            q = q_by_type.get(tt)
+            g = g_by_type.get(tt)
+
+            entry = {
+                'test_type': tt,
+                'has_questionnaire': q is not None,
+                'has_game': g is not None,
+                'questionnaire_scores': q.get('percentages') if q else None,
+                'game_scores': g.get('percentages') if g else None,
+                'game_behavioral_metrics': g.get('behavioral_metrics') if g else None,
+                'dimension_comparison': None,
+                'agreement_level': None,
+            }
+
+            # If both exist, compute dimension-level comparison
+            if q and g and q.get('percentages') and g.get('percentages'):
+                q_pct = q['percentages']
+                g_pct = g['percentages']
+                dims = {}
+                diffs = []
+                for dim in q_pct:
+                    if dim in g_pct:
+                        diff = round(g_pct[dim] - q_pct[dim], 1)
+                        dims[dim] = {
+                            'questionnaire': q_pct[dim],
+                            'game': g_pct[dim],
+                            'diff': diff
+                        }
+                        diffs.append(abs(diff))
+
+                avg_diff = sum(diffs) / len(diffs) if diffs else 999
+                entry['dimension_comparison'] = dims
+                entry['avg_absolute_difference'] = round(avg_diff, 1)
+                entry['agreement_level'] = 'high' if avg_diff < 10 else 'moderate' if avg_diff < 20 else 'low'
+
+            correlations[tt] = entry
+
+        return {
+            'email': email,
+            'tests_compared': list(test_types),
+            'correlations': correlations,
+            'interview': interview_data[0] if interview_data else None,
+            'summary': {
+                'questionnaire_tests': list(q_by_type.keys()),
+                'game_tests': list(g_by_type.keys()),
+                'has_interview': len(interview_data) > 0,
+            }
+        }
+
+@app.get("/api/game/results")
+async def get_game_results(email: Optional[str] = None):
+    """Get all game results, optionally filtered by email"""
+    async with httpx.AsyncClient() as client:
+        url = f"{SUPABASE_URL}/rest/v1/game_results?select=*&order=created_at.desc"
+        if email:
+            url += f"&email=eq.{email}"
+        response = await client.get(url, headers=HEADERS)
+        if response.status_code == 200:
+            return response.json()
+        raise HTTPException(status_code=500, detail="Error obteniendo resultados de juegos")
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Un Dia en la Tienda — Evaluacion de Competencias</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+        /* Registration */
+        .register-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .register-card { background: #1e293b; border-radius: 16px; padding: 40px; max-width: 440px; width: 100%; }
+        .register-card h1 { font-size: 1.5rem; margin-bottom: 8px; color: #60a5fa; }
+        .register-card p { font-size: 0.9rem; color: #94a3b8; margin-bottom: 24px; line-height: 1.5; }
+        .register-card input { width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; font-size: 1rem; margin-bottom: 12px; outline: none; }
+        .register-card input:focus { border-color: #60a5fa; }
+        .register-card select { width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; font-size: 1rem; margin-bottom: 16px; outline: none; }
+        .btn-primary { width: 100%; padding: 14px; border-radius: 8px; border: none; background: #3b82f6; color: white; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-primary:disabled { background: #475569; cursor: not-allowed; }
+
+        /* Game container */
+        .game-screen { display: none; min-height: 100vh; }
+        .game-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; background: #1e293b; border-bottom: 1px solid #334155; }
+        .game-header .progress-bar-container { flex: 1; margin: 0 16px; height: 8px; background: #0f172a; border-radius: 4px; overflow: hidden; }
+        .game-header .progress-bar-fill { height: 100%; background: #60a5fa; border-radius: 4px; transition: width 0.4s ease; }
+        .game-header .progress { font-size: 0.85rem; color: #94a3b8; white-space: nowrap; }
+        .game-header .timer { font-size: 1.1rem; font-weight: 700; color: #fbbf24; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+        .game-area { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(100vh - 60px); padding: 24px; }
+
+        /* Scenario card */
+        .scenario-card { background: #1e293b; border-radius: 16px; padding: 32px; max-width: 640px; width: 100%; }
+        .scenario-emoji { font-size: 2.5rem; margin-bottom: 12px; text-align: center; }
+        .scenario-comp { font-size: 0.75rem; color: #60a5fa; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-bottom: 8px; text-align: center; }
+        .scenario-title { font-size: 0.85rem; color: #94a3b8; margin-bottom: 16px; text-align: center; }
+        .scenario-text { font-size: 1.05rem; color: #f1f5f9; line-height: 1.7; margin-bottom: 24px; text-align: left; }
+
+        .options-list { display: flex; flex-direction: column; gap: 10px; }
+        .option-btn { padding: 16px 20px; border-radius: 12px; border: 2px solid #334155; background: #0f172a; color: #e2e8f0; font-size: 0.95rem; cursor: pointer; transition: all 0.15s; text-align: left; line-height: 1.5; }
+        .option-btn:hover { border-color: #60a5fa; background: #1e293b; transform: scale(1.01); }
+        .option-btn.feedback-good { border-color: #22c55e; background: #052e16; color: #22c55e; }
+        .option-btn.feedback-ok { border-color: #fbbf24; background: #2a2206; color: #fbbf24; }
+        .option-btn:disabled { cursor: default; }
+
+        /* Results */
+        .results-screen { display: none; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 100vh; padding: 24px; overflow-y: auto; }
+        .results-card { background: #1e293b; border-radius: 16px; padding: 40px; max-width: 600px; width: 100%; margin: 20px 0; }
+        .results-card h2 { font-size: 1.5rem; margin-bottom: 24px; color: #60a5fa; text-align: center; }
+
+        .result-bar { margin: 10px 0; text-align: left; }
+        .result-bar .label { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px; }
+        .result-bar .label .comp-name { color: #e2e8f0; }
+        .result-bar .label .comp-pct { color: #94a3b8; font-weight: 600; }
+        .result-bar .bar { height: 14px; background: #0f172a; border-radius: 7px; overflow: hidden; }
+        .result-bar .bar-fill { height: 100%; border-radius: 7px; transition: width 1s ease; }
+
+        .strengths-section { margin-top: 24px; padding-top: 20px; border-top: 1px solid #334155; }
+        .strengths-section h3 { font-size: 0.9rem; color: #94a3b8; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        .strength-item { padding: 8px 0; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+        .strength-item .s-icon { font-size: 1.1rem; }
+        .strength-item .s-text { color: #e2e8f0; }
+
+        .behavioral-stats { margin-top: 24px; padding-top: 20px; border-top: 1px solid #334155; text-align: left; }
+        .behavioral-stats h3 { font-size: 0.9rem; color: #94a3b8; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.85rem; }
+        .stat-row .stat-label { color: #94a3b8; }
+        .stat-row .stat-value { color: #e2e8f0; font-weight: 600; }
+
+        @media (max-width: 480px) {
+            .scenario-card { padding: 20px; }
+            .scenario-text { font-size: 0.95rem; }
+            .option-btn { font-size: 0.9rem; padding: 14px 16px; }
+            .results-card { padding: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== REGISTRATION ===== -->
+<div class="register-screen" id="registerScreen">
+    <div class="register-card">
+        <h1>🏪 Un Dia en la Tienda</h1>
+        <p>20 situaciones laborales reales que evaluan tus competencias profesionales. No hay respuestas correctas o incorrectas — elige la opcion que mejor refleje como actuarias. Toma ~10 minutos.</p>
+        <input type="text" id="regName" placeholder="Nombre completo" required>
+        <input type="email" id="regEmail" placeholder="Email" required>
+        <input type="tel" id="regPhone" placeholder="Telefono">
+        <select id="regPosition">
+            <option value="">Selecciona posicion...</option>
+            <option value="almacen">Almacen</option>
+            <option value="ventas_mostrador">Ventas a Mostrador</option>
+            <option value="pueblaventas">Puebla Ventas</option>
+            <option value="internal_team">Equipo Interno (correlacion)</option>
+        </select>
+        <button class="btn-primary" id="startBtn" onclick="startGame()">Comenzar Juego</button>
+    </div>
+</div>
+
+<!-- ===== GAME AREA ===== -->
+<div class="game-screen" id="gameScreen">
+    <div class="game-header">
+        <span class="progress" id="progressLabel">1/20</span>
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="progressBar" style="width: 5%;"></div>
+        </div>
+        <span class="timer" id="timerLabel">0:00</span>
+    </div>
+    <div class="game-area" id="gameArea"></div>
+</div>
+
+<!-- ===== RESULTS ===== -->
+<div class="results-screen" id="resultsScreen">
+    <div class="results-card" id="resultsCard"></div>
+</div>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const SUPABASE_URL = 'https://gbkhkbfbarsnpbdkxzii.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdia2hrYmZiYXJzbnBiZGt4emlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQzODAzNzMsImV4cCI6MjA0OTk1NjM3M30.mcOcC2GVEu_wD3xNBzSCC3MwDck3CIdmz4D8adU-bpI';
+const HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+
+// Auto-fill from URL params (when coming from /games menu)
+const urlParams = new URLSearchParams(window.location.search);
+const prefillEmail = urlParams.get('email');
+window.addEventListener('DOMContentLoaded', () => {
+    if (prefillEmail) {
+        document.getElementById('regEmail').value = prefillEmail;
+        document.getElementById('regEmail').readOnly = true;
+        document.getElementById('regEmail').style.opacity = '0.7';
+    }
+});
+
+// ============================================================
+// STATE
+// ============================================================
+let player = {};
+let sessionId = null;
+let gameStartTime = 0;
+let events = [];
+let currentScenario = 0;
+let scenarioStartTime = 0;
+let gameTimer = null;
+
+// Raw scores per competency (each scenario gives 1-4 points, 2 scenarios each)
+let rawScores = { LID: 0, COM: 0, TEQ: 0, ADA: 0, PEN: 0, RES: 0, IE: 0, CRE: 0, PLN: 0, NEG: 0 };
+let reactionTimes = { LID: [], COM: [], TEQ: [], ADA: [], PEN: [], RES: [], IE: [], CRE: [], PLN: [], NEG: [] };
+
+// ============================================================
+// COMPETENCY DEFINITIONS
+// ============================================================
+const COMPETENCIES = {
+    LID: { name: 'Liderazgo', max: 50, color: '#3b82f6', emoji: '👑' },
+    COM: { name: 'Comunicacion', max: 50, color: '#8b5cf6', emoji: '💬' },
+    TEQ: { name: 'Trabajo en Equipo', max: 40, color: '#06b6d4', emoji: '🤝' },
+    ADA: { name: 'Adaptabilidad', max: 40, color: '#f59e0b', emoji: '🔄' },
+    PEN: { name: 'Pensamiento Critico', max: 40, color: '#10b981', emoji: '🧠' },
+    RES: { name: 'Orientacion a Resultados', max: 40, color: '#ef4444', emoji: '🎯' },
+    IE:  { name: 'Inteligencia Emocional', max: 40, color: '#ec4899', emoji: '💡' },
+    CRE: { name: 'Creatividad', max: 30, color: '#f97316', emoji: '🎨' },
+    PLN: { name: 'Planeacion', max: 30, color: '#14b8a6', emoji: '📋' },
+    NEG: { name: 'Negociacion', max: 30, color: '#a855f7', emoji: '🤝' }
+};
+
+// ============================================================
+// 20 SCENARIOS
+// ============================================================
+const SCENARIOS = [
+    // LID-1
+    {
+        competency: 'LID',
+        emoji: '📉',
+        title: 'Escenario 1 de 20',
+        text: 'Tu equipo esta desmotivado despues de una semana dificil de ventas. Las metas no se cumplieron y el ambiente se siente pesado. ¿Que haces?',
+        options: [
+            { text: 'Reunes al equipo, reconoces el esfuerzo de la semana, analizas juntos que salio mal y definen acciones concretas para la siguiente semana.', score: 4 },
+            { text: 'Hablas individualmente con cada persona para entender como se sienten y ofreces tu apoyo para mejorar.', score: 3 },
+            { text: 'Les dices que no se preocupen, que la proxima semana sera mejor, y sigues con las actividades normales.', score: 2 },
+            { text: 'Les recuerdas que las metas son metas y que hay que esforzarse mas, sin entrar en detalles.', score: 1 }
+        ]
+    },
+    // LID-2
+    {
+        competency: 'LID',
+        emoji: '🆕',
+        title: 'Escenario 2 de 20',
+        text: 'Un empleado nuevo no esta rindiendo como se esperaba despues de 2 semanas. Sus companeros empiezan a quejarse porque tienen que cubrir su parte. ¿Que haces?',
+        options: [
+            { text: 'Programas una reunion con el empleado para revisar su avance, identificar donde tiene dificultades y crear un plan de capacitacion con metas claras a 2 semanas.', score: 4 },
+            { text: 'Le asignas un companero experimentado como mentor para que lo guie durante sus primeras semanas.', score: 3 },
+            { text: 'Esperas otra semana mas para ver si mejora por si solo — todos necesitan tiempo de adaptacion.', score: 2 },
+            { text: 'Le adviertes que si no mejora pronto, habra consecuencias, para que se ponga las pilas.', score: 1 }
+        ]
+    },
+    // COM-1
+    {
+        competency: 'COM',
+        emoji: '😤',
+        title: 'Escenario 3 de 20',
+        text: 'Un cliente se queja en voz alta frente a otros clientes por un producto defectuoso. Esta visiblemente molesto y otros clientes estan observando la situacion. ¿Que haces?',
+        options: [
+            { text: 'Te acercas con calma, escuchas su queja sin interrumpir, te disculpas por la experiencia, y le ofreces una solucion concreta (cambio o devolucion) en un tono profesional.', score: 4 },
+            { text: 'Lo invitas a pasar a un area mas privada para atenderlo con calma y resolver su problema sin que otros clientes se alarmen.', score: 3 },
+            { text: 'Le pides que se calme y le explicas la politica de devoluciones de la tienda.', score: 2 },
+            { text: 'Llamas a tu supervisor para que se encargue de la situacion, mientras tanto le pides al cliente que espere.', score: 1 }
+        ]
+    },
+    // COM-2
+    {
+        competency: 'COM',
+        emoji: '📅',
+        title: 'Escenario 4 de 20',
+        text: 'Necesitas comunicar un cambio de horario que no sera popular con el equipo. A partir de la siguiente semana, todos tendran que cubrir un turno extra los sabados. ¿Que haces?',
+        options: [
+            { text: 'Convocas una reunion, explicas las razones del cambio con datos (aumento de trafico los sabados), escuchas sus preocupaciones y juntos buscan la mejor forma de organizar los turnos.', score: 4 },
+            { text: 'Les envias un mensaje detallado explicando el por que del cambio y que estas abierto a escuchar sus comentarios y ajustar lo que se pueda.', score: 3 },
+            { text: 'Les informas del cambio en persona, de manera directa, y les dices que es una decision de la empresa que no se puede negociar.', score: 2 },
+            { text: 'Publicas el nuevo horario en el pizarron y esperas a que lo lean. Si tienen dudas, que te busquen.', score: 1 }
+        ]
+    },
+    // TEQ-1
+    {
+        competency: 'TEQ',
+        emoji: '📦',
+        title: 'Escenario 5 de 20',
+        text: 'Un companero tiene problemas con su seccion y se esta atrasando en el inventario. Tu ya terminaste con tu parte. ¿Que haces?',
+        options: [
+            { text: 'Le ofreces ayuda directamente. Te acercas, preguntas en que necesita apoyo y entre los dos terminan mas rapido.', score: 4 },
+            { text: 'Le preguntas si quiere que le enseñes un metodo mas rapido que a ti te funciona bien para el inventario.', score: 3 },
+            { text: 'Le avisas al supervisor que tu companero necesita ayuda para que el decida como apoyarlo.', score: 2 },
+            { text: 'Te enfocas en adelantar otras tareas tuyas. Cada quien es responsable de su seccion.', score: 1 }
+        ]
+    },
+    // TEQ-2
+    {
+        competency: 'TEQ',
+        emoji: '⚡',
+        title: 'Escenario 6 de 20',
+        text: 'Dos miembros del equipo tienen un conflicto personal que esta afectando el trabajo. Ya no se hablan y evitan colaborar entre ellos. ¿Que haces?',
+        options: [
+            { text: 'Hablas con cada uno por separado para entender la situacion, y luego facilitas una conversacion entre los tres para encontrar acuerdos minimos de trabajo profesional.', score: 4 },
+            { text: 'Los reunes y les explicas que los conflictos personales no deben afectar el trabajo, y les pides que encuentren una forma de trabajar juntos.', score: 3 },
+            { text: 'Reorganizas las tareas para que no tengan que interactuar mucho, evitando que el conflicto escale.', score: 2 },
+            { text: 'No te metes. Es un problema personal entre ellos y deben resolverlo solos.', score: 1 }
+        ]
+    },
+    // ADA-1
+    {
+        competency: 'ADA',
+        emoji: '💻',
+        title: 'Escenario 7 de 20',
+        text: 'Llega un cambio de sistema de punto de venta sin previo aviso. Hay que empezar a usarlo hoy mismo y nadie recibio capacitacion formal. ¿Que haces?',
+        options: [
+            { text: 'Exploras el nuevo sistema rapidamente, identificas las funciones basicas, haces una guia rapida de los pasos esenciales y la compartes con el equipo mientras atienden.', score: 4 },
+            { text: 'Empiezas a usarlo por prueba y error, y vas preguntando a soporte tecnico cuando te trabas en algo.', score: 3 },
+            { text: 'Pides al supervisor que consiga una capacitacion urgente antes de empezar a usarlo con clientes.', score: 2 },
+            { text: 'Sigues usando el sistema anterior mientras puedas, hasta que alguien te explique bien el nuevo.', score: 1 }
+        ]
+    },
+    // ADA-2
+    {
+        competency: 'ADA',
+        emoji: '🚚',
+        title: 'Escenario 8 de 20',
+        text: 'Tu proveedor principal cancela un pedido grande a 2 dias de una promocion importante. Sin ese producto, la promocion no tiene sentido. ¿Que haces?',
+        options: [
+            { text: 'Contactas inmediatamente a proveedores alternativos, ajustas la promocion con los productos disponibles y comunicas los cambios al equipo y a los clientes.', score: 4 },
+            { text: 'Buscas productos similares en tu inventario actual que puedan sustituir al producto cancelado y rediseñas la oferta.', score: 3 },
+            { text: 'Llamas al proveedor para presionar que cumpla aunque sea con una parte del pedido.', score: 2 },
+            { text: 'Cancelas la promocion y la reprogramas para cuando tengas el producto asegurado.', score: 1 }
+        ]
+    },
+    // PEN-1
+    {
+        competency: 'PEN',
+        emoji: '📊',
+        title: 'Escenario 9 de 20',
+        text: 'Las ventas cayeron 20% este mes comparado con el anterior. Tu jefe te pide un analisis de que esta pasando. ¿Que haces?',
+        options: [
+            { text: 'Revisas los datos de ventas por categoria, dia de la semana y vendedor. Comparas con el mismo mes del año pasado, identificas los productos con mayor caida y presentas hipotesis con datos.', score: 4 },
+            { text: 'Hablas con los vendedores para recopilar sus observaciones de campo y las combinas con los numeros de ventas para encontrar patrones.', score: 3 },
+            { text: 'Revisas si hubo algun factor externo obvio (clima, competencia, dias inhabiles) que explique la caida.', score: 2 },
+            { text: 'Le dices a tu jefe que probablemente es un tema de temporada y que el proximo mes deberia recuperarse.', score: 1 }
+        ]
+    },
+    // PEN-2
+    {
+        competency: 'PEN',
+        emoji: '🏷️',
+        title: 'Escenario 10 de 20',
+        text: 'Un producto nuevo no se vende. Llevas 3 semanas en exhibicion y apenas se han movido unas cuantas piezas. ¿Que haces?',
+        options: [
+            { text: 'Analizas la ubicacion del producto, su precio vs la competencia, si los vendedores lo conocen bien, y pruebas al menos dos cambios (ubicacion y demostracion) para medir el impacto.', score: 4 },
+            { text: 'Pides retroalimentacion a los clientes que lo ven pero no lo compran para entender las objeciones.', score: 3 },
+            { text: 'Lo mueves a un lugar mas visible de la tienda y le pones un letrero de promocion.', score: 2 },
+            { text: 'Esperas a que el proveedor haga publicidad del producto. A veces los productos tardan en agarrar traccion.', score: 1 }
+        ]
+    },
+    // RES-1
+    {
+        competency: 'RES',
+        emoji: '⏰',
+        title: 'Escenario 11 de 20',
+        text: 'Faltan 3 horas para cerrar el inventario y llevas 60% de avance. Al ritmo actual, no vas a terminar. ¿Que haces?',
+        options: [
+            { text: 'Priorizas las secciones de mayor valor, pides apoyo a quien este disponible, y divides el trabajo pendiente en bloques con tiempos especificos para cada uno.', score: 4 },
+            { text: 'Aceleras tu ritmo de trabajo eliminando pasos no esenciales y enfocandote solo en lo critico.', score: 3 },
+            { text: 'Pides una extension de tiempo a tu supervisor explicando la situacion.', score: 2 },
+            { text: 'Sigues al mismo ritmo haciendo las cosas bien. Mejor entregar tarde pero exacto.', score: 1 }
+        ]
+    },
+    // RES-2
+    {
+        competency: 'RES',
+        emoji: '📈',
+        title: 'Escenario 12 de 20',
+        text: 'Tu meta de ventas del mes esta al 70% y quedan 5 dias. Necesitas un esfuerzo extra para llegar. ¿Que haces?',
+        options: [
+            { text: 'Calculas exactamente cuanto necesitas vender por dia, identificas los clientes con mayor potencial de cierre y creas un plan diario con acciones especificas.', score: 4 },
+            { text: 'Contactas a clientes anteriores que no cerraron para darles seguimiento y ofreces combos o promociones especiales.', score: 3 },
+            { text: 'Aumentas tu esfuerzo general: llegas mas temprano, sales mas tarde y atiendes a mas clientes.', score: 2 },
+            { text: 'Aceptas que probablemente no llegaras al 100% y te enfocas en hacer tu mejor esfuerzo sin presionarte demasiado.', score: 1 }
+        ]
+    },
+    // IE-1
+    {
+        competency: 'IE',
+        emoji: '😔',
+        title: 'Escenario 13 de 20',
+        text: 'Un companero esta visiblemente molesto despues de una llamada de atencion del gerente. No quiere hablar con nadie y su actitud esta afectando al equipo. ¿Que haces?',
+        options: [
+            { text: 'Le das su espacio un momento, y despues te acercas discretamente para preguntarle como se siente. Escuchas sin juzgar y le ofreces tu perspectiva si la quiere.', score: 4 },
+            { text: 'Lo invitas a tomar un cafe o salir un momento para que se despeje, sin presionarlo a hablar del tema.', score: 3 },
+            { text: 'Le dices que no se lo tome personal, que las llamadas de atencion son parte del trabajo y que todos las reciben.', score: 2 },
+            { text: 'Lo dejas tranquilo. Es mejor no meterse cuando alguien esta molesto.', score: 1 }
+        ]
+    },
+    // IE-2
+    {
+        competency: 'IE',
+        emoji: '🔥',
+        title: 'Escenario 14 de 20',
+        text: 'Un cliente se pone agresivo porque no aceptas una devolucion fuera de politica. Empieza a subir la voz y a hacer comentarios personales. ¿Que haces?',
+        options: [
+            { text: 'Mantienes la calma, no tomas los comentarios de forma personal, validas su frustracion diciendo "entiendo que es molesto", y le ofreces alternativas dentro de lo que puedes hacer.', score: 4 },
+            { text: 'Le hablas en tono tranquilo y firme, le explicas la politica con empatia y le sugieres hablar con el gerente si no esta satisfecho con la respuesta.', score: 3 },
+            { text: 'Le dices firmemente que no puedes ayudarlo si no baja el tono de voz, y que la politica es clara.', score: 2 },
+            { text: 'Llamas a seguridad o a tu supervisor para que manejen la situacion porque ya se salio de control.', score: 1 }
+        ]
+    },
+    // CRE-1
+    {
+        competency: 'CRE',
+        emoji: '🔍',
+        title: 'Escenario 15 de 20',
+        text: 'El proveedor habitual no tiene stock del producto mas vendido de tu tienda. No habra reabastecimiento en al menos 2 semanas. ¿Que haces?',
+        options: [
+            { text: 'Buscas proveedores alternativos locales, negocias una compra emergente, y mientras tanto creas combos con productos complementarios para mantener las ventas.', score: 4 },
+            { text: 'Diseñas una exhibicion especial con productos sustitutos posicionandolos como "alternativas recomendadas" para que los clientes los prueben.', score: 3 },
+            { text: 'Contactas a otras sucursales para ver si tienen excedente y puedes hacer un traspaso.', score: 2 },
+            { text: 'Esperas a que el proveedor se reabastezca y mientras tanto ofreces lo que hay disponible.', score: 1 }
+        ]
+    },
+    // CRE-2
+    {
+        competency: 'CRE',
+        emoji: '🧲',
+        title: 'Escenario 16 de 20',
+        text: 'La tienda necesita atraer mas clientes jovenes pero no hay presupuesto de marketing. ¿Que haces?',
+        options: [
+            { text: 'Creas contenido en redes sociales con el celular (videos cortos, fotos de productos), organizas dinamicas en tienda y haces alianzas con negocios vecinos para promociones cruzadas.', score: 4 },
+            { text: 'Propones una noche de ofertas especiales para jovenes o un evento tematico que genere interes y boca a boca.', score: 3 },
+            { text: 'Pides a los empleados jovenes que inviten a sus amigos y conocidos a visitar la tienda.', score: 2 },
+            { text: 'Le dices a tu jefe que sin presupuesto no se puede hacer mucho y que habria que esperar a tener recursos.', score: 1 }
+        ]
+    },
+    // PLN-1
+    {
+        competency: 'PLN',
+        emoji: '📝',
+        title: 'Escenario 17 de 20',
+        text: 'Te asignan organizar el inventario de fin de año con 2 semanas de anticipacion. Es el inventario mas grande del año y participara todo el equipo. ¿Que haces?',
+        options: [
+            { text: 'Creas un cronograma detallado por seccion, asignas responsables, defines los materiales necesarios, estableces puntos de control diarios y comunicas el plan a todo el equipo con anticipacion.', score: 4 },
+            { text: 'Divides la tienda en zonas, asignas equipos a cada zona y estableces una fecha limite para que cada equipo termine su parte.', score: 3 },
+            { text: 'Haces una lista de todo lo que hay que contar y le pides al equipo que se organice entre ellos para repartirse el trabajo.', score: 2 },
+            { text: 'Empiezas por las secciones mas faciles y vas avanzando. Ya sobre la marcha ves como se va organizando todo.', score: 1 }
+        ]
+    },
+    // PLN-2
+    {
+        competency: 'PLN',
+        emoji: '🔀',
+        title: 'Escenario 18 de 20',
+        text: 'Tienes que cubrir 3 turnos diferentes esta semana por ausencias del equipo, ademas de tus responsabilidades normales. ¿Que haces?',
+        options: [
+            { text: 'Mapeas todas las tareas criticas de la semana, priorizas por impacto, delegas lo que se pueda a otros companeros y creas un horario hora por hora para cubrir todo.', score: 4 },
+            { text: 'Identificas que tareas puedes posponer sin consecuencias graves y te enfocas en lo mas urgente e importante de cada turno.', score: 3 },
+            { text: 'Pides ayuda a tu supervisor para que redistribuya algunas de las tareas entre el resto del equipo.', score: 2 },
+            { text: 'Haces lo que puedas en cada turno. Es imposible cubrirlo todo perfectamente con tantas ausencias.', score: 1 }
+        ]
+    },
+    // NEG-1
+    {
+        competency: 'NEG',
+        emoji: '💰',
+        title: 'Escenario 19 de 20',
+        text: 'Un cliente quiere un descuento mayor al autorizado en un producto de alto margen. Es un cliente frecuente y el producto tiene buen margen de ganancia. ¿Que haces?',
+        options: [
+            { text: 'Le ofreces un descuento dentro de tu limite mas un valor agregado (envio gratis, accesorio, garantia extendida). Buscas que ambos ganen sin romper la politica.', score: 4 },
+            { text: 'Le explicas el maximo descuento que puedes dar y le propones que si compra un producto adicional, le mejoras la oferta en el paquete completo.', score: 3 },
+            { text: 'Le das el maximo descuento autorizado y le dices que es lo mejor que puedes hacer, dejandolo claro.', score: 2 },
+            { text: 'Consultas con tu gerente si puede autorizar un descuento especial para no perder al cliente.', score: 1 }
+        ]
+    },
+    // NEG-2
+    {
+        competency: 'NEG',
+        emoji: '📦',
+        title: 'Escenario 20 de 20',
+        text: 'Un proveedor te ofrece un descuento por volumen atractivo (15% menos) pero requiere pedir el doble de lo normal. El producto se vende bien pero no tienes certeza de mover todo antes del siguiente pedido. ¿Que haces?',
+        options: [
+            { text: 'Analizas el historico de ventas del producto, calculas en cuanto tiempo moverias el inventario extra, negocias un acuerdo parcial (1.5x en vez de 2x) o pides devolucion de lo no vendido.', score: 4 },
+            { text: 'Aceptas el trato pero negocias que el pago sea en plazos o que te permita devolver una parte si no se vende en un tiempo determinado.', score: 3 },
+            { text: 'Aceptas el descuento por volumen. El 15% de ahorro compensa el riesgo de tener inventario extra.', score: 2 },
+            { text: 'Rechazas la oferta. Mejor comprar lo seguro y no arriesgar con inventario que podria quedarse.', score: 1 }
+        ]
+    }
+];
+
+// ============================================================
+// UTILITY: SHUFFLE ARRAY
+// ============================================================
+function shuffleArray(arr) {
+    const shuffled = [...arr];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+// ============================================================
+// GAME FLOW
+// ============================================================
+
+async function startGame() {
+    const name = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const phone = document.getElementById('regPhone').value.trim();
+    const position = document.getElementById('regPosition').value;
+
+    if (!name || !email) { alert('Nombre y email son requeridos'); return; }
+
+    player = { name, email, phone, position };
+    gameStartTime = Date.now();
+
+    // Create session in Supabase
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/game_sessions`, {
+            method: 'POST', headers: HEADERS,
+            body: JSON.stringify({
+                email, name, phone, position,
+                game_type: 'game_competencias',
+                test_equivalent: 'competencias',
+                user_agent: navigator.userAgent,
+                screen_width: screen.width,
+                screen_height: screen.height,
+                status: 'in_progress'
+            })
+        });
+        const data = await res.json();
+        if (data && data[0]) sessionId = data[0].id;
+    } catch (e) { console.warn('Session save failed:', e); }
+
+    document.getElementById('registerScreen').style.display = 'none';
+    document.getElementById('gameScreen').style.display = 'block';
+
+    // Start global timer
+    gameTimer = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - gameStartTime) / 1000);
+        const m = Math.floor(elapsed / 60);
+        const s = elapsed % 60;
+        document.getElementById('timerLabel').textContent = `${m}:${s.toString().padStart(2, '0')}`;
+    }, 200);
+
+    showScenario(0);
+}
+
+function showScenario(index) {
+    if (index >= SCENARIOS.length) {
+        finishGame();
+        return;
+    }
+
+    currentScenario = index;
+    scenarioStartTime = Date.now();
+
+    const sc = SCENARIOS[index];
+    const comp = COMPETENCIES[sc.competency];
+    const shuffledOptions = shuffleArray(sc.options.map((o, i) => ({ ...o, originalIndex: i })));
+
+    // Update progress
+    document.getElementById('progressLabel').textContent = `${index + 1}/${SCENARIOS.length}`;
+    document.getElementById('progressBar').style.width = `${((index + 1) / SCENARIOS.length) * 100}%`;
+
+    const area = document.getElementById('gameArea');
+    area.innerHTML = `
+        <div class="scenario-card">
+            <div class="scenario-emoji">${sc.emoji}</div>
+            <div class="scenario-comp">${comp.emoji} ${comp.name}</div>
+            <div class="scenario-title">${sc.title}</div>
+            <div class="scenario-text">${sc.text}</div>
+            <div class="options-list">
+                ${shuffledOptions.map((o, i) => `<button class="option-btn" onclick="answerScenario(${index}, ${i})" id="opt${i}" data-score="${o.score}">${o.text}</button>`).join('')}
+            </div>
+        </div>`;
+}
+
+function answerScenario(scenarioIdx, optionIdx) {
+    const rt = Date.now() - scenarioStartTime;
+    const sc = SCENARIOS[scenarioIdx];
+    const btn = document.getElementById(`opt${optionIdx}`);
+    const score = parseInt(btn.dataset.score);
+
+    // Record raw score
+    rawScores[sc.competency] += score;
+    reactionTimes[sc.competency].push(rt);
+
+    // Disable all buttons
+    document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+
+    // Visual feedback: green for 3-4, yellow for 1-2
+    if (score >= 3) {
+        btn.classList.add('feedback-good');
+    } else {
+        btn.classList.add('feedback-ok');
+    }
+
+    // Record event
+    events.push({
+        session_id: sessionId,
+        mini_game: 'competencias',
+        event_type: 'response',
+        event_index: scenarioIdx,
+        timestamp_ms: Date.now() - gameStartTime,
+        reaction_time_ms: rt,
+        response: { scenario: scenarioIdx, competency: sc.competency, score: score, option_selected: optionIdx },
+        correct: score >= 3,
+        dimension: sc.competency,
+        hesitation_ms: null,
+        attempts: 1
+    });
+
+    setTimeout(() => {
+        showScenario(scenarioIdx + 1);
+    }, 700);
+}
+
+// ============================================================
+// FINISH & SCORE
+// ============================================================
+
+async function finishGame() {
+    clearInterval(gameTimer);
+    document.getElementById('gameScreen').style.display = 'none';
+    const totalDuration = Date.now() - gameStartTime;
+
+    // Calculate scaled scores and percentages
+    const scaledScores = {};
+    const percentages = {};
+
+    for (const [key, comp] of Object.entries(COMPETENCIES)) {
+        // raw is 2-8 (2 scenarios, each 1-4 points)
+        const raw = rawScores[key];
+        const scaled = Math.round((raw / 8) * comp.max);
+        scaledScores[key] = scaled;
+        percentages[key] = Math.round((scaled / comp.max) * 1000) / 10;
+    }
+
+    // Behavioral metrics
+    const allRTs = events.map(e => e.reaction_time_ms);
+    const avgRT = allRTs.length > 0 ? Math.round(allRTs.reduce((a, b) => a + b, 0) / allRTs.length) : 0;
+
+    // Find fastest/slowest competency by average RT
+    let fastestComp = '', slowestComp = '', fastestRT = Infinity, slowestRT = 0;
+    for (const [key, times] of Object.entries(reactionTimes)) {
+        if (times.length === 0) continue;
+        const avg = times.reduce((a, b) => a + b, 0) / times.length;
+        if (avg < fastestRT) { fastestRT = avg; fastestComp = key; }
+        if (avg > slowestRT) { slowestRT = avg; slowestComp = key; }
+    }
+
+    // Consistency index: based on standard deviation of scores across competencies
+    const allPcts = Object.values(percentages);
+    const pctMean = allPcts.reduce((a, b) => a + b, 0) / allPcts.length;
+    const pctVariance = allPcts.reduce((sum, p) => sum + Math.pow(p - pctMean, 2), 0) / allPcts.length;
+    const pctSD = Math.sqrt(pctVariance);
+    const consistencyIndex = Math.max(0, Math.round((1 - pctSD / 100) * 100) / 100);
+
+    const behavioralMetrics = {
+        avg_decision_time_ms: avgRT,
+        fastest_competency: fastestComp,
+        slowest_competency: slowestComp,
+        consistency_index: consistencyIndex
+    };
+
+    // Sort competencies by percentage for display
+    const sorted = Object.entries(percentages).sort((a, b) => b[1] - a[1]);
+    const top3 = sorted.slice(0, 3);
+    const bottom3 = sorted.slice(-3).reverse();
+
+    // Determine dominant trait
+    const dominantTrait = sorted[0][0];
+    const dominantName = COMPETENCIES[dominantTrait].name;
+
+    // Save to Supabase
+    try {
+        // Save events
+        if (events.length > 0 && sessionId) {
+            await fetch(`${SUPABASE_URL}/rest/v1/game_events`, {
+                method: 'POST', headers: HEADERS,
+                body: JSON.stringify(events)
+            });
+        }
+
+        // Save results
+        const resultData = {
+            session_id: sessionId,
+            email: player.email,
+            game_type: 'game_competencias',
+            test_equivalent: 'competencias',
+            scores: scaledScores,
+            percentages: percentages,
+            dominant_trait: dominantName,
+            description: `Fortaleza principal: ${dominantName}. Promedio general: ${Math.round(pctMean)}%.`,
+            behavioral_metrics: behavioralMetrics
+        };
+
+        await fetch(`${SUPABASE_URL}/rest/v1/game_results`, {
+            method: 'POST', headers: HEADERS,
+            body: JSON.stringify(resultData)
+        });
+
+        // Update session
+        if (sessionId) {
+            await fetch(`${SUPABASE_URL}/rest/v1/game_sessions?id=eq.${sessionId}`, {
+                method: 'PATCH', headers: HEADERS,
+                body: JSON.stringify({ status: 'completed', completed_at: new Date().toISOString(), duration_ms: totalDuration })
+            });
+        }
+    } catch (e) { console.warn('Save failed:', e); }
+
+    // Show results
+    showResults(scaledScores, percentages, sorted, top3, bottom3, behavioralMetrics, pctMean);
+}
+
+function showResults(scaledScores, percentages, sorted, top3, bottom3, bm, avgPct) {
+    const rs = document.getElementById('resultsScreen');
+    rs.style.display = 'flex';
+
+    // Build bars HTML sorted by score
+    let barsHTML = '';
+    sorted.forEach(([key, pct], i) => {
+        const comp = COMPETENCIES[key];
+        barsHTML += `
+            <div class="result-bar">
+                <div class="label">
+                    <span class="comp-name">${comp.emoji} ${comp.name}</span>
+                    <span class="comp-pct">${pct}%</span>
+                </div>
+                <div class="bar"><div class="bar-fill" style="width: 0%; background: ${comp.color};" data-pct="${pct}"></div></div>
+            </div>`;
+    });
+
+    // Top 3 strengths
+    let strengthsHTML = '';
+    top3.forEach(([key, pct]) => {
+        const comp = COMPETENCIES[key];
+        strengthsHTML += `<div class="strength-item"><span class="s-icon">✅</span><span class="s-text"><strong>${comp.name}</strong> — ${pct}%</span></div>`;
+    });
+
+    // Bottom 3 areas to improve
+    let improveHTML = '';
+    bottom3.forEach(([key, pct]) => {
+        const comp = COMPETENCIES[key];
+        improveHTML += `<div class="strength-item"><span class="s-icon">📌</span><span class="s-text"><strong>${comp.name}</strong> — ${pct}%</span></div>`;
+    });
+
+    document.getElementById('resultsCard').innerHTML = `
+        <h2>🏪 Resultados: Un Dia en la Tienda</h2>
+        <p style="color:#94a3b8; margin-bottom:8px; font-size:0.95rem;">Puntuacion promedio: <strong style="color:#60a5fa;">${Math.round(avgPct)}%</strong></p>
+        <p style="color:#64748b; margin-bottom:24px; font-size:0.85rem;">Evaluacion de 10 competencias profesionales</p>
+        ${barsHTML}
+        <div class="strengths-section">
+            <h3>🏆 Top 3 Fortalezas</h3>
+            ${strengthsHTML}
+        </div>
+        <div class="strengths-section">
+            <h3>📈 3 Areas de Mejora</h3>
+            ${improveHTML}
+        </div>
+        <div class="behavioral-stats">
+            <h3>📊 Metricas Conductuales</h3>
+            <div class="stat-row"><span class="stat-label">Tiempo promedio de decision</span><span class="stat-value">${(bm.avg_decision_time_ms / 1000).toFixed(1)}s</span></div>
+            <div class="stat-row"><span class="stat-label">Competencia mas rapida</span><span class="stat-value">${COMPETENCIES[bm.fastest_competency]?.name || '-'}</span></div>
+            <div class="stat-row"><span class="stat-label">Competencia mas lenta</span><span class="stat-value">${COMPETENCIES[bm.slowest_competency]?.name || '-'}</span></div>
+            <div class="stat-row"><span class="stat-label">Indice de consistencia</span><span class="stat-value">${Math.round(bm.consistency_index * 100)}%</span></div>
+        </div>
+    `;
+
+    // Animate bars
+    setTimeout(() => {
+        document.querySelectorAll('.bar-fill').forEach(bar => {
+            bar.style.width = bar.dataset.pct + '%';
+        });
+    }, 200);
+}
+</script>
+</body>
+</html>

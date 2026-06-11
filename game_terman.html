@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego Cognitivo — Evaluacion de Razonamiento</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+        /* Registration */
+        .register-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .register-card { background: #1e293b; border-radius: 16px; padding: 40px; max-width: 440px; width: 100%; }
+        .register-card h1 { font-size: 1.5rem; margin-bottom: 8px; color: #60a5fa; }
+        .register-card p { font-size: 0.9rem; color: #94a3b8; margin-bottom: 24px; line-height: 1.5; }
+        .register-card input { width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; font-size: 1rem; margin-bottom: 12px; outline: none; }
+        .register-card input:focus { border-color: #60a5fa; }
+        .register-card select { width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; font-size: 1rem; margin-bottom: 16px; outline: none; }
+        .btn-primary { width: 100%; padding: 14px; border-radius: 8px; border: none; background: #3b82f6; color: white; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-primary:disabled { background: #475569; cursor: not-allowed; }
+
+        /* Game container */
+        .game-screen { display: none; min-height: 100vh; }
+        .game-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; background: #1e293b; border-bottom: 1px solid #334155; }
+        .game-header .mini-game-label { font-size: 0.85rem; color: #60a5fa; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .game-header .progress { font-size: 0.85rem; color: #94a3b8; }
+        .game-header .timer { font-size: 1.1rem; font-weight: 700; color: #fbbf24; font-variant-numeric: tabular-nums; }
+
+        .game-area { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(100vh - 60px); padding: 24px; }
+
+        /* Mini-game styles */
+        .challenge-card { background: #1e293b; border-radius: 16px; padding: 32px; max-width: 600px; width: 100%; text-align: center; }
+        .challenge-card h2 { font-size: 1.3rem; margin-bottom: 8px; color: #f1f5f9; }
+        .challenge-card .instruction { font-size: 0.9rem; color: #94a3b8; margin-bottom: 24px; }
+        .challenge-card .stimulus { font-size: 2rem; font-weight: 700; color: #60a5fa; margin: 24px 0; letter-spacing: 4px; font-variant-numeric: tabular-nums; }
+        .challenge-card .stimulus.word { font-size: 1.4rem; letter-spacing: 1px; }
+
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .option-btn { padding: 16px; border-radius: 12px; border: 2px solid #334155; background: #0f172a; color: #e2e8f0; font-size: 1rem; cursor: pointer; transition: all 0.15s; font-weight: 500; }
+        .option-btn:hover { border-color: #60a5fa; background: #1e293b; transform: scale(1.02); }
+        .option-btn.correct { border-color: #22c55e; background: #052e16; color: #22c55e; }
+        .option-btn.wrong { border-color: #ef4444; background: #2a0a0a; color: #ef4444; }
+        .option-btn:disabled { cursor: default; opacity: 0.7; }
+
+        /* Spatial game */
+        .grid-container { display: grid; gap: 8px; margin: 20px auto; width: fit-content; }
+        .grid-cell { width: 64px; height: 64px; border-radius: 8px; border: 2px solid #334155; background: #0f172a; cursor: pointer; transition: all 0.15s; }
+        .grid-cell.highlighted { background: #3b82f6; border-color: #60a5fa; }
+        .grid-cell.selected { background: #8b5cf6; border-color: #a78bfa; }
+        .grid-cell.correct-cell { background: #22c55e; border-color: #4ade80; }
+        .grid-cell.wrong-cell { background: #ef4444; border-color: #f87171; }
+        .grid-cell:hover:not(.highlighted):not([disabled]) { border-color: #60a5fa; }
+
+        /* Transition */
+        .transition-screen { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; text-align: center; }
+        .transition-screen h2 { font-size: 1.8rem; margin-bottom: 12px; color: #60a5fa; }
+        .transition-screen p { font-size: 1rem; color: #94a3b8; margin-bottom: 24px; max-width: 400px; line-height: 1.6; }
+        .transition-screen .score-preview { font-size: 3rem; font-weight: 700; color: #22c55e; margin: 16px 0; }
+        .countdown { font-size: 4rem; font-weight: 700; color: #fbbf24; margin: 24px 0; }
+
+        /* Results */
+        .results-screen { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
+        .results-card { background: #1e293b; border-radius: 16px; padding: 40px; max-width: 500px; width: 100%; text-align: center; }
+        .results-card h2 { font-size: 1.5rem; margin-bottom: 24px; color: #60a5fa; }
+        .result-bar { margin: 12px 0; text-align: left; }
+        .result-bar .label { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 4px; }
+        .result-bar .bar { height: 12px; background: #0f172a; border-radius: 6px; overflow: hidden; }
+        .result-bar .bar-fill { height: 100%; border-radius: 6px; transition: width 1s ease; }
+        .bar-fill.v { background: #3b82f6; }
+        .bar-fill.m { background: #8b5cf6; }
+        .bar-fill.s { background: #06b6d4; }
+        .bar-fill.c { background: #f59e0b; }
+        .ci-badge { display: inline-block; padding: 12px 32px; border-radius: 12px; background: #052e16; border: 2px solid #22c55e; color: #22c55e; font-size: 1.8rem; font-weight: 700; margin: 20px 0; }
+
+        .behavioral-stats { margin-top: 24px; padding-top: 20px; border-top: 1px solid #334155; text-align: left; }
+        .behavioral-stats h3 { font-size: 0.9rem; color: #94a3b8; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.85rem; }
+        .stat-row .stat-label { color: #94a3b8; }
+        .stat-row .stat-value { color: #e2e8f0; font-weight: 600; }
+
+        @media (max-width: 480px) {
+            .grid-cell { width: 52px; height: 52px; }
+            .challenge-card { padding: 20px; }
+            .stimulus { font-size: 1.5rem !important; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== REGISTRATION ===== -->
+<div class="register-screen" id="registerScreen">
+    <div class="register-card">
+        <h1>🧠 Juego Cognitivo</h1>
+        <p>4 mini-juegos que miden tu razonamiento verbal, matematico, espacial y analitico. Toma ~8 minutos. No hay respuestas "correctas" de personalidad — solo resuelve lo mejor que puedas.</p>
+        <input type="text" id="regName" placeholder="Nombre completo" required>
+        <input type="email" id="regEmail" placeholder="Email" required>
+        <input type="tel" id="regPhone" placeholder="Telefono">
+        <select id="regPosition">
+            <option value="">Selecciona posicion...</option>
+            <option value="almacen">Almacen</option>
+            <option value="ventas_mostrador">Ventas a Mostrador</option>
+            <option value="pueblaventas">Puebla Ventas</option>
+            <option value="internal_team">Equipo Interno (correlacion)</option>
+        </select>
+        <button class="btn-primary" id="startBtn" onclick="startGame()">Comenzar Juego</button>
+    </div>
+</div>
+
+<!-- ===== GAME AREA ===== -->
+<div class="game-screen" id="gameScreen">
+    <div class="game-header">
+        <span class="mini-game-label" id="miniGameLabel">Verbal</span>
+        <span class="progress" id="progressLabel">1/8</span>
+        <span class="timer" id="timerLabel">0:00</span>
+    </div>
+    <div class="game-area" id="gameArea"></div>
+</div>
+
+<!-- ===== TRANSITION ===== -->
+<div class="transition-screen" id="transitionScreen">
+    <h2 id="transTitle">Siguiente: Matematico</h2>
+    <p id="transDesc">Resuelve secuencias numericas y operaciones lo mas rapido que puedas.</p>
+    <div class="countdown" id="transCountdown">3</div>
+</div>
+
+<!-- ===== RESULTS ===== -->
+<div class="results-screen" id="resultsScreen">
+    <div class="results-card" id="resultsCard"></div>
+</div>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const API_BASE = window.location.origin;
+
+// Auto-fill from URL params (when coming from /games menu)
+const urlParams = new URLSearchParams(window.location.search);
+const prefillEmail = urlParams.get('email');
+window.addEventListener('DOMContentLoaded', () => {
+    if (prefillEmail) {
+        document.getElementById('regEmail').value = prefillEmail;
+        document.getElementById('regEmail').readOnly = true;
+        document.getElementById('regEmail').style.opacity = '0.7';
+    }
+});
+const SUPABASE_URL = 'https://gbkhkbfbarsnpbdkxzii.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdia2hrYmZiYXJzbnBiZGt4emlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQzODAzNzMsImV4cCI6MjA0OTk1NjM3M30.mcOcC2GVEu_wD3xNBzSCC3MwDck3CIdmz4D8adU-bpI';
+const HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+
+// ============================================================
+// STATE
+// ============================================================
+let player = {};
+let sessionId = null;
+let gameStartTime = 0;
+let events = [];
+let currentMiniGame = 0;
+let currentChallenge = 0;
+let miniGameTimer = null;
+let miniGameStartTime = 0;
+let challengeStartTime = 0;
+
+const miniGames = ['verbal', 'math', 'spatial', 'comprehension'];
+const miniGameLabels = {
+    verbal: { name: 'Razonamiento Verbal', dim: 'V', icon: '📝', desc: 'Encuentra relaciones entre palabras y conceptos.' },
+    math: { name: 'Razonamiento Matematico', dim: 'M', icon: '🔢', desc: 'Completa secuencias numericas y resuelve patrones.' },
+    spatial: { name: 'Razonamiento Espacial', dim: 'S', icon: '🔷', desc: 'Recuerda patrones y posiciones en una cuadricula.' },
+    comprehension: { name: 'Comprension y Analisis', dim: 'C', icon: '📊', desc: 'Analiza informacion y extrae conclusiones.' }
+};
+
+// Scores per mini-game
+let scores = { V: { correct: 0, total: 0, totalRT: 0 }, M: { correct: 0, total: 0, totalRT: 0 }, S: { correct: 0, total: 0, totalRT: 0 }, C: { correct: 0, total: 0, totalRT: 0 } };
+
+// ============================================================
+// CHALLENGES
+// ============================================================
+const verbalChallenges = [
+    { word: 'RAPIDO', options: ['Veloz', 'Lento', 'Pesado', 'Oscuro'], correct: 0, type: 'sinonimo' },
+    { word: 'EFICIENTE', options: ['Inutil', 'Productivo', 'Debil', 'Confuso'], correct: 1, type: 'sinonimo' },
+    { word: 'OBSTINADO', options: ['Flexible', 'Terco', 'Amable', 'Rapido'], correct: 1, type: 'sinonimo' },
+    { word: 'ESCASO', options: ['Abundante', 'Limitado', 'Grande', 'Visible'], correct: 1, type: 'sinonimo' },
+    { word: 'AUDAZ', options: ['Timido', 'Valiente', 'Torpe', 'Silencioso'], correct: 1, type: 'sinonimo' },
+    { word: 'DILIGENTE', options: ['Perezoso', 'Cuidadoso', 'Ruidoso', 'Fragil'], correct: 1, type: 'sinonimo' },
+    { word: 'PROSPERO', options: ['Pobre', 'Exitoso', 'Lento', 'Bajo'], correct: 1, type: 'sinonimo' },
+    { word: 'HOSTIL', options: ['Amigable', 'Agresivo', 'Tranquilo', 'Curioso'], correct: 1, type: 'sinonimo' },
+];
+
+const mathChallenges = [
+    { sequence: '2, 4, 6, 8, __', options: ['9', '10', '12', '11'], correct: 1 },
+    { sequence: '3, 6, 12, 24, __', options: ['36', '48', '30', '42'], correct: 1 },
+    { sequence: '1, 1, 2, 3, 5, __', options: ['7', '8', '6', '9'], correct: 1 },
+    { sequence: '100, 81, 64, 49, __', options: ['25', '36', '32', '40'], correct: 1 },
+    { sequence: '2, 6, 18, 54, __', options: ['108', '162', '72', '96'], correct: 1 },
+    { sequence: '1, 4, 9, 16, 25, __', options: ['30', '36', '35', '49'], correct: 1 },
+    { sequence: '5, 10, 9, 18, 17, __', options: ['34', '16', '33', '25'], correct: 0 },
+    { sequence: '3, 5, 9, 15, 23, __', options: ['33', '31', '35', '29'], correct: 0 },
+];
+
+function generateSpatialChallenge(gridSize, highlightCount) {
+    const cells = [];
+    const total = gridSize * gridSize;
+    while (cells.length < highlightCount) {
+        const r = Math.floor(Math.random() * total);
+        if (!cells.includes(r)) cells.push(r);
+    }
+    return { gridSize, highlighted: cells };
+}
+
+const comprehensionChallenges = [
+    {
+        text: 'Una empresa redujo sus costos de produccion un 20% y aumento su produccion un 15%. Si antes producia 1000 unidades a $10 cada una, ¿cual es el nuevo costo por unidad?',
+        options: ['$6.96', '$7.50', '$8.00', '$6.50'],
+        correct: 0
+    },
+    {
+        text: 'En un equipo de 5 personas, 3 votan SI y 2 votan NO. Si se requiere 75% para aprobar una decision, ¿se aprueba?',
+        options: ['Si, se aprueba', 'No, falta 1 voto', 'No, se necesita unanimidad', 'Si, con mayoria simple'],
+        correct: 1
+    },
+    {
+        text: 'Un almacen tiene 500 productos. El 30% son tipo A, el 50% son tipo B, y el resto tipo C. Si se venden todos los tipo C, ¿cuantos productos quedan?',
+        options: ['350', '400', '300', '450'],
+        correct: 1
+    },
+    {
+        text: 'Si el vendedor A cierra 8 de cada 10 contactos y el vendedor B cierra 6 de cada 8, ¿quien tiene mejor tasa de cierre?',
+        options: ['Vendedor A (80%)', 'Vendedor B (75%)', 'Son iguales', 'No se puede determinar'],
+        correct: 0
+    },
+    {
+        text: 'Una tienda ofrece 2x1 en productos de $200. Un cliente compra 3 unidades. ¿Cuanto paga?',
+        options: ['$400', '$600', '$300', '$500'],
+        correct: 0
+    },
+    {
+        text: 'Si 4 empleados completan un inventario en 6 horas, ¿cuantas horas tomaria con 6 empleados (mismo ritmo)?',
+        options: ['4 horas', '3 horas', '5 horas', '2 horas'],
+        correct: 0
+    },
+    {
+        text: 'Las ventas de enero fueron $100K, febrero $120K, marzo $90K, abril $110K. ¿Cual es la tendencia?',
+        options: ['Crecimiento constante', 'Variable sin tendencia clara', 'Decrecimiento', 'Estacional ciclica'],
+        correct: 1
+    },
+    {
+        text: 'Un producto tiene margen del 40%. Si el costo es $150, ¿cual es el precio de venta?',
+        options: ['$210', '$250', '$190', '$225'],
+        correct: 0
+    },
+];
+
+// ============================================================
+// GAME FLOW
+// ============================================================
+
+async function startGame() {
+    const name = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const phone = document.getElementById('regPhone').value.trim();
+    const position = document.getElementById('regPosition').value;
+
+    if (!name || !email) { alert('Nombre y email son requeridos'); return; }
+
+    player = { name, email, phone, position };
+    gameStartTime = Date.now();
+
+    // Create session in Supabase
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/game_sessions`, {
+            method: 'POST', headers: HEADERS,
+            body: JSON.stringify({
+                email, name, phone, position,
+                game_type: 'game_terman',
+                test_equivalent: 'terman',
+                user_agent: navigator.userAgent,
+                screen_width: screen.width,
+                screen_height: screen.height,
+                status: 'in_progress'
+            })
+        });
+        const data = await res.json();
+        if (data && data[0]) sessionId = data[0].id;
+    } catch (e) { console.warn('Session save failed:', e); }
+
+    document.getElementById('registerScreen').style.display = 'none';
+    showTransition(0);
+}
+
+function showTransition(mgIndex) {
+    currentMiniGame = mgIndex;
+    const mg = miniGames[mgIndex];
+    const info = miniGameLabels[mg];
+
+    document.getElementById('gameScreen').style.display = 'none';
+    const ts = document.getElementById('transitionScreen');
+    ts.style.display = 'flex';
+    document.getElementById('transTitle').textContent = `${info.icon} ${info.name}`;
+    document.getElementById('transDesc').textContent = info.desc;
+
+    let count = 3;
+    document.getElementById('transCountdown').textContent = count;
+    const iv = setInterval(() => {
+        count--;
+        if (count <= 0) {
+            clearInterval(iv);
+            ts.style.display = 'none';
+            startMiniGame(mgIndex);
+        } else {
+            document.getElementById('transCountdown').textContent = count;
+        }
+    }, 1000);
+}
+
+function startMiniGame(mgIndex) {
+    const gs = document.getElementById('gameScreen');
+    gs.style.display = 'block';
+    currentChallenge = 0;
+    miniGameStartTime = Date.now();
+
+    const mg = miniGames[mgIndex];
+    const info = miniGameLabels[mg];
+    document.getElementById('miniGameLabel').textContent = `${info.icon} ${info.name}`;
+
+    // Start timer
+    clearInterval(miniGameTimer);
+    miniGameTimer = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - miniGameStartTime) / 1000);
+        const m = Math.floor(elapsed / 60);
+        const s = elapsed % 60;
+        document.getElementById('timerLabel').textContent = `${m}:${s.toString().padStart(2, '0')}`;
+    }, 200);
+
+    showChallenge(mg, 0);
+}
+
+function showChallenge(mg, index) {
+    const area = document.getElementById('gameArea');
+
+    if (mg === 'verbal') {
+        const challenges = verbalChallenges;
+        if (index >= challenges.length) return endMiniGame();
+        const ch = challenges[index];
+        document.getElementById('progressLabel').textContent = `${index + 1}/${challenges.length}`;
+        challengeStartTime = Date.now();
+
+        area.innerHTML = `
+            <div class="challenge-card">
+                <h2>Sinonimo</h2>
+                <div class="instruction">¿Cual palabra significa lo mismo que...</div>
+                <div class="stimulus word">${ch.word}</div>
+                <div class="options-grid">
+                    ${ch.options.map((o, i) => `<button class="option-btn" onclick="answerVerbal(${index}, ${i})" id="opt${i}">${o}</button>`).join('')}
+                </div>
+            </div>`;
+    }
+    else if (mg === 'math') {
+        const challenges = mathChallenges;
+        if (index >= challenges.length) return endMiniGame();
+        const ch = challenges[index];
+        document.getElementById('progressLabel').textContent = `${index + 1}/${challenges.length}`;
+        challengeStartTime = Date.now();
+
+        area.innerHTML = `
+            <div class="challenge-card">
+                <h2>Completa la Secuencia</h2>
+                <div class="instruction">¿Que numero sigue?</div>
+                <div class="stimulus">${ch.sequence}</div>
+                <div class="options-grid">
+                    ${ch.options.map((o, i) => `<button class="option-btn" onclick="answerMath(${index}, ${i})" id="opt${i}">${o}</button>`).join('')}
+                </div>
+            </div>`;
+    }
+    else if (mg === 'spatial') {
+        if (index >= 8) return endMiniGame();
+        const difficulty = Math.min(3 + Math.floor(index / 2), 6);
+        const highlights = Math.min(3 + Math.floor(index / 2), 5);
+        const ch = generateSpatialChallenge(difficulty > 5 ? 5 : 4, highlights);
+        document.getElementById('progressLabel').textContent = `${index + 1}/8`;
+        challengeStartTime = Date.now();
+
+        // Show grid with highlighted cells
+        let gridHTML = `<div class="challenge-card">
+            <h2>Memoria Espacial</h2>
+            <div class="instruction">Memoriza las celdas iluminadas...</div>
+            <div class="grid-container" style="grid-template-columns: repeat(${ch.gridSize}, 1fr);" id="spatialGrid">`;
+        for (let i = 0; i < ch.gridSize * ch.gridSize; i++) {
+            const hl = ch.highlighted.includes(i) ? ' highlighted' : '';
+            gridHTML += `<div class="grid-cell${hl}" data-idx="${i}"></div>`;
+        }
+        gridHTML += `</div></div>`;
+        area.innerHTML = gridHTML;
+
+        // Hide after delay, then let user click
+        setTimeout(() => {
+            document.querySelectorAll('.grid-cell').forEach(c => c.classList.remove('highlighted'));
+            document.querySelector('.instruction').textContent = 'Haz clic en las celdas que estaban iluminadas';
+            let selected = [];
+            document.querySelectorAll('.grid-cell').forEach(c => {
+                c.addEventListener('click', function handler() {
+                    const idx = parseInt(this.dataset.idx);
+                    if (selected.includes(idx)) return;
+                    selected.push(idx);
+                    this.classList.add('selected');
+
+                    if (selected.length >= ch.highlighted.length) {
+                        const rt = Date.now() - challengeStartTime;
+                        const correctCount = selected.filter(s => ch.highlighted.includes(s)).length;
+                        const isCorrect = correctCount === ch.highlighted.length;
+                        const dim = 'S';
+
+                        scores[dim].total++;
+                        scores[dim].totalRT += rt;
+                        if (isCorrect) scores[dim].correct++;
+
+                        // Visual feedback
+                        document.querySelectorAll('.grid-cell').forEach(gc => {
+                            const gIdx = parseInt(gc.dataset.idx);
+                            if (ch.highlighted.includes(gIdx)) gc.classList.add('correct-cell');
+                            else if (selected.includes(gIdx) && !ch.highlighted.includes(gIdx)) gc.classList.add('wrong-cell');
+                        });
+
+                        recordEvent('spatial', index, dim, rt, { highlighted: ch.highlighted, selected }, isCorrect);
+                        setTimeout(() => { currentChallenge = index + 1; showChallenge('spatial', index + 1); }, 800);
+                    }
+                });
+            });
+        }, 1500 + (index * 200)); // More time for harder levels
+    }
+    else if (mg === 'comprehension') {
+        const challenges = comprehensionChallenges;
+        if (index >= challenges.length) return endMiniGame();
+        const ch = challenges[index];
+        document.getElementById('progressLabel').textContent = `${index + 1}/${challenges.length}`;
+        challengeStartTime = Date.now();
+
+        area.innerHTML = `
+            <div class="challenge-card">
+                <h2>Analisis</h2>
+                <div class="instruction" style="text-align:left; font-size:0.95rem; color:#cbd5e1; line-height:1.7; margin-bottom:20px;">${ch.text}</div>
+                <div class="options-grid">
+                    ${ch.options.map((o, i) => `<button class="option-btn" onclick="answerComprehension(${index}, ${i})" id="opt${i}">${o}</button>`).join('')}
+                </div>
+            </div>`;
+    }
+}
+
+// ============================================================
+// ANSWER HANDLERS
+// ============================================================
+
+function answerVerbal(challengeIdx, selected) {
+    const ch = verbalChallenges[challengeIdx];
+    handleAnswer('verbal', challengeIdx, selected, ch.correct, 'V', verbalChallenges.length);
+}
+
+function answerMath(challengeIdx, selected) {
+    const ch = mathChallenges[challengeIdx];
+    handleAnswer('math', challengeIdx, selected, ch.correct, 'M', mathChallenges.length);
+}
+
+function answerComprehension(challengeIdx, selected) {
+    const ch = comprehensionChallenges[challengeIdx];
+    handleAnswer('comprehension', challengeIdx, selected, ch.correct, 'C', comprehensionChallenges.length);
+}
+
+function handleAnswer(miniGame, challengeIdx, selected, correctIdx, dim, totalChallenges) {
+    const rt = Date.now() - challengeStartTime;
+    const isCorrect = selected === correctIdx;
+
+    scores[dim].total++;
+    scores[dim].totalRT += rt;
+    if (isCorrect) scores[dim].correct++;
+
+    // Visual feedback
+    document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+    document.getElementById(`opt${selected}`).classList.add(isCorrect ? 'correct' : 'wrong');
+    if (!isCorrect) document.getElementById(`opt${correctIdx}`).classList.add('correct');
+
+    recordEvent(miniGame, challengeIdx, dim, rt, { selected }, isCorrect);
+
+    setTimeout(() => {
+        currentChallenge = challengeIdx + 1;
+        showChallenge(miniGame, challengeIdx + 1);
+    }, 600);
+}
+
+// ============================================================
+// EVENT RECORDING
+// ============================================================
+
+function recordEvent(miniGame, eventIndex, dimension, reactionTime, response, correct) {
+    events.push({
+        session_id: sessionId,
+        mini_game: miniGame,
+        event_type: 'response',
+        event_index: eventIndex,
+        timestamp_ms: Date.now() - gameStartTime,
+        reaction_time_ms: reactionTime,
+        response: response,
+        correct: correct,
+        dimension: dimension,
+        hesitation_ms: null,
+        attempts: 1
+    });
+}
+
+// ============================================================
+// MINI-GAME END / TRANSITION
+// ============================================================
+
+function endMiniGame() {
+    clearInterval(miniGameTimer);
+    currentMiniGame++;
+
+    if (currentMiniGame < miniGames.length) {
+        showTransition(currentMiniGame);
+    } else {
+        finishGame();
+    }
+}
+
+// ============================================================
+// FINISH & SCORE
+// ============================================================
+
+async function finishGame() {
+    document.getElementById('gameScreen').style.display = 'none';
+    const totalDuration = Date.now() - gameStartTime;
+
+    // Calculate scores in same format as questionnaire Terman
+    const maxScores = { V: 50, M: 50, S: 40, C: 35 };
+    const rawScores = {};
+    const percentages = {};
+
+    for (const dim of ['V', 'M', 'S', 'C']) {
+        const s = scores[dim];
+        const accuracy = s.total > 0 ? s.correct / s.total : 0;
+        const avgRT = s.total > 0 ? s.totalRT / s.total : 10000;
+        // Speed-accuracy composite: weight accuracy 70%, speed 30%
+        const speedFactor = Math.max(0, 1 - (avgRT / 15000)); // normalize: 0-15s range
+        const composite = (accuracy * 0.7 + speedFactor * 0.3);
+        rawScores[dim] = Math.round(composite * maxScores[dim]);
+        percentages[dim] = Math.round(composite * 100 * 10) / 10;
+    }
+
+    const avgPct = (percentages.V + percentages.M + percentages.S + percentages.C) / 4;
+    const ciEstimate = Math.round(85 + (avgPct * 0.30));
+    const level = ciEstimate >= 110 ? 'Superior' : ciEstimate >= 100 ? 'Promedio Alto' : 'Promedio';
+
+    // Behavioral metrics (unique to game — not available from questionnaires)
+    const allRTs = events.filter(e => e.reaction_time_ms).map(e => e.reaction_time_ms);
+    const avgRT = allRTs.length > 0 ? Math.round(allRTs.reduce((a, b) => a + b, 0) / allRTs.length) : 0;
+    const totalCorrect = events.filter(e => e.correct).length;
+    const totalAttempts = events.length;
+    const accuracyRate = totalAttempts > 0 ? Math.round((totalCorrect / totalAttempts) * 100) / 100 : 0;
+
+    // Consistency: standard deviation of reaction times
+    const rtMean = avgRT;
+    const rtVariance = allRTs.length > 1 ? allRTs.reduce((sum, rt) => sum + Math.pow(rt - rtMean, 2), 0) / allRTs.length : 0;
+    const rtSD = Math.round(Math.sqrt(rtVariance));
+    const consistencyIndex = Math.max(0, Math.round((1 - rtSD / (rtMean || 1)) * 100) / 100);
+
+    // Learning curve: compare first half vs second half accuracy
+    const halfIdx = Math.floor(events.length / 2);
+    const firstHalf = events.slice(0, halfIdx).filter(e => e.correct).length / (halfIdx || 1);
+    const secondHalf = events.slice(halfIdx).filter(e => e.correct).length / ((events.length - halfIdx) || 1);
+    const learningCurve = Math.round((secondHalf - firstHalf) * 100) / 100;
+
+    const behavioralMetrics = {
+        avg_reaction_time_ms: avgRT,
+        accuracy_rate: accuracyRate,
+        consistency_index: consistencyIndex,
+        learning_curve_slope: learningCurve,
+        total_duration_ms: totalDuration,
+        fastest_rt_ms: allRTs.length > 0 ? Math.min(...allRTs) : 0,
+        slowest_rt_ms: allRTs.length > 0 ? Math.max(...allRTs) : 0
+    };
+
+    // Save to Supabase
+    try {
+        // Save events
+        if (events.length > 0 && sessionId) {
+            await fetch(`${SUPABASE_URL}/rest/v1/game_events`, {
+                method: 'POST', headers: HEADERS,
+                body: JSON.stringify(events)
+            });
+        }
+
+        // Save results
+        const resultData = {
+            session_id: sessionId,
+            email: player.email,
+            game_type: 'game_terman',
+            test_equivalent: 'terman',
+            scores: rawScores,
+            percentages: percentages,
+            dominant_trait: `CI: ${ciEstimate}`,
+            description: `Nivel ${level} de razonamiento (CI estimado: ${ciEstimate}).`,
+            behavioral_metrics: behavioralMetrics
+        };
+
+        await fetch(`${SUPABASE_URL}/rest/v1/game_results`, {
+            method: 'POST', headers: HEADERS,
+            body: JSON.stringify(resultData)
+        });
+
+        // Update session
+        if (sessionId) {
+            await fetch(`${SUPABASE_URL}/rest/v1/game_sessions?id=eq.${sessionId}`, {
+                method: 'PATCH', headers: HEADERS,
+                body: JSON.stringify({ status: 'completed', completed_at: new Date().toISOString(), duration_ms: totalDuration })
+            });
+        }
+    } catch (e) { console.warn('Save failed:', e); }
+
+    // Show results
+    showResults(rawScores, percentages, ciEstimate, level, behavioralMetrics);
+}
+
+function showResults(rawScores, percentages, ci, level, bm) {
+    const rs = document.getElementById('resultsScreen');
+    rs.style.display = 'flex';
+
+    const dimNames = { V: 'Verbal', M: 'Matematico', S: 'Espacial', C: 'Comprension' };
+    const dimColors = { V: 'v', M: 'm', S: 's', C: 'c' };
+
+    let barsHTML = '';
+    for (const dim of ['V', 'M', 'S', 'C']) {
+        barsHTML += `
+            <div class="result-bar">
+                <div class="label"><span>${dimNames[dim]}</span><span>${percentages[dim]}%</span></div>
+                <div class="bar"><div class="bar-fill ${dimColors[dim]}" style="width: 0%"></div></div>
+            </div>`;
+    }
+
+    document.getElementById('resultsCard').innerHTML = `
+        <h2>🧠 Resultados del Juego Cognitivo</h2>
+        <div class="ci-badge">CI: ${ci}</div>
+        <p style="color:#94a3b8; margin-bottom:20px;">Nivel ${level} de razonamiento</p>
+        ${barsHTML}
+        <div class="behavioral-stats">
+            <h3>📊 Metricas Conductuales (solo del juego)</h3>
+            <div class="stat-row"><span class="stat-label">Tiempo de reaccion promedio</span><span class="stat-value">${(bm.avg_reaction_time_ms / 1000).toFixed(1)}s</span></div>
+            <div class="stat-row"><span class="stat-label">Precision global</span><span class="stat-value">${Math.round(bm.accuracy_rate * 100)}%</span></div>
+            <div class="stat-row"><span class="stat-label">Indice de consistencia</span><span class="stat-value">${Math.round(bm.consistency_index * 100)}%</span></div>
+            <div class="stat-row"><span class="stat-label">Curva de aprendizaje</span><span class="stat-value">${bm.learning_curve_slope > 0 ? '+' : ''}${Math.round(bm.learning_curve_slope * 100)}%</span></div>
+            <div class="stat-row"><span class="stat-label">Respuesta mas rapida</span><span class="stat-value">${(bm.fastest_rt_ms / 1000).toFixed(1)}s</span></div>
+            <div class="stat-row"><span class="stat-label">Duracion total</span><span class="stat-value">${Math.round(bm.total_duration_ms / 1000)}s</span></div>
+        </div>
+    `;
+
+    // Animate bars
+    setTimeout(() => {
+        document.querySelectorAll('.bar-fill').forEach(bar => {
+            const dim = bar.classList[1].toUpperCase();
+            bar.style.width = percentages[dim] + '%';
+        });
+    }, 200);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juegos Cognitivos — Evaluacion</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+        .login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .login-card { background: #1e293b; border-radius: 16px; padding: 40px; max-width: 440px; width: 100%; text-align: center; }
+        .login-card h1 { font-size: 1.8rem; margin-bottom: 8px; }
+        .login-card p { font-size: 0.9rem; color: #94a3b8; margin-bottom: 24px; line-height: 1.5; }
+        .login-card input { width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; font-size: 1rem; margin-bottom: 16px; outline: none; text-align: center; }
+        .login-card input:focus { border-color: #60a5fa; }
+        .btn-primary { width: 100%; padding: 14px; border-radius: 10px; border: none; background: #3b82f6; color: white; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-primary:hover { background: #2563eb; transform: translateY(-1px); }
+
+        .menu-screen { display: none; min-height: 100vh; padding: 20px; }
+        .menu-header { text-align: center; padding: 40px 20px 20px; }
+        .menu-header h1 { font-size: 1.6rem; margin-bottom: 4px; }
+        .menu-header .welcome { font-size: 0.95rem; color: #60a5fa; margin-bottom: 4px; }
+        .menu-header .subtitle { font-size: 0.85rem; color: #64748b; }
+        .menu-header .logout { font-size: 0.8rem; color: #64748b; cursor: pointer; margin-top: 8px; text-decoration: underline; }
+        .menu-header .logout:hover { color: #94a3b8; }
+
+        .games-grid { display: grid; grid-template-columns: 1fr; gap: 16px; max-width: 500px; margin: 24px auto; padding: 0 16px; }
+
+        .game-card { background: #1e293b; border-radius: 16px; padding: 24px; cursor: pointer; transition: all 0.2s; border: 2px solid transparent; position: relative; overflow: hidden; }
+        .game-card:hover { border-color: #3b82f6; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(59,130,246,0.15); }
+        .game-card .emoji { font-size: 2.5rem; margin-bottom: 12px; }
+        .game-card h2 { font-size: 1.1rem; margin-bottom: 6px; color: #f1f5f9; }
+        .game-card .desc { font-size: 0.85rem; color: #94a3b8; line-height: 1.5; margin-bottom: 12px; }
+        .game-card .meta { display: flex; gap: 16px; font-size: 0.8rem; color: #64748b; }
+        .game-card .meta span { display: flex; align-items: center; gap: 4px; }
+        .game-card .badge { position: absolute; top: 16px; right: 16px; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge-new { background: #052e16; color: #22c55e; border: 1px solid #22c55e; }
+        .badge-played { background: #1e1b4b; color: #818cf8; border: 1px solid #818cf8; }
+
+        .history-section { max-width: 500px; margin: 32px auto; padding: 0 16px; }
+        .history-section h3 { font-size: 0.85rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .history-item { background: #1e293b; border-radius: 10px; padding: 14px 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .history-item .info { font-size: 0.85rem; }
+        .history-item .info .game-name { color: #e2e8f0; font-weight: 500; }
+        .history-item .info .date { color: #64748b; font-size: 0.75rem; margin-top: 2px; }
+        .history-item .score { color: #60a5fa; font-weight: 700; font-size: 0.95rem; }
+        .no-history { text-align: center; color: #475569; font-size: 0.85rem; padding: 20px; }
+
+        .equipo-card { background: linear-gradient(135deg, #1e293b 0%, #1e1b4b 100%); border: 2px solid #6366f1; }
+        .equipo-card:hover { border-color: #818cf8; }
+
+        @media (min-width: 600px) {
+            .games-grid { grid-template-columns: 1fr 1fr; max-width: 700px; }
+            .history-section { max-width: 700px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+    <div class="login-card">
+        <h1>🎮 Juegos de Evaluacion</h1>
+        <p>Ingresa tu email para acceder a los juegos cognitivos y de personalidad. Juega las veces que quieras.</p>
+        <input type="email" id="loginEmail" placeholder="tu@email.com" autofocus>
+        <button class="btn-primary" onclick="login()">Entrar</button>
+    </div>
+</div>
+
+<!-- MENU -->
+<div class="menu-screen" id="menuScreen">
+    <div class="menu-header">
+        <h1>🎮 Juegos de Evaluacion</h1>
+        <div class="welcome" id="welcomeMsg">Hola</div>
+        <div class="subtitle">Juega las veces que quieras — cada sesion se guarda</div>
+        <div class="logout" onclick="logout()">Cambiar cuenta</div>
+    </div>
+
+    <div class="games-grid">
+        <div class="game-card" onclick="playGame('terman')">
+            <span class="badge badge-new" id="badge-terman">Nuevo</span>
+            <div class="emoji">🧠</div>
+            <h2>Juego Cognitivo (Terman)</h2>
+            <div class="desc">4 mini-juegos: verbal, matematico, memoria espacial y comprension analitica.</div>
+            <div class="meta">
+                <span>⏱ ~8 min</span>
+                <span>📊 CI estimado</span>
+            </div>
+        </div>
+
+        <div class="game-card" onclick="playGame('disc')">
+            <span class="badge badge-new" id="badge-disc">Nuevo</span>
+            <div class="emoji">🎯</div>
+            <h2>Juego Conductual (DISC)</h2>
+            <div class="desc">Globo de riesgo, decisiones sociales, consistencia y atencion al detalle.</div>
+            <div class="meta">
+                <span>⏱ ~6 min</span>
+                <span>📊 Perfil DISC</span>
+            </div>
+        </div>
+
+        <div class="game-card" onclick="playGame('big5')">
+            <span class="badge badge-new" id="badge-big5">Nuevo</span>
+            <div class="emoji">🌟</div>
+            <h2>Juego de Personalidad (Big Five)</h2>
+            <div class="desc">Exploracion, precision, velocidad, cooperacion y resistencia bajo presion.</div>
+            <div class="meta">
+                <span>⏱ ~8 min</span>
+                <span>📊 5 rasgos</span>
+            </div>
+        </div>
+
+        <div class="game-card" onclick="playGame('competencias')">
+            <span class="badge badge-new" id="badge-competencias">Nuevo</span>
+            <div class="emoji">🏪</div>
+            <h2>Un Dia en la Tienda (Competencias)</h2>
+            <div class="desc">20 escenarios laborales reales. Toma decisiones como lider de equipo.</div>
+            <div class="meta">
+                <span>⏱ ~10 min</span>
+                <span>📊 10 competencias</span>
+            </div>
+        </div>
+
+        <div class="game-card equipo-card" onclick="window.location.href='/equipo'">
+            <div class="emoji">📋</div>
+            <h2>Cuestionario Semanal del Equipo</h2>
+            <div class="desc">12 preguntas sobre seguridad psicologica, conflicto, reconocimiento y mejora.</div>
+            <div class="meta">
+                <span>⏱ ~4 min</span>
+                <span>📊 Feedback anonimo</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="history-section">
+        <h3>📜 Tu historial de juegos</h3>
+        <div id="historyList"><div class="no-history">Cargando...</div></div>
+    </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://gbkhkbfbarsnpbdkxzii.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdia2hrYmZiYXJzbnBiZGt4emlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQzODAzNzMsImV4cCI6MjA0OTk1NjM3M30.mcOcC2GVEu_wD3xNBzSCC3MwDck3CIdmz4D8adU-bpI';
+const HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' };
+
+const gameNames = {
+    game_terman: '🧠 Cognitivo (Terman)',
+    game_disc: '🎯 Conductual (DISC)',
+    game_big5: '🌟 Personalidad (Big Five)',
+    game_competencias: '🏪 Competencias'
+};
+
+// Check if already logged in
+const savedEmail = localStorage.getItem('game_email');
+if (savedEmail) {
+    showMenu(savedEmail);
+}
+
+document.getElementById('loginEmail').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') login();
+});
+
+function login() {
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+    if (!email || !email.includes('@')) {
+        alert('Ingresa un email valido');
+        return;
+    }
+    localStorage.setItem('game_email', email);
+    showMenu(email);
+}
+
+function logout() {
+    localStorage.removeItem('game_email');
+    document.getElementById('menuScreen').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('loginEmail').value = '';
+}
+
+function showMenu(email) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('menuScreen').style.display = 'block';
+    document.getElementById('welcomeMsg').textContent = `Hola, ${email}`;
+    loadHistory(email);
+}
+
+function playGame(type) {
+    const email = localStorage.getItem('game_email');
+    // Pass email as URL param so the game can pre-fill registration
+    window.location.href = `/game/${type}?email=${encodeURIComponent(email)}`;
+}
+
+async function loadHistory(email) {
+    const container = document.getElementById('historyList');
+    try {
+        const res = await fetch(
+            `${SUPABASE_URL}/rest/v1/game_results?email=eq.${encodeURIComponent(email)}&select=game_type,dominant_trait,created_at&order=created_at.desc&limit=20`,
+            { headers: HEADERS }
+        );
+        const data = await res.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+            container.innerHTML = '<div class="no-history">Aun no has jugado ningun juego. Elige uno arriba!</div>';
+            // All badges stay "Nuevo"
+            return;
+        }
+
+        // Update badges for played games
+        const playedTypes = new Set(data.map(d => d.game_type));
+        for (const [type, _] of Object.entries(gameNames)) {
+            const shortType = type.replace('game_', '');
+            const badge = document.getElementById(`badge-${shortType}`);
+            if (badge && playedTypes.has(type)) {
+                badge.textContent = `Jugado ${data.filter(d => d.game_type === type).length}x`;
+                badge.className = 'badge badge-played';
+            }
+        }
+
+        container.innerHTML = data.map(d => {
+            const date = new Date(d.created_at);
+            const dateStr = date.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            return `
+                <div class="history-item">
+                    <div class="info">
+                        <div class="game-name">${gameNames[d.game_type] || d.game_type}</div>
+                        <div class="date">${dateStr}</div>
+                    </div>
+                    <div class="score">${d.dominant_trait || '—'}</div>
+                </div>`;
+        }).join('');
+
+    } catch (e) {
+        container.innerHTML = '<div class="no-history">Error cargando historial</div>';
+    }
+}
+</script>
+</body>
+</html>
