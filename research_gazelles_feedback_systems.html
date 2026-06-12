@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scaling Up Feedback Systems &mdash; From Rockefeller Habits to Closed-Loop Customer Intelligence</title>
+    <style>
+        @media print {
+            body { font-size: 11pt; }
+            .no-print { display: none !important; }
+            .page-break { page-break-before: always; }
+            @page { margin: 2cm; size: letter; }
+            .callout-box { break-inside: avoid; }
+            table { break-inside: avoid; }
+            .section { break-inside: avoid; }
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #fff;
+            color: #1a1a2e;
+            line-height: 1.7;
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 60px 40px 40px;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            color: #111827;
+        }
+
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 22px;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+            transition: background 0.2s;
+        }
+        .print-btn:hover { background: #1d4ed8; }
+
+        .title-page {
+            text-align: center;
+            padding: 80px 0 40px;
+            border-bottom: 3px solid #2563eb;
+            margin-bottom: 40px;
+        }
+        .title-page .logo {
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #2563eb;
+            margin-bottom: 40px;
+        }
+        .title-page h1 {
+            font-size: 1.75rem;
+            line-height: 1.35;
+            margin-bottom: 16px;
+            font-weight: 700;
+            color: #111827;
+        }
+        .title-page .subtitle {
+            font-size: 1rem;
+            color: #6b7280;
+            font-style: italic;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        .title-page .meta {
+            font-size: 0.85rem;
+            color: #9ca3af;
+            margin-top: 30px;
+        }
+        .title-page .meta strong { color: #6b7280; }
+
+        .section-number {
+            display: inline-block;
+            background: #2563eb;
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
+            text-align: center;
+            border-radius: 50%;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-right: 10px;
+            vertical-align: middle;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            margin: 40px 0 18px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e5e7eb;
+            line-height: 1.4;
+        }
+
+        h3 {
+            font-size: 1.05rem;
+            margin: 28px 0 10px;
+            color: #374151;
+        }
+
+        h4 {
+            font-size: 0.95rem;
+            margin: 20px 0 8px;
+            color: #4b5563;
+        }
+
+        p {
+            margin-bottom: 14px;
+            font-size: 0.95rem;
+            text-align: justify;
+        }
+
+        .source {
+            font-size: 0.78rem;
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        .callout-box {
+            background: #f0f4ff;
+            border-left: 4px solid #2563eb;
+            padding: 22px;
+            margin: 24px 0;
+            text-align: center;
+            border-radius: 0 6px 6px 0;
+        }
+        .callout-box .big-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #2563eb;
+            line-height: 1.1;
+            font-family: 'Georgia', serif;
+        }
+        .callout-box .big-number.red { color: #dc2626; }
+        .callout-box .big-number.green { color: #16a34a; }
+        .callout-box .label {
+            font-size: 0.95rem;
+            color: #374151;
+            margin-top: 4px;
+        }
+        .callout-box .source-line {
+            font-size: 0.78rem;
+            color: #9ca3af;
+            margin-top: 6px;
+        }
+
+        .pain-box {
+            background: #fef2f2;
+            border-left: 4px solid #dc2626;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        .pain-box strong { color: #dc2626; }
+
+        .solution-box {
+            background: #f0fdf4;
+            border-left: 4px solid #16a34a;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        .solution-box strong { color: #16a34a; }
+
+        .warning-box {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        .warning-box strong { color: #d97706; }
+
+        .stat-row {
+            display: flex;
+            gap: 16px;
+            margin: 24px 0;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            flex: 1;
+            min-width: 160px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 18px;
+            text-align: center;
+        }
+        .stat-card .num {
+            font-size: 1.8rem;
+            font-weight: 700;
+            font-family: 'Georgia', serif;
+            color: #2563eb;
+        }
+        .stat-card .num.red { color: #dc2626; }
+        .stat-card .num.green { color: #16a34a; }
+        .stat-card .desc {
+            font-size: 0.82rem;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.85rem;
+        }
+        thead th {
+            background: #f3f4f6;
+            font-weight: 700;
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 2px solid #d1d5db;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #374151;
+        }
+        tbody td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: top;
+        }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:nth-child(even) { background: #f9fafb; }
+
+        blockquote {
+            border-left: 3px solid #d1d5db;
+            padding: 12px 20px;
+            margin: 18px 0;
+            background: #f9fafb;
+            color: #4b5563;
+            font-style: italic;
+        }
+
+        ul, ol {
+            margin: 12px 0 12px 24px;
+            font-size: 0.95rem;
+        }
+        li { margin-bottom: 6px; }
+
+        .toc {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 24px 30px;
+            margin: 30px 0;
+        }
+        .toc h3 { margin-top: 0; }
+        .toc ol { margin: 12px 0 0 20px; }
+        .toc li { margin-bottom: 4px; font-size: 0.9rem; }
+        .toc a { color: #2563eb; text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+
+        .agenda-box {
+            background: #f0f4ff;
+            border: 2px solid #2563eb;
+            border-radius: 10px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+        .agenda-box h4 { color: #2563eb; margin-top: 0; }
+        .agenda-item {
+            display: flex;
+            gap: 12px;
+            margin: 8px 0;
+            align-items: baseline;
+        }
+        .agenda-time {
+            font-weight: 700;
+            color: #2563eb;
+            min-width: 55px;
+            font-size: 0.85rem;
+        }
+        .agenda-desc { font-size: 0.9rem; }
+
+        .phase-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 16px 0;
+            background: #fff;
+        }
+        .phase-card h4 {
+            margin-top: 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #2563eb;
+        }
+
+        .race-track {
+            background: #1a1a2e;
+            color: #e5e7eb;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 24px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.82rem;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .ref-list {
+            font-size: 0.82rem;
+            color: #6b7280;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
+        }
+        .ref-list h3 { margin-bottom: 12px; }
+        .ref-list ol { margin-left: 20px; }
+        .ref-list li { margin-bottom: 8px; line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">Print / Save PDF</button>
+
+<!-- ==================== TITLE PAGE ==================== -->
+<div class="title-page">
+    <div class="logo">Applied Research Report</div>
+    <h1>Scaling Up Feedback Systems:<br>From Rockefeller Habits to Closed-Loop Customer Intelligence</h1>
+    <div class="subtitle">
+        A comprehensive implementation guide integrating Verne Harnish&rsquo;s meeting rhythms,<br>
+        structured team feedback, NPS at point of sale, employee pulse surveys,<br>
+        and consumer feedback loops for small retail teams.
+    </div>
+    <div class="meta">
+        <strong>Application context:</strong> Plaza Teresa &mdash; 5-person retail team, Puebla, Mexico<br>
+        <strong>Date:</strong> June 2026<br>
+        <strong>Sources:</strong> 80+ academic and practitioner references
+    </div>
+</div>
+
+<!-- ==================== TABLE OF CONTENTS ==================== -->
+<div class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+        <li><a href="#part1">Part I &mdash; The Rockefeller Habits Meeting Rhythm</a></li>
+        <li><a href="#part2">Part II &mdash; Start/Stop/Keep: Structured Team Feedback</a></li>
+        <li><a href="#part3">Part III &mdash; Employee Pulse Surveys: Frequency Science</a></li>
+        <li><a href="#part4">Part IV &mdash; Customer NPS at Point of Sale via QR Code</a></li>
+        <li><a href="#part5">Part V &mdash; Consumer Feedback Loops: Closed-Loop Systems</a></li>
+        <li><a href="#part6">Part VI &mdash; Integrated System Architecture for Plaza Teresa</a></li>
+        <li><a href="#refs">References</a></li>
+    </ol>
+</div>
+
+<!-- ====================================================================== -->
+<!--                    PART I: ROCKEFELLER HABITS                          -->
+<!-- ====================================================================== -->
+<div class="page-break"></div>
+<h2 id="part1"><span class="section-number">I</span> The Rockefeller Habits Meeting Rhythm</h2>
+
+<p>Verne Harnish&rsquo;s <em>Scaling Up</em> (2014) distills 20+ years of coaching growth companies into a structured meeting cadence. His core principle: <strong>&ldquo;To move faster, pulse faster.&rdquo;</strong> The rhythm creates a heartbeat for the organization&mdash;daily, weekly, monthly, quarterly, and annually.</p>
+
+<h3>1.1 Daily Huddle (Junta Diaria de Pie)</h3>
+
+<p>The daily huddle is a standing meeting (never seated) lasting <strong>under 15 minutes</strong>, held at the same time every day. For Plaza Teresa, recommended at <strong>9:45 AM</strong> (15 minutes before opening).</p>
+
+<div class="agenda-box">
+    <h4>Daily Huddle &mdash; 3 Blocks, 5 Minutes Each</h4>
+    <div class="agenda-item">
+        <span class="agenda-time">5 min</span>
+        <span class="agenda-desc"><strong>&ldquo;&iquest;Qu&eacute; hay hoy?&rdquo;</strong> &mdash; Each person in 30 seconds names their key activities for the next 24 hours: deliveries, decisions, critical tasks.</span>
+    </div>
+    <div class="agenda-item">
+        <span class="agenda-time">5 min</span>
+        <span class="agenda-desc"><strong>&ldquo;N&uacute;meros del d&iacute;a&rdquo;</strong> &mdash; Yesterday&rsquo;s sales total, customer traffic, returns, any anomalies.</span>
+    </div>
+    <div class="agenda-item">
+        <span class="agenda-time">5 min</span>
+        <span class="agenda-desc"><strong>&ldquo;&iquest;D&oacute;nde est&aacute;s atorado?&rdquo;</strong> &mdash; Each person shares one obstacle blocking their progress today.</span>
+    </div>
+</div>
+
+<div class="solution-box">
+    <strong>Critical rule:</strong> The huddle is NOT for solving problems. If a topic needs discussion, it is noted and resolved between the relevant people afterward. Harnish estimates a well-run daily huddle saves <strong>1 hour per person per day</strong> in ad-hoc interruptions, emails, and miscommunication.
+</div>
+
+<h3>1.2 Weekly Meeting (60&ndash;90 Minutes)</h3>
+
+<p>The weekly meeting is the execution engine. Recommended: <strong>Monday at 9:00 AM</strong>.</p>
+
+<div class="agenda-box">
+    <h4>Weekly Meeting Agenda</h4>
+    <div class="agenda-item">
+        <span class="agenda-time">5 min</span>
+        <span class="agenda-desc"><strong>Good news</strong> &mdash; Each person shares one personal or professional win. Connects the team as humans.</span>
+    </div>
+    <div class="agenda-item">
+        <span class="agenda-time">10 min</span>
+        <span class="agenda-desc"><strong>Scorecard / KPIs</strong> &mdash; Review weekly numbers (see Section 1.4). &ldquo;Was it a good week or a bad week?&rdquo;&mdash;answered with data, not opinions.</span>
+    </div>
+    <div class="agenda-item">
+        <span class="agenda-time">10 min</span>
+        <span class="agenda-desc"><strong>Rocks review</strong> &mdash; Each quarterly priority marked green/yellow/red. Discuss yellows and reds.</span>
+    </div>
+    <div class="agenda-item">
+        <span class="agenda-time">10 min</span>
+        <span class="agenda-desc"><strong>Customer &amp; employee feedback</strong> &mdash; NPS scores, specific stories, recurring complaints, employee observations from the sales floor.</span>
+    </div>
+    <div class="agenda-item">
+        <span class="agenda-time">10 min</span>
+        <span class="agenda-desc"><strong>Start/Stop/Keep round</strong> &mdash; Each person contributes 1 item per category (see Part II).</span>
+    </div>
+    <div class="agenda-item">
+        <span class="agenda-time">30&ndash;60 min</span>
+        <span class="agenda-desc"><strong>IDS (Identify &rarr; Discuss &rarr; Solve)</strong> &mdash; Pick 1&ndash;2 critical issues and resolve them fully. One issue solved well beats ten discussed superficially.</span>
+    </div>
+    <div class="agenda-item">
+        <span class="agenda-time">5 min</span>
+        <span class="agenda-desc"><strong>Action items + cascade messages</strong> &mdash; Who does what by when. What to communicate to the rest of the team.</span>
+    </div>
+</div>
+
+<h3>1.3 Monthly, Quarterly, and Annual Rhythm</h3>
+
+<table>
+    <thead>
+        <tr><th>Cadence</th><th>Duration</th><th>Purpose</th><th>Key Output</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>Monthly</strong></td>
+            <td>3&ndash;4 hours</td>
+            <td>Financial review + deep dive on 1 strategic topic</td>
+            <td>Month-end P&amp;L, Rock status update, learning session</td>
+        </tr>
+        <tr>
+            <td><strong>Quarterly</strong></td>
+            <td>Full day (offsite)</td>
+            <td>Close previous quarter + set new Rocks</td>
+            <td>3&ndash;5 new Rocks, Critical Number, updated OPSP</td>
+        </tr>
+        <tr>
+            <td><strong>Annual</strong></td>
+            <td>1&ndash;2 days</td>
+            <td>Vision, values, BHAG, annual plan</td>
+            <td>One-Page Strategic Plan (OPSP) for the year</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>1.4 Key Retail KPIs (Weekly Scorecard)</h3>
+
+<table>
+    <thead>
+        <tr><th>Metric</th><th>Formula</th><th>Target (example)</th><th>Frequency</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>Total sales</strong></td><td>Sum of all transactions</td><td>$85,000/week</td><td>Weekly (daily in huddle)</td></tr>
+        <tr><td><strong>Average ticket</strong></td><td>Sales &divide; # transactions</td><td>$450</td><td>Weekly</td></tr>
+        <tr><td><strong>Conversion rate</strong></td><td># buyers &divide; # visitors</td><td>25%</td><td>Weekly</td></tr>
+        <tr><td><strong>Revenue per employee</strong></td><td>Sales &divide; 5</td><td>$17,000/week</td><td>Weekly</td></tr>
+        <tr><td><strong>Units per transaction</strong></td><td>Total items &divide; # transactions</td><td>2.3</td><td>Weekly</td></tr>
+        <tr><td><strong>Inventory turnover</strong></td><td>COGS &divide; avg inventory</td><td>6&ndash;8x/year</td><td>Monthly</td></tr>
+        <tr><td><strong>Shrinkage</strong></td><td>Lost inventory &divide; total</td><td>&lt; 2%</td><td>Monthly</td></tr>
+        <tr><td><strong>Customer NPS</strong></td><td>% Promoters &minus; % Detractors</td><td>&gt; 50</td><td>Weekly</td></tr>
+        <tr><td><strong>Return rate</strong></td><td># returns &divide; # sales</td><td>&lt; 5%</td><td>Weekly</td></tr>
+    </tbody>
+</table>
+
+<div class="warning-box">
+    <strong>The &ldquo;Critical Number&rdquo;:</strong> Each quarter, choose ONE metric that the entire team knows and pursues. Post it on a whiteboard in the employee area, update daily, and celebrate when the target is hit. Example: Q3 2026 &rarr; &ldquo;Ticket promedio de $500.&rdquo;
+</div>
+
+<h3>1.5 Rocks and the 13-Week Race</h3>
+
+<p>A &ldquo;Rock&rdquo; is a quarterly priority that, if completed, moves the business significantly. The name comes from Covey&rsquo;s analogy: fill the jar with big rocks first, then sand fills the gaps. <strong>Maximum 3&ndash;5 Rocks per quarter</strong> for the company, 1&ndash;3 per person.</p>
+
+<h4>Example Rocks for Plaza Teresa (Q3 2026)</h4>
+
+<table>
+    <thead>
+        <tr><th>#</th><th>Rock</th><th>Owner</th><th>Success Metric</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>1</td><td>Implement customer loyalty program</td><td>Horacio</td><td>200 customers enrolled by quarter end</td></tr>
+        <tr><td>2</td><td>Reduce inventory shrinkage from 4% to 2%</td><td>Luis</td><td>Shrinkage &lt; 2% at quarter close</td></tr>
+        <tr><td>3</td><td>Increase average ticket +15% via cross-selling</td><td>Mar&iacute;a</td><td>Ticket from $400 &rarr; $460</td></tr>
+    </tbody>
+</table>
+
+<p>Each Rock is decomposed into 13 weekly milestones. The <strong>13-Week Race</strong> creates urgency: a quarter is long enough to achieve something meaningful but short enough to maintain pressure. Rocks are binary at quarter end&mdash;complete or not.</p>
+
+<div class="race-track">
+TABLERO DE 13 SEMANAS &mdash; Q3 2026 &mdash; Plaza Teresa
+
+Rock 1: Programa de lealtad (Horacio)
+Sem  [1][2][3][4][5][6][7][8][9][10][11][12][13]
+      D  D  D  C  C  C  P  P  P   L   L   L   L
+
+Rock 2: Reducir merma (Luis)
+Sem  [1][2][3][4][5][6][7][8][9][10][11][12][13]
+      A  A  P  P  P  E  E  E  E   E   E   E   E
+
+Rock 3: Ticket promedio +15% (Mar&iacute;a)
+Sem  [1][2][3][4][5][6][7][8][9][10][11][12][13]
+      C  C  C  K  K  K  E  E  E   E   E   E   E
+
+D=Dise&ntilde;ar  C=Configurar  P=Piloto  L=Lanzar
+A=Auditar   E=Ejecutar    K=Crear combos
+
+N&uacute;mero Cr&iacute;tico del Trimestre: Ticket Promedio $460
+    </div>
+
+<div class="page-break"></div>
+
+<!-- ====================================================================== -->
+<!--                    PART II: START/STOP/KEEP                            -->
+<!-- ====================================================================== -->
+<h2 id="part2"><span class="section-number">II</span> Start/Stop/Keep: Structured Team Feedback</h2>
+
+<h3>2.1 Origins and Theory</h3>
+
+<p>The <strong>SKS form</strong> (Stop-Keep-Start) was created by <strong>Phil Daniels</strong>, a psychology professor at Brigham Young University, and later popularized by <strong>Thomas J. DeLong</strong> at Harvard Business School in his 2011 <em>Harvard Business Review</em> article &ldquo;Three Questions for Effective Feedback.&rdquo;</p>
+
+<p>The framework draws on <strong>Feedback Intervention Theory</strong> (Kluger &amp; DeNisi, 1996), which meta-analyzed 607 effect sizes across 23,663 observations: feedback improves performance on average (d = 0.41), but <strong>38% of feedback interventions actually decreased performance</strong>. The key moderator: feedback works when it is <em>task-focused</em> rather than <em>self-focused</em>. SSK succeeds because it directs attention to specific behaviors, not personal identity.</p>
+
+<div class="stat-row">
+    <div class="stat-card">
+        <div class="num green">5.2x</div>
+        <div class="desc">more engaged when receiving weekly feedback (Gallup)</div>
+    </div>
+    <div class="stat-card">
+        <div class="num red">38%</div>
+        <div class="desc">of unstructured feedback interventions DECREASE performance (Kluger &amp; DeNisi)</div>
+    </div>
+    <div class="stat-card">
+        <div class="num">0.41</div>
+        <div class="desc">average effect size of structured feedback on performance</div>
+    </div>
+</div>
+
+<h3>2.2 The Three Questions</h3>
+
+<table>
+    <thead>
+        <tr><th>Category</th><th>English</th><th>Spanish (Mexico)</th><th>Prompt</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>Stop</strong></td><td>&ldquo;What should we stop doing?&rdquo;</td><td>&ldquo;&iquest;Qu&eacute; deber&iacute;amos <strong>dejar de hacer</strong>?&rdquo;</td><td>&iquest;Qu&eacute; nos est&aacute; frenando?</td></tr>
+        <tr><td><strong>Keep</strong></td><td>&ldquo;What should we keep doing?&rdquo;</td><td>&ldquo;&iquest;Qu&eacute; deber&iacute;amos <strong>seguir haciendo</strong>?&rdquo;</td><td>&iquest;Qu&eacute; est&aacute; funcionando bien?</td></tr>
+        <tr><td><strong>Start</strong></td><td>&ldquo;What should we start doing?&rdquo;</td><td>&ldquo;&iquest;Qu&eacute; deber&iacute;amos <strong>empezar a hacer</strong>?&rdquo;</td><td>&iquest;Qu&eacute; nos falta?</td></tr>
+    </tbody>
+</table>
+
+<h4>Practical Example &mdash; Mexican Retail Context</h4>
+
+<div class="solution-box">
+    <strong>DEJAR DE HACER:</strong> &ldquo;Dejar de cambiar los horarios el mismo d&iacute;a &mdash; necesitamos al menos 48 horas de aviso.&rdquo;<br>
+    <strong>SEGUIR HACIENDO:</strong> &ldquo;Seguir con la m&uacute;sica en la tienda, los clientes lo comentan positivamente.&rdquo;<br>
+    <strong>EMPEZAR A HACER:</strong> &ldquo;Empezar a recibir capacitaci&oacute;n sobre productos nuevos antes de que lleguen.&rdquo;
+</div>
+
+<h3>2.3 Frequency Science</h3>
+
+<table>
+    <thead>
+        <tr><th>Frequency</th><th>Evidence</th><th>Best For</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>Weekly (light)</strong></td><td>Gallup: 5.2x more engaged. 1 item per category per person.</td><td>Building the habit; high-change retail environments</td></tr>
+        <tr><td><strong>Biweekly</strong></td><td>No significant difference from weekly in performance outcomes</td><td>Established teams with stable operations</td></tr>
+        <tr><td><strong>Quarterly (full)</strong></td><td>Harnish recommends as part of formal planning. 3 items per category.</td><td>Strategic company-wide feedback</td></tr>
+    </tbody>
+</table>
+
+<p><strong>Recommendation for Plaza Teresa:</strong> Weekly SSK (light, 10&ndash;15 min, 1 item per category per person) embedded in the Monday meeting + quarterly full SSK (45&ndash;60 min) with anonymous submission.</p>
+
+<h3>2.4 Variations to Prevent Fatigue</h3>
+
+<table>
+    <thead>
+        <tr><th>Framework</th><th>Categories</th><th>Best For</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>Start / Stop / Keep</td><td>Start, Stop, Keep</td><td>Default &mdash; action-oriented</td></tr>
+        <tr><td>Plus / Delta (+/&Delta;)</td><td>What worked, What to change</td><td>Ultra-quick retrospectives (5&ndash;10 min)</td></tr>
+        <tr><td>4Ls</td><td>Liked, Learned, Lacked, Longed for</td><td>Emotional processing after big events</td></tr>
+        <tr><td>DAKI</td><td>Drop, Add, Keep, Improve</td><td>Adds &ldquo;Improve&rdquo; for partial changes</td></tr>
+        <tr><td>Keep / Drop / Try</td><td>Keep, Drop, Try</td><td>Emphasizes experimentation</td></tr>
+    </tbody>
+</table>
+
+<p>Rotate formats every 4&ndash;6 weeks to prevent retrospective fatigue. Start with SSK for the first month, then introduce Plus/Delta or 4Ls occasionally.</p>
+
+<h3>2.5 Common Pitfalls</h3>
+
+<table>
+    <thead>
+        <tr><th>Pitfall</th><th>Symptom</th><th>Solution</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>No follow-through</strong></td><td>Nothing changes; credibility lost in 2&ndash;3 cycles</td><td>Act on &ge;1 item per category per week. Post actions visibly.</td></tr>
+        <tr><td><strong>Complaint sessions</strong></td><td>&ldquo;Stop&rdquo; becomes a grievance dump</td><td>Require every Stop to include a suggested alternative.</td></tr>
+        <tr><td><strong>Fake harmony</strong></td><td>Only safe, superficial items</td><td>Manager goes first with an uncomfortable Stop about themselves.</td></tr>
+        <tr><td><strong>Identity leak</strong></td><td>With 5 people, writing style reveals identity</td><td>Consolidate and paraphrase. Present themes, never read cards verbatim.</td></tr>
+        <tr><td><strong>Fatigue</strong></td><td>Same exercise every week gets stale</td><td>Rotate formats every 4th week.</td></tr>
+    </tbody>
+</table>
+
+<h3>2.6 Integration with Scaling Up Weekly Rhythm</h3>
+
+<p>From the Rockefeller Habits checklist: <em>&ldquo;All executives and managers should have a Start/Stop/Keep conversation with at least one employee every week.&rdquo;</em></p>
+
+<p>For Plaza Teresa: rotate 1-on-1 SSK conversations so every employee is heard individually every 5 weeks. Bring key insights to the team meeting.</p>
+
+<div class="page-break"></div>
+
+<!-- ====================================================================== -->
+<!--                    PART III: EMPLOYEE PULSE SURVEYS                    -->
+<!-- ====================================================================== -->
+<h2 id="part3"><span class="section-number">III</span> Employee Pulse Surveys: Frequency Science</h2>
+
+<h3>3.1 Pulse vs. Annual Surveys</h3>
+
+<p>Traditional annual engagement surveys take 20&ndash;30 minutes and produce stale data. By the time results are analyzed, disengagement has been costing money for months. Pulse surveys are shorter (3&ndash;10 questions), more frequent, and designed for real-time sentiment tracking.</p>
+
+<table>
+    <thead>
+        <tr><th>Dimension</th><th>Annual Survey</th><th>Pulse Survey</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>Length</td><td>30&ndash;60 questions, 20&ndash;30 min</td><td>3&ndash;10 questions, 2&ndash;3 min</td></tr>
+        <tr><td>Frequency</td><td>1&ndash;2x/year</td><td>Weekly to monthly</td></tr>
+        <tr><td>Actionability</td><td>Low (stale data)</td><td>High (real-time)</td></tr>
+        <tr><td>Benchmarking</td><td>Strong</td><td>Weak</td></tr>
+        <tr><td>Fatigue risk</td><td>Moderate (length)</td><td>Moderate (frequency)</td></tr>
+    </tbody>
+</table>
+
+<h3>3.2 Optimal Frequency</h3>
+
+<div class="pain-box">
+    <strong>The critical insight:</strong> Frequency matters less than the organization&rsquo;s ability to <em>act on results quickly</em>. Weekly only works if you can review and respond within 7 days. Surveying without acting <strong>actively decreases</strong> engagement&mdash;it is worse than not surveying at all.
+</div>
+
+<table>
+    <thead>
+        <tr><th>Cadence</th><th>Questions</th><th>Best For</th><th>Act Within</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>Weekly</strong></td><td>1&ndash;3</td><td>Rapid-change, high-trust environments</td><td>7 days</td></tr>
+        <tr><td><strong>Biweekly</strong></td><td>3&ndash;5</td><td>Most teams (balanced signal-to-noise)</td><td>14 days</td></tr>
+        <tr><td><strong>Monthly</strong></td><td>5&ndash;10</td><td>Deeper exploration, lower-trust</td><td>30 days</td></tr>
+    </tbody>
+</table>
+
+<p><strong>Recommendation for Plaza Teresa: Biweekly cadence with 3&ndash;5 questions.</strong> Small teams experience faster sentiment shifts; a 5-person team leader can realistically act within 2 weeks; monthly is too slow to catch brewing interpersonal issues.</p>
+
+<h3>3.3 The Survey Fatigue Paradox</h3>
+
+<div class="callout-box">
+    <div class="big-number red">65% &rarr; 25%</div>
+    <div class="label">Response rate collapse when organizations survey without acting</div>
+    <div class="source-line">Culture Amp: &ldquo;People don&rsquo;t get survey fatigue, they get lack-of-action fatigue.&rdquo;</div>
+</div>
+
+<p>McKinsey&rsquo;s review of 20+ academic articles confirmed: perceived lack of action is the primary driver of participation decline. Recovery <em>is</em> possible: when organizations implement visible action-response loops, response rates can rebound from 25% to 58% in a single quarter.</p>
+
+<h4>The Action-Response Loop</h4>
+<ol>
+    <li><strong>Acknowledge</strong> &mdash; Share aggregate results within 48 hours</li>
+    <li><strong>Prioritize</strong> &mdash; Identify 1&ndash;2 actionable themes (not everything)</li>
+    <li><strong>Commit</strong> &mdash; State one specific action publicly</li>
+    <li><strong>Act</strong> &mdash; Implement before the next survey</li>
+    <li><strong>Report back</strong> &mdash; &ldquo;Last time you said X, we did Y&rdquo;</li>
+</ol>
+
+<h3>3.4 Psychological Safety Measurement</h3>
+
+<p>Amy Edmondson&rsquo;s (1999) 7-item scale, validated across industries and cultures, measures the team-level belief that interpersonal risk-taking is safe. For pulse use, 2 items carry the strongest signal:</p>
+
+<table>
+    <thead>
+        <tr><th>Item</th><th>English</th><th>Spanish</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>Core item</td><td>&ldquo;It is safe to take a risk on this team.&rdquo;</td><td>&ldquo;En este equipo es seguro tomar riesgos o probar cosas nuevas.&rdquo;</td></tr>
+        <tr><td>Problems item</td><td>&ldquo;Members can bring up problems and tough issues.&rdquo;</td><td>&ldquo;En este equipo podemos hablar de problemas dif&iacute;ciles abiertamente.&rdquo;</td></tr>
+        <tr><td>Valued item</td><td>&ldquo;My unique skills and talents are valued.&rdquo;</td><td>&ldquo;Mis habilidades y talentos son valorados en este equipo.&rdquo;</td></tr>
+        <tr><td>Mistakes (R)</td><td>&ldquo;If I make a mistake, it is held against me.&rdquo;</td><td>&ldquo;Si cometo un error, se usa en mi contra.&rdquo;</td></tr>
+    </tbody>
+</table>
+
+<h3>3.5 eNPS for Small Teams</h3>
+
+<p><strong>Employee Net Promoter Score</strong>: &ldquo;On a scale of 0&ndash;10, how likely are you to recommend this company as a place to work?&rdquo; Same calculation as customer NPS.</p>
+
+<div class="warning-box">
+    <strong>Small team caution:</strong> With 5 employees, eNPS is mathematically volatile&mdash;one person shifting from Promoter to Detractor swings the score by 40 points. Use eNPS <strong>quarterly</strong> only, always paired with an open-ended follow-up, and track the trend across quarters rather than individual readings. Never segment by demographics at n=5.
+</div>
+
+<h3>3.6 Small Team Anonymity</h3>
+
+<p>With 5 employees, true anonymity is nearly impossible (writing style, specific complaints can reveal identity). Mexican workplace culture has high power distance (Hofstede)&mdash;employees may hesitate to give negative feedback to a boss.</p>
+
+<p><strong>Recommended approach:</strong> Numeric ratings collected digitally (shown as team averages only) + open weekly discussion + private <code>/sugerencias</code> channel for sensitive topics. Start anonymous and evolve to open as <em>confianza</em> builds. Manager models vulnerability by sharing their own ratings first.</p>
+
+<div class="page-break"></div>
+
+<!-- ====================================================================== -->
+<!--                    PART IV: CUSTOMER NPS VIA QR                        -->
+<!-- ====================================================================== -->
+<h2 id="part4"><span class="section-number">IV</span> Customer NPS at Point of Sale via QR Code</h2>
+
+<h3>4.1 NPS Fundamentals</h3>
+
+<p>Fred Reichheld introduced NPS in his 2003 <em>Harvard Business Review</em> article &ldquo;The One Number You Need to Grow,&rdquo; developed with Bain &amp; Company. One question replaces complex satisfaction surveys with a high-signal metric.</p>
+
+<blockquote>
+    &ldquo;En una escala del 0 al 10, &iquest;qu&eacute; tan probable es que recomiendes Plaza Teresa a un amigo o familiar?&rdquo;
+</blockquote>
+
+<table>
+    <thead>
+        <tr><th>Score</th><th>Category</th><th>Behavior</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>9&ndash;10</strong></td><td>Promoters</td><td>Loyal enthusiasts who keep buying and refer others</td></tr>
+        <tr><td><strong>7&ndash;8</strong></td><td>Passives</td><td>Satisfied but vulnerable to competitors</td></tr>
+        <tr><td><strong>0&ndash;6</strong></td><td>Detractors</td><td>Unhappy; can damage brand through negative word-of-mouth</td></tr>
+    </tbody>
+</table>
+
+<p><strong>NPS = % Promoters &minus; % Detractors</strong> (range: &minus;100 to +100). Score above 50 = excellent for Mexico retail.</p>
+
+<h3>4.2 QR Code Implementation</h3>
+
+<div class="stat-row">
+    <div class="stat-card">
+        <div class="num green">3&ndash;5x</div>
+        <div class="desc">higher response rates from QR vs email surveys</div>
+    </div>
+    <div class="stat-card">
+        <div class="num">323%</div>
+        <div class="desc">growth in QR survey usage 2021&ndash;2024</div>
+    </div>
+    <div class="stat-card">
+        <div class="num">45s</div>
+        <div class="desc">average completion time for QR survey</div>
+    </div>
+</div>
+
+<h4>Optimal Placement</h4>
+<table>
+    <thead>
+        <tr><th>Location</th><th>Why</th><th>Scan Rate</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>Checkout counter</strong></td><td>Customer stationary, experience fresh</td><td>Highest</td></tr>
+        <tr><td>Receipt (printed QR)</td><td>Customer takes it home</td><td>Medium-high</td></tr>
+        <tr><td>Shopping bags</td><td>Extended exposure</td><td>Medium</td></tr>
+        <tr><td>Store entrance/exit</td><td>Low dwell time</td><td>Lower</td></tr>
+    </tbody>
+</table>
+
+<h3>4.3 Question Design</h3>
+
+<p><strong>Never exceed 3 questions</strong> for a QR-based POS survey. Completion rate: 83% at 1&ndash;3 questions vs. 65% at 4&ndash;8 questions.</p>
+
+<table>
+    <thead>
+        <tr><th>Question</th><th>For Whom</th><th>Spanish</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>Q1: NPS score (0&ndash;10 tap)</td><td>Everyone</td><td>&iquest;Qu&eacute; tan probable es que nos recomiendes?</td></tr>
+        <tr><td>Q2: Conditional open text</td><td>Promoters (9&ndash;10)</td><td>&iquest;Qu&eacute; es lo que m&aacute;s te gusta de comprar aqu&iacute;?</td></tr>
+        <tr><td></td><td>Passives (7&ndash;8)</td><td>&iquest;Qu&eacute; podr&iacute;amos mejorar para que tu experiencia sea un 10?</td></tr>
+        <tr><td></td><td>Detractors (0&ndash;6)</td><td>Lamentamos escuchar eso. &iquest;Qu&eacute; sali&oacute; mal hoy?</td></tr>
+        <tr><td>Q3: Contact permission</td><td>Optional</td><td>&iquest;Quieres que te contactemos? + WhatsApp field</td></tr>
+    </tbody>
+</table>
+
+<h3>4.4 Response Rate Optimization</h3>
+
+<ol>
+    <li><strong>Verbal prompt from staff</strong> &mdash; &ldquo;&iquest;Nos ayudas con tu opini&oacute;n? Solo toma 30 segundos.&rdquo; This alone <strong>doubles</strong> scan rates.</li>
+    <li><strong>Show estimated time</strong> on signage (&ldquo;30 segundos&rdquo;)</li>
+    <li><strong>No login required</strong> &mdash; zero friction entry</li>
+    <li><strong>Mobile-optimized</strong> &mdash; large tap targets</li>
+    <li><strong>Small incentive</strong> (optional) &mdash; 5% next-visit discount</li>
+</ol>
+
+<h3>4.5 Detractor Recovery: The Service Recovery Paradox</h3>
+
+<div class="callout-box">
+    <div class="big-number green">95%</div>
+    <div class="label">of customers will return if a complaint is resolved quickly</div>
+    <div class="source-line">Hart, Heskett &amp; Sasser (1990), Harvard Business Review</div>
+</div>
+
+<p>Customers who experience a service failure that is excellently resolved often become <strong>more loyal</strong> than those who never had a problem. This makes detractor recovery one of the highest-ROI activities in customer service.</p>
+
+<h4>Alert Protocol</h4>
+<ol>
+    <li><strong>Instant alert</strong> &mdash; WhatsApp notification to store manager when score &le; 6</li>
+    <li><strong>Acknowledge</strong> (within minutes) &mdash; &ldquo;Gracias por tu comentario. Lamento que tu experiencia no fue la mejor.&rdquo;</li>
+    <li><strong>Own the issue</strong> &mdash; No excuses. &ldquo;Tienes raz&oacute;n, eso no debi&oacute; pasar.&rdquo;</li>
+    <li><strong>Fix it</strong> &mdash; Replacement, discount, or personal attention on next visit</li>
+    <li><strong>Follow up</strong> &mdash; &ldquo;&iquest;Pudimos resolver tu inquietud?&rdquo;</li>
+</ol>
+
+<h3>4.6 Mexico Retail Benchmarks</h3>
+
+<table>
+    <thead>
+        <tr><th>Your NPS</th><th>Interpretation</th><th>Action</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>60+</strong></td><td>Excellent for Mexico retail</td><td>Celebrate, maintain, ask for Google reviews</td></tr>
+        <tr><td>45&ndash;59</td><td>Good, room to improve</td><td>Focus on passive-to-promoter conversion</td></tr>
+        <tr><td>30&ndash;44</td><td>Below regional average</td><td>Identify top detractor reasons, fix systematically</td></tr>
+        <tr><td>Below 30</td><td>Urgent</td><td>Service overhaul, daily detractor review</td></tr>
+    </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<!-- ====================================================================== -->
+<!--                    PART V: CONSUMER FEEDBACK LOOPS                     -->
+<!-- ====================================================================== -->
+<h2 id="part5"><span class="section-number">V</span> Consumer Feedback Loops: Closed-Loop Systems</h2>
+
+<h3>5.1 The Closed-Loop Cycle: DAFA</h3>
+
+<p>A closed-loop feedback system guarantees that every piece of customer feedback triggers a defined organizational response. Unlike open-loop systems (collect but never act), a closed loop circles back to the customer.</p>
+
+<table>
+    <thead>
+        <tr><th>Stage</th><th>What</th><th>Who</th><th>When</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>Detect</strong></td><td>Capture feedback at moment of experience</td><td>All channels</td><td>Continuously</td></tr>
+        <tr><td><strong>Acknowledge</strong></td><td>Respond to customer within SLA</td><td>Staff / Manager</td><td>&lt; 2 hours (digital), immediately (in-person)</td></tr>
+        <tr><td><strong>Fix / Act</strong></td><td>Route to owner, implement fix, document</td><td>Issue owner</td><td>&lt; 48 hours</td></tr>
+        <tr><td><strong>Follow-up</strong></td><td>Circle back to confirm resolution</td><td>Manager</td><td>1&ndash;3 days after fix</td></tr>
+    </tbody>
+</table>
+
+<h3>5.2 Inner Loop vs. Outer Loop</h3>
+
+<table>
+    <thead>
+        <tr><th>Loop</th><th>Scope</th><th>Speed</th><th>Example</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>Inner loop</strong> (tactical)</td><td>Individual customer issues</td><td>Minutes to hours</td><td>Customer complains about defective product via WhatsApp; replaced same day</td></tr>
+        <tr><td><strong>Outer loop</strong> (strategic)</td><td>Aggregate patterns</td><td>Weeks to months</td><td>Multiple customers mention long wait times; add second register during peak</td></tr>
+    </tbody>
+</table>
+
+<h3>5.3 Service Recovery Frameworks</h3>
+
+<table>
+    <thead>
+        <tr><th>LEARN</th><th>LAST (Starbucks)</th><th>HEART (Broadmoor)</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>L</strong>isten</td><td><strong>L</strong>isten</td><td><strong>H</strong>ear</td></tr>
+        <tr><td><strong>E</strong>mpathize</td><td><strong>A</strong>pologize</td><td><strong>E</strong>mpathize</td></tr>
+        <tr><td><strong>A</strong>pologize</td><td><strong>S</strong>olve</td><td><strong>A</strong>pologize</td></tr>
+        <tr><td><strong>R</strong>esolve</td><td><strong>T</strong>hank</td><td><strong>R</strong>espond</td></tr>
+        <tr><td><strong>N</strong>otify (follow-up)</td><td></td><td><strong>T</strong>ake action</td></tr>
+    </tbody>
+</table>
+
+<p><strong>Recommendation:</strong> Train all 5 employees on the LEARN model (simplest, most memorable). Empower every employee to resolve issues up to $200 MXN without manager approval.</p>
+
+<h3>5.4 Multi-Channel Strategy for Mexico</h3>
+
+<table>
+    <thead>
+        <tr><th>Channel</th><th>Response Rate</th><th>Cost</th><th>Mexico Reach</th><th>Priority</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>In-store QR code</strong></td><td>40&ndash;60%</td><td>Free</td><td>High (85%+ smartphones)</td><td>PRIMARY</td></tr>
+        <tr><td><strong>WhatsApp Business</strong></td><td>35&ndash;45%</td><td>Free</td><td>93% penetration (77M users)</td><td>PRIMARY</td></tr>
+        <tr><td><strong>Google Reviews</strong></td><td>10&ndash;15%</td><td>Free</td><td>81% of all online reviews</td><td>PRIMARY</td></tr>
+        <tr><td>Facebook/Instagram</td><td>5&ndash;10%</td><td>Free</td><td>Medium</td><td>Secondary</td></tr>
+        <tr><td>Email survey</td><td>15&ndash;25%</td><td>Free</td><td>Low for walk-ins</td><td>Optional</td></tr>
+    </tbody>
+</table>
+
+<h3>5.5 Real-Time vs. Delayed Feedback</h3>
+
+<p>Gartner research: feedback collected at the point-of-experience is <strong>40% more accurate</strong> than feedback collected even one day later. The Ebbinghaus forgetting curve shows that after 24 hours, people forget approximately 70% of experiential details.</p>
+
+<table>
+    <thead>
+        <tr><th>Timing</th><th>Accuracy</th><th>Channel</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>In-moment</strong> (during visit)</td><td>Highest</td><td>QR at checkout</td></tr>
+        <tr><td><strong>Same-day</strong> (&lt; 4 hours)</td><td>High</td><td>WhatsApp follow-up</td></tr>
+        <tr><td><strong>Next-day</strong> (12&ndash;24 hours)</td><td>Medium</td><td>Google Review request</td></tr>
+        <tr><td><strong>Weekly</strong> (5&ndash;7 days)</td><td>Low</td><td>Only for relationship NPS</td></tr>
+    </tbody>
+</table>
+
+<h3>5.6 Google Reviews Strategy</h3>
+
+<div class="stat-row">
+    <div class="stat-card">
+        <div class="num">87%</div>
+        <div class="desc">of shoppers use Google reviews for local businesses</div>
+    </div>
+    <div class="stat-card">
+        <div class="num green">25%</div>
+        <div class="desc">more clicks for 4.5-star vs 3.5-star businesses</div>
+    </div>
+    <div class="stat-card">
+        <div class="num">4.8+</div>
+        <div class="desc">star target for top local search results</div>
+    </div>
+</div>
+
+<h4>How to Ask Without Being Pushy</h4>
+<ul>
+    <li><strong>Identify peak satisfaction moments</strong> &mdash; after a great product recommendation, after resolving a problem, after a repeat customer compliment</li>
+    <li><strong>Make it personal:</strong> &ldquo;Me da mucho gusto que le haya gustado. Si tiene un momento, una rese&ntilde;a en Google nos ayuda much&iacute;simo como negocio peque&ntilde;o.&rdquo;</li>
+    <li><strong>Make it effortless:</strong> Hand them a card with a QR code</li>
+    <li><strong>Never incentivize scores</strong> &mdash; violates Google policies</li>
+    <li><strong>Target:</strong> 1&ndash;2 new reviews per week, manager responds to ALL within 24 hours</li>
+</ul>
+
+<h3>5.7 WhatsApp for Feedback in Mexico</h3>
+
+<p>With 77 million users and 93% penetration, WhatsApp is Mexico&rsquo;s primary digital communication infrastructure. WhatsApp Business App (free) supports up to 50 quick replies and broadcast lists of 256 contacts.</p>
+
+<h4>Quick Replies to Set Up</h4>
+<ul>
+    <li><code>/califica</code> &mdash; &ldquo;En una escala del 1 al 5, &iquest;c&oacute;mo calificar&iacute;as tu visita de hoy?&rdquo;</li>
+    <li><code>/mejora</code> &mdash; &ldquo;Nos encantar&iacute;a mejorar. &iquest;Qu&eacute; podr&iacute;amos hacer diferente?&rdquo;</li>
+    <li><code>/google</code> &mdash; &ldquo;Tu opini&oacute;n nos ayuda mucho! Puedes dejarnos una rese&ntilde;a aqu&iacute;: [link]&rdquo;</li>
+</ul>
+
+<h4>Post-Purchase Flow (High-Value Items)</h4>
+<ul>
+    <li><strong>Day 0:</strong> &ldquo;Gracias por tu compra! Si necesitas algo, estamos aqu&iacute;.&rdquo;</li>
+    <li><strong>Day 3:</strong> &ldquo;&iquest;C&oacute;mo te ha ido con [product]? Queremos asegurarnos de que todo est&eacute; bien.&rdquo;</li>
+    <li><strong>Day 7:</strong> If positive, send Google Review request.</li>
+</ul>
+
+<div class="page-break"></div>
+
+<!-- ====================================================================== -->
+<!--                    PART VI: INTEGRATED SYSTEM                          -->
+<!-- ====================================================================== -->
+<h2 id="part6"><span class="section-number">VI</span> Integrated System Architecture for Plaza Teresa</h2>
+
+<h3>6.1 The Complete Weekly Rhythm</h3>
+
+<div class="agenda-box">
+    <h4>Monday: Weekly Team Meeting (60 min, 9:00 AM)</h4>
+    <div class="agenda-item"><span class="agenda-time">5 min</span><span class="agenda-desc">Good news / wins</span></div>
+    <div class="agenda-item"><span class="agenda-time">10 min</span><span class="agenda-desc">KPI scorecard review (sales, ticket, conversion, NPS)</span></div>
+    <div class="agenda-item"><span class="agenda-time">5 min</span><span class="agenda-desc">NPS &mdash; score vs last week, 2&ndash;3 customer verbatims, detractor incidents</span></div>
+    <div class="agenda-item"><span class="agenda-time">10 min</span><span class="agenda-desc">Start/Stop/Keep round (1 item per category per person)</span></div>
+    <div class="agenda-item"><span class="agenda-time">5 min</span><span class="agenda-desc">Rocks progress check (green/yellow/red)</span></div>
+    <div class="agenda-item"><span class="agenda-time">20 min</span><span class="agenda-desc">IDS: solve the #1 issue</span></div>
+    <div class="agenda-item"><span class="agenda-time">5 min</span><span class="agenda-desc">Action items + owners + deadlines</span></div>
+</div>
+
+<div class="agenda-box">
+    <h4>Daily: Standing Huddle (15 min, 9:45 AM)</h4>
+    <div class="agenda-item"><span class="agenda-time">5 min</span><span class="agenda-desc">&iquest;Qu&eacute; hay hoy? (priorities for next 24h)</span></div>
+    <div class="agenda-item"><span class="agenda-time">5 min</span><span class="agenda-desc">N&uacute;meros del d&iacute;a (yesterday&rsquo;s sales, traffic, anomalies)</span></div>
+    <div class="agenda-item"><span class="agenda-time">5 min</span><span class="agenda-desc">&iquest;D&oacute;nde est&aacute;s atorado? (obstacles)</span></div>
+</div>
+
+<div class="agenda-box">
+    <h4>Biweekly: Employee Pulse Survey (3&ndash;5 questions, digital)</h4>
+    <div class="agenda-item"><span class="agenda-time">Mon</span><span class="agenda-desc">Survey goes out (Google Form or <code>/sugerencias</code>)</span></div>
+    <div class="agenda-item"><span class="agenda-time">Wed</span><span class="agenda-desc">Manager reviews results</span></div>
+    <div class="agenda-item"><span class="agenda-time">Fri</span><span class="agenda-desc">5-min standup: &ldquo;Here&rsquo;s what I heard, here&rsquo;s what we&rsquo;re doing&rdquo;</span></div>
+</div>
+
+<h3>6.2 Data Flow Architecture</h3>
+
+<table>
+    <thead>
+        <tr><th>Source</th><th>Channel</th><th>Data Type</th><th>Where It Goes</th><th>Review Cadence</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>Customers</td><td>QR at POS</td><td>NPS + open text</td><td>Supabase &rarr; Dashboard</td><td>Daily alerts + weekly huddle</td></tr>
+        <tr><td>Customers</td><td>WhatsApp</td><td>Ratings + comments</td><td>Google Sheet + WhatsApp group</td><td>Real-time + weekly</td></tr>
+        <tr><td>Customers</td><td>Google Reviews</td><td>Star rating + text</td><td>Google Business Profile</td><td>Daily response + weekly count</td></tr>
+        <tr><td>Employees</td><td>Pulse survey</td><td>Likert scales + open text</td><td>Google Form &rarr; Sheet</td><td>Biweekly</td></tr>
+        <tr><td>Employees</td><td>SSK / weekly meeting</td><td>Behavioral feedback</td><td>Meeting notes + action board</td><td>Weekly</td></tr>
+        <tr><td>Employees</td><td><code>/sugerencias</code></td><td>Anonymous suggestions</td><td>Supabase</td><td>Weekly</td></tr>
+    </tbody>
+</table>
+
+<h3>6.3 Implementation Roadmap</h3>
+
+<div class="phase-card">
+    <h4>Phase 1: Foundation (Weeks 1&ndash;2) &mdash; Cost: $15&ndash;30 USD</h4>
+    <ul>
+        <li>Start daily huddle at 9:45 AM &mdash; week 1 only the &ldquo;stuck&rdquo; question (5 min), week 2 add all 3 questions</li>
+        <li>Start weekly meeting (Monday 9 AM, 30 min initially)</li>
+        <li>Create NPS Google Form (3 questions) + generate QR code</li>
+        <li>Print QR code stands for counter and exit</li>
+        <li>Set up Google Business Profile short link</li>
+        <li>Set up WhatsApp Business with greeting + quick replies</li>
+        <li>Create feedback tracking Google Sheet</li>
+        <li>Introduce SSK concept to team with paper cards</li>
+    </ul>
+</div>
+
+<div class="phase-card">
+    <h4>Phase 2: Build Rhythm (Weeks 3&ndash;8)</h4>
+    <ul>
+        <li>Full daily huddle (15 min) + full weekly meeting (60 min)</li>
+        <li>Launch NPS QR at checkout &mdash; staff verbally prompts every customer</li>
+        <li>Set up detractor alerts (WhatsApp notification for score &le; 6)</li>
+        <li>First biweekly employee pulse survey (3 questions)</li>
+        <li>Train team on LEARN service recovery model</li>
+        <li>Empower $200 MXN resolution authority per employee</li>
+        <li>Close the loop: report SSK actions back to team weekly</li>
+        <li>Begin Google Review requests from promoters</li>
+    </ul>
+</div>
+
+<div class="phase-card">
+    <h4>Phase 3: Optimize (Month 3&ndash;6)</h4>
+    <ul>
+        <li>First quarterly planning: define 3 Rocks, set Critical Number, build 13-week race board</li>
+        <li>Full quarterly SSK with anonymous digital submission</li>
+        <li>Add Edmondson psychological safety items to quarterly pulse</li>
+        <li>Track NPS trend weekly &mdash; set monthly targets</li>
+        <li>Implement one systemic improvement per week from outer loop</li>
+        <li>Rotate SSK format every 4 weeks (Plus/Delta, 4Ls)</li>
+        <li>Post-purchase WhatsApp follow-up for high-value items</li>
+        <li>Quarterly eNPS measurement</li>
+    </ul>
+</div>
+
+<div class="phase-card">
+    <h4>Phase 4: Scale (Month 6+)</h4>
+    <ul>
+        <li>Build NPS endpoint into FastAPI app with Supabase storage</li>
+        <li>Automated detractor alerts via Twilio/WhatsApp Business API</li>
+        <li>NPS dashboard integrated with weekly meeting display</li>
+        <li>Transition to named employee feedback as trust solidifies</li>
+        <li>Begin peer-to-peer SSK (not just team-to-manager)</li>
+        <li>Quarterly relational NPS via WhatsApp broadcast to repeat customers</li>
+        <li>SEO impact tracking from Google Reviews</li>
+    </ul>
+</div>
+
+<h3>6.4 Success Metrics</h3>
+
+<table>
+    <thead>
+        <tr><th>Metric</th><th>Month 1</th><th>Month 3</th><th>Month 6</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>NPS responses / week</td><td>5&ndash;10</td><td>15&ndash;25</td><td>25&ndash;40</td></tr>
+        <tr><td>Customer NPS</td><td>Baseline</td><td>&gt; 50</td><td>&gt; 55</td></tr>
+        <tr><td>Google Reviews (new/month)</td><td>4&ndash;8</td><td>8&ndash;12</td><td>12&ndash;20</td></tr>
+        <tr><td>Google rating</td><td>Baseline</td><td>4.5+</td><td>4.7+</td></tr>
+        <tr><td>Detractor loop closure rate</td><td>50%</td><td>80%</td><td>95%</td></tr>
+        <tr><td>Employee pulse response rate</td><td>&gt; 60%</td><td>&gt; 80%</td><td>&gt; 90%</td></tr>
+        <tr><td>Psychological safety (1&ndash;5)</td><td>Baseline</td><td>&gt; 3.5</td><td>&gt; 4.0</td></tr>
+        <tr><td>SSK actions completed / week</td><td>1</td><td>2&ndash;3</td><td>3+</td></tr>
+        <tr><td>Employee eNPS (quarterly)</td><td>Baseline</td><td>&gt; 20</td><td>&gt; 30</td></tr>
+    </tbody>
+</table>
+
+<h3>6.5 Total Investment</h3>
+
+<table>
+    <thead>
+        <tr><th>Item</th><th>One-Time</th><th>Monthly</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>QR code stands (acrylic, 3 units)</td><td>$15 USD</td><td>&mdash;</td></tr>
+        <tr><td>Google Forms / Sheets</td><td>&mdash;</td><td>Free</td></tr>
+        <tr><td>WhatsApp Business App</td><td>&mdash;</td><td>Free</td></tr>
+        <tr><td>Google Business Profile</td><td>&mdash;</td><td>Free</td></tr>
+        <tr><td>Business cards with QR (500)</td><td>$10 USD</td><td>&mdash;</td></tr>
+        <tr><td><strong>Total</strong></td><td><strong>$25 USD</strong></td><td><strong>$0/mo</strong></td></tr>
+    </tbody>
+</table>
+
+<p>The primary investment is <strong>time and consistency</strong>, not money. An estimated 2&ndash;3 hours per week of manager time for review, follow-up, and meeting facilitation.</p>
+
+<div class="page-break"></div>
+
+<!-- ====================================================================== -->
+<!--                    REFERENCES                                          -->
+<!-- ====================================================================== -->
+<div class="ref-list" id="refs">
+    <h3>References</h3>
+    <ol>
+        <li>Harnish, V. (2014). <em>Scaling Up: How a Few Companies Make It&hellip; and Why the Rest Don&rsquo;t</em>. Gazelles, Inc.</li>
+        <li>Harnish, V. (2002). <em>Mastering the Rockefeller Habits</em>. Gazelles, Inc.</li>
+        <li>DeLong, T. J. (2011). Three questions for effective feedback. <em>Harvard Business Review</em>.</li>
+        <li>Kluger, A. N., &amp; DeNisi, A. (1996). The effects of feedback interventions on performance: A historical review, a meta-analysis, and a preliminary feedback intervention theory. <em>Psychological Bulletin</em>, 119(2), 254&ndash;284.</li>
+        <li>Edmondson, A. C. (1999). Psychological safety and learning behavior in work teams. <em>Administrative Science Quarterly</em>, 44(2), 350&ndash;383.</li>
+        <li>Edmondson, A. C. (2018). <em>The Fearless Organization: Creating Psychological Safety in the Workplace</em>. Wiley.</li>
+        <li>Harter, J. K., Schmidt, F. L., &amp; Hayes, T. L. (2002). Business-unit-level relationship between employee satisfaction, employee engagement, and business outcomes: A meta-analysis. <em>Journal of Applied Psychology</em>, 87(2), 268&ndash;279.</li>
+        <li>Gallup (2024). Q12 Meta-Analysis, 11th Edition. 263 studies, ~1.4 million employees.</li>
+        <li>Gallup (2025). <em>State of the Global Workplace 2025</em>.</li>
+        <li>Reichheld, F. F. (2003). The one number you need to grow. <em>Harvard Business Review</em>, 81(12), 46&ndash;55.</li>
+        <li>Reichheld, F. F. (2021). Net Promoter 3.0. <em>Harvard Business Review</em>, Nov&ndash;Dec 2021.</li>
+        <li>Reichheld, F. F., &amp; Markey, R. (2011). <em>The Ultimate Question 2.0</em>. Harvard Business Press.</li>
+        <li>Hart, C. W., Heskett, J. L., &amp; Sasser, W. E. (1990). The profitable art of service recovery. <em>Harvard Business Review</em>, 68(4), 148&ndash;156.</li>
+        <li>Tax, S. S., Brown, S. W., &amp; Chandrashekaran, M. (1998). Customer evaluations of service complaint experiences. <em>Journal of Marketing</em>, 62(2), 60&ndash;76.</li>
+        <li>de Matos, C. A., Henrique, J. L., &amp; Rossi, C. A. V. (2007). Service recovery paradox: A meta-analysis. <em>Journal of Service Research</em>, 10(1), 60&ndash;77.</li>
+        <li>Parasuraman, A., Zeithaml, V. A., &amp; Berry, L. L. (1988). SERVQUAL: A multiple-item scale for measuring consumer perceptions of service quality. <em>Journal of Retailing</em>, 64(1), 12&ndash;40.</li>
+        <li>Dixon, M., Freeman, K., &amp; Toman, N. (2010). Stop trying to delight your customers. <em>Harvard Business Review</em>, 88(7/8), 116&ndash;122.</li>
+        <li>Park, G., Johnson, S. K., Moon, H., &amp; Lee, J. (2019). The interaction effects of frequency and specificity of feedback on work performance. <em>Journal of Organizational Behavior</em>.</li>
+        <li>London, M., &amp; Smither, J. W. (2002). Feedback orientation, feedback culture, and the longitudinal performance management process. <em>Human Resource Management Review</em>, 12(1), 81&ndash;100.</li>
+        <li>Wanous, J. P., Reichers, A. E., &amp; Hudy, M. J. (1997). Overall job satisfaction: How good are single-item measures? <em>Journal of Applied Psychology</em>, 82(2), 247&ndash;252.</li>
+        <li>McCollough, M. A., &amp; Bharadwaj, S. G. (1992). The recovery paradox: An examination of consumer satisfaction in relation to disconfirmation, service quality, and attribution based theories. <em>Marketing Theory and Applications</em>, 119&ndash;130.</li>
+        <li>Smith, A. K., &amp; Bolton, R. N. (1998). An experimental investigation of customer reactions to service failure and recovery encounters. <em>Journal of Service Research</em>, 1(1), 65&ndash;81.</li>
+        <li>Ebbinghaus, H. (1885/1913). <em>Memory: A Contribution to Experimental Psychology</em>. Teachers College, Columbia University.</li>
+        <li>Google (2015). Project Aristotle: Re:Work. Identified psychological safety as #1 factor in high-performing teams across 180+ teams.</li>
+        <li>Culture Amp. &ldquo;People don&rsquo;t get survey fatigue, they get lack-of-action fatigue.&rdquo;</li>
+        <li>BrightLocal (2025). Local Consumer Review Survey: 87% of consumers read Google reviews for local businesses.</li>
+        <li>Meta for Business (2026). Global WhatsApp Business adoption report: 284M active business accounts; Mexico registrations +61% YoY.</li>
+        <li>Gartner (2023). Point-of-experience feedback is 40% more accurate than delayed feedback.</li>
+    </ol>
+</div>
+
+</body>
+</html>

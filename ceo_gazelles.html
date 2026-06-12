@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEO Strategic Dashboard — Scaling Up</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+        /* Layout */
+        .app { display: flex; min-height: 100vh; }
+        .sidebar { width: 280px; background: #1e293b; border-right: 1px solid #334155; padding: 24px 16px; position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; z-index: 100; transition: transform 0.3s; }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
+        .main { flex: 1; margin-left: 280px; padding: 24px; max-width: 900px; }
+
+        /* Sidebar branding */
+        .brand { text-align: center; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid #334155; }
+        .brand h1 { font-size: 1.1rem; color: #f59e0b; margin-bottom: 4px; }
+        .brand p { font-size: 0.75rem; color: #64748b; }
+        .progress-summary { background: #0f172a; border-radius: 10px; padding: 12px; margin-bottom: 20px; text-align: center; }
+        .progress-summary .count { font-size: 1.8rem; font-weight: 700; color: #f59e0b; }
+        .progress-summary .label { font-size: 0.75rem; color: #94a3b8; }
+        .progress-bar-bg { height: 6px; background: #334155; border-radius: 3px; margin-top: 8px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #f59e0b, #22c55e); border-radius: 3px; transition: width 0.5s; }
+
+        /* Sidebar nav */
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 10px; cursor: pointer; transition: all 0.15s; margin-bottom: 4px; font-size: 0.85rem; color: #94a3b8; }
+        .nav-item:hover { background: #0f172a; color: #e2e8f0; }
+        .nav-item.active { background: #451a03; color: #f59e0b; font-weight: 600; border: 1px solid rgba(245,158,11,0.3); }
+        .nav-item .icon { font-size: 1.1rem; width: 24px; text-align: center; flex-shrink: 0; }
+        .nav-item .check { margin-left: auto; color: #22c55e; font-weight: 700; font-size: 1rem; display: none; }
+        .nav-item.completed .check { display: block; }
+        .nav-item .score-badge { margin-left: auto; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+        .score-red { background: #450a0a; color: #ef4444; border: 1px solid #ef4444; }
+        .score-yellow { background: #451a03; color: #f59e0b; border: 1px solid #f59e0b; }
+        .score-green { background: #052e16; color: #22c55e; border: 1px solid #22c55e; }
+
+        /* Sidebar actions */
+        .sidebar-actions { margin-top: 20px; padding-top: 16px; border-top: 1px solid #334155; }
+        .btn-print { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #94a3b8; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; }
+        .btn-print:hover { border-color: #f59e0b; color: #f59e0b; }
+
+        /* Mobile hamburger */
+        .mobile-header { display: none; position: fixed; top: 0; left: 0; right: 0; background: #1e293b; padding: 14px 16px; z-index: 98; border-bottom: 1px solid #334155; }
+        .mobile-header .hamburger { background: none; border: none; color: #e2e8f0; font-size: 1.5rem; cursor: pointer; }
+        .mobile-header .title { font-size: 0.9rem; color: #f59e0b; font-weight: 600; }
+        .mobile-header .progress-mini { font-size: 0.75rem; color: #64748b; }
+
+        /* Section cards */
+        .section { display: none; }
+        .section.active { display: block; }
+
+        .section-header { margin-bottom: 24px; }
+        .section-header h2 { font-size: 1.4rem; color: #f59e0b; margin-bottom: 4px; }
+        .section-header p { font-size: 0.85rem; color: #64748b; line-height: 1.5; }
+
+        .card { background: #1e293b; border-radius: 14px; padding: 24px; margin-bottom: 16px; border: 1px solid #334155; }
+        .card.saving { border-color: #f59e0b; }
+        .card.saved { border-color: #22c55e; }
+
+        .field { margin-bottom: 20px; }
+        .field:last-child { margin-bottom: 0; }
+        .field label { display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 8px; line-height: 1.5; }
+        .field label strong { color: #e2e8f0; }
+
+        input[type="text"], input[type="number"], textarea, select {
+            width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #334155;
+            background: #0f172a; color: #e2e8f0; font-size: 0.9rem; font-family: inherit; outline: none;
+            transition: border-color 0.15s;
+        }
+        input:focus, textarea:focus, select:focus { border-color: #f59e0b; }
+        textarea { min-height: 90px; resize: vertical; line-height: 1.6; }
+        input[type="number"] { -moz-appearance: textfield; }
+        input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+        .hint { font-size: 0.75rem; color: #475569; margin-top: 4px; font-style: italic; }
+
+        /* Repeat groups (for people, rocks, etc.) */
+        .repeat-group { background: #0f172a; border-radius: 10px; padding: 16px; margin-bottom: 12px; border: 1px solid #334155; }
+        .repeat-group .group-label { font-size: 0.8rem; color: #f59e0b; font-weight: 600; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Always/Never pairs */
+        .pair-row { display: flex; gap: 12px; margin-bottom: 8px; }
+        .pair-row input { flex: 1; }
+
+        /* Likert scale */
+        .likert-row { margin-bottom: 16px; }
+        .likert-row .statement { font-size: 0.88rem; color: #e2e8f0; margin-bottom: 8px; line-height: 1.5; }
+        .likert-options { display: flex; gap: 6px; }
+        .likert-btn { flex: 1; padding: 10px 4px; border-radius: 8px; border: 2px solid #334155; background: #0f172a; color: #64748b; font-size: 0.75rem; cursor: pointer; transition: all 0.15s; text-align: center; }
+        .likert-btn:hover { border-color: #f59e0b; color: #e2e8f0; }
+        .likert-btn.selected { border-color: #f59e0b; background: #451a03; color: #fbbf24; font-weight: 600; }
+        .likert-btn .num { display: block; font-size: 1rem; font-weight: 700; }
+        .likert-labels { display: flex; justify-content: space-between; margin-top: 4px; }
+        .likert-labels span { font-size: 0.65rem; color: #475569; }
+
+        /* Score display */
+        .score-display { background: #0f172a; border-radius: 10px; padding: 16px; text-align: center; margin-top: 16px; }
+        .score-display .score-value { font-size: 2rem; font-weight: 700; }
+        .score-display .score-label { font-size: 0.8rem; color: #94a3b8; margin-top: 2px; }
+        .score-display .score-bar { height: 8px; background: #334155; border-radius: 4px; margin-top: 10px; overflow: hidden; }
+        .score-display .score-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+
+        /* Checkboxes */
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; }
+        .checkbox-item { padding: 8px 14px; border-radius: 20px; border: 1px solid #334155; background: #0f172a; color: #94a3b8; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; user-select: none; }
+        .checkbox-item:hover { border-color: #f59e0b; color: #e2e8f0; }
+        .checkbox-item.selected { border-color: #f59e0b; background: #451a03; color: #fbbf24; font-weight: 600; }
+
+        /* Range/slider */
+        .slider-container { margin-top: 8px; }
+        .slider-container input[type="range"] { width: 100%; -webkit-appearance: none; height: 8px; background: #334155; border-radius: 4px; outline: none; border: none; padding: 0; }
+        .slider-container input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; background: #f59e0b; border-radius: 50%; cursor: pointer; }
+        .slider-container input[type="range"]::-moz-range-thumb { width: 24px; height: 24px; background: #f59e0b; border-radius: 50%; cursor: pointer; border: none; }
+        .slider-value { text-align: center; margin-top: 8px; font-size: 1.5rem; font-weight: 700; color: #f59e0b; }
+        .slider-labels { display: flex; justify-content: space-between; font-size: 0.7rem; color: #475569; margin-top: 4px; }
+
+        /* Traffic light */
+        .traffic-light { display: flex; gap: 8px; }
+        .traffic-btn { flex: 1; padding: 10px; border-radius: 8px; border: 2px solid #334155; background: #0f172a; color: #64748b; font-size: 0.8rem; cursor: pointer; text-align: center; transition: all 0.15s; }
+        .traffic-btn:hover { border-color: #64748b; }
+        .traffic-btn.selected.green { border-color: #22c55e; color: #22c55e; background: #052e16; }
+        .traffic-btn.selected.yellow { border-color: #f59e0b; color: #f59e0b; background: #451a03; }
+        .traffic-btn.selected.red { border-color: #ef4444; color: #ef4444; background: #450a0a; }
+
+        /* Save button */
+        .save-area { margin-top: 20px; display: flex; gap: 12px; align-items: center; }
+        .btn-save { padding: 12px 32px; border-radius: 10px; border: none; background: #f59e0b; color: #0f172a; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .btn-save:hover { background: #fbbf24; transform: translateY(-1px); }
+        .btn-save:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; transform: none; }
+        .save-status { font-size: 0.8rem; color: #64748b; }
+        .save-status.success { color: #22c55e; }
+        .save-status.error { color: #ef4444; }
+
+        /* Section navigation arrows */
+        .section-nav { display: flex; justify-content: space-between; margin-top: 24px; padding-top: 16px; border-top: 1px solid #334155; }
+        .btn-nav { padding: 10px 20px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #94a3b8; font-size: 0.85rem; cursor: pointer; transition: all 0.15s; }
+        .btn-nav:hover { border-color: #f59e0b; color: #f59e0b; }
+        .btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); width: 260px; }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.open { display: block; }
+            .main { margin-left: 0; padding: 16px; padding-top: 70px; }
+            .mobile-header { display: flex; align-items: center; gap: 12px; }
+            .pair-row { flex-direction: column; gap: 8px; }
+            .likert-options { gap: 4px; }
+            .likert-btn { padding: 8px 2px; font-size: 0.7rem; }
+            .likert-btn .num { font-size: 0.85rem; }
+            .traffic-light { flex-direction: column; }
+        }
+
+        /* Print styles */
+        @media print {
+            body { background: #fff; color: #000; }
+            .sidebar, .mobile-header, .btn-save, .save-area, .section-nav, .btn-print, .sidebar-overlay { display: none !important; }
+            .main { margin-left: 0; max-width: 100%; }
+            .section { display: block !important; page-break-inside: avoid; margin-bottom: 32px; }
+            .card { background: #f9f9f9; border: 1px solid #ddd; }
+            .section-header h2 { color: #b45309; }
+            input, textarea, select { border: 1px solid #ccc; background: #fff; color: #000; }
+            .likert-btn.selected { background: #fef3c7; border-color: #b45309; color: #92400e; }
+            .checkbox-item.selected { background: #fef3c7; border-color: #b45309; color: #92400e; }
+            .repeat-group { background: #f0f0f0; }
+            .score-display { background: #f0f0f0; }
+            .score-display .score-value { color: #b45309; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="mobile-header">
+    <button class="hamburger" onclick="toggleSidebar()">&#9776;</button>
+    <span class="title">CEO Strategic Dashboard</span>
+    <span class="progress-mini" id="progressMini">0/7</span>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<div class="app">
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <h1>Scaling Up</h1>
+            <p>CEO Strategic Dashboard</p>
+        </div>
+
+        <div class="progress-summary">
+            <div class="count" id="progressCount">0/7</div>
+            <div class="label">secciones completas</div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar" style="width:0%"></div></div>
+        </div>
+
+        <nav id="navList">
+            <div class="nav-item active" onclick="goToSection(0)">
+                <span class="icon">&#9830;</span> Core Values
+                <span class="check">&#10003;</span>
+            </div>
+            <div class="nav-item" onclick="goToSection(1)">
+                <span class="icon">&#9733;</span> Purpose &amp; BHAG
+                <span class="check">&#10003;</span>
+            </div>
+            <div class="nav-item" onclick="goToSection(2)">
+                <span class="icon">&#9881;</span> The Sandbox
+                <span class="check">&#10003;</span>
+            </div>
+            <div class="nav-item" onclick="goToSection(3)">
+                <span class="icon">&#9650;</span> Quarterly Rocks
+                <span class="check">&#10003;</span>
+            </div>
+            <div class="nav-item" onclick="goToSection(4)">
+                <span class="icon">&#8635;</span> Meeting Rhythm
+                <span class="check">&#10003;</span>
+                <span class="score-badge" style="display:none"></span>
+            </div>
+            <div class="nav-item" onclick="goToSection(5)">
+                <span class="icon">&#9823;</span> CEO Profile
+                <span class="check">&#10003;</span>
+                <span class="score-badge" style="display:none"></span>
+            </div>
+            <div class="nav-item" onclick="goToSection(6)">
+                <span class="icon">&#9829;</span> Customer Intel
+                <span class="check">&#10003;</span>
+            </div>
+        </nav>
+
+        <div class="sidebar-actions">
+            <button class="btn-print" onclick="window.print()">&#128424; Imprimir / Exportar PDF</button>
+        </div>
+    </aside>
+
+    <main class="main">
+
+        <!-- ===== SECTION 0: CORE VALUES ===== -->
+        <div class="section active" id="section-0">
+            <div class="section-header">
+                <h2>1. Core Values Discovery</h2>
+                <p>Los valores no se inventan, se descubren. Piensa en las personas y comportamientos que definen tu cultura.</p>
+            </div>
+
+            <div class="card">
+                <div class="field">
+                    <label><strong>Nombra 3 personas en tu empresa (pasadas o actuales) que representan la cultura que quieres.</strong> Para cada una, escribe los COMPORTAMIENTOS especificos que las hacen grandes.</label>
+                </div>
+                <div class="repeat-group">
+                    <div class="group-label">Persona 1</div>
+                    <div class="field">
+                        <input type="text" data-section="values" data-key="person1_name" placeholder="Nombre">
+                    </div>
+                    <div class="field">
+                        <textarea data-section="values" data-key="person1_behaviors" placeholder="Que comportamientos especificos la hacen destacar?"></textarea>
+                    </div>
+                </div>
+                <div class="repeat-group">
+                    <div class="group-label">Persona 2</div>
+                    <div class="field">
+                        <input type="text" data-section="values" data-key="person2_name" placeholder="Nombre">
+                    </div>
+                    <div class="field">
+                        <textarea data-section="values" data-key="person2_behaviors" placeholder="Que comportamientos especificos la hacen destacar?"></textarea>
+                    </div>
+                </div>
+                <div class="repeat-group">
+                    <div class="group-label">Persona 3</div>
+                    <div class="field">
+                        <input type="text" data-section="values" data-key="person3_name" placeholder="Nombre">
+                    </div>
+                    <div class="field">
+                        <textarea data-section="values" data-key="person3_behaviors" placeholder="Que comportamientos especificos la hacen destacar?"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="field">
+                    <label><strong>Que comportamiento NUNCA tolerarias, ni siquiera de tu mejor empleado?</strong></label>
+                    <textarea data-section="values" data-key="never_tolerate" placeholder="Describe el comportamiento que es inaceptable sin importar el desempeno..."></textarea>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="field">
+                    <label><strong>Cuando estas en tu mejor momento como lider, que estas haciendo?</strong></label>
+                    <textarea data-section="values" data-key="leader_best" placeholder="Piensa en un dia donde sentiste que todo fluyo..."></textarea>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="field">
+                    <label><strong>Que dicen tus clientes que les encanta de comprarte?</strong></label>
+                    <textarea data-section="values" data-key="customers_love" placeholder="Usa sus palabras exactas si puedes..."></textarea>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="field">
+                    <label><strong>Completa estas frases (3 de cada una):</strong></label>
+                </div>
+                <div class="field">
+                    <label>"En esta empresa, SIEMPRE ___"</label>
+                    <div class="pair-row"><input type="text" data-section="values" data-key="always_1" placeholder="1."></div>
+                    <div class="pair-row"><input type="text" data-section="values" data-key="always_2" placeholder="2."></div>
+                    <div class="pair-row"><input type="text" data-section="values" data-key="always_3" placeholder="3."></div>
+                </div>
+                <div class="field" style="margin-top: 16px;">
+                    <label>"En esta empresa, NUNCA ___"</label>
+                    <div class="pair-row"><input type="text" data-section="values" data-key="never_1" placeholder="1."></div>
+                    <div class="pair-row"><input type="text" data-section="values" data-key="never_2" placeholder="2."></div>
+                    <div class="pair-row"><input type="text" data-section="values" data-key="never_3" placeholder="3."></div>
+                </div>
+                <div class="hint">De estas respuestas se pueden extraer tus Core Values candidatos.</div>
+            </div>
+
+            <div class="save-area">
+                <button class="btn-save" onclick="saveSection('values')">Guardar Seccion</button>
+                <span class="save-status" id="status-values"></span>
+            </div>
+            <div class="section-nav">
+                <button class="btn-nav" disabled>&larr; Anterior</button>
+                <button class="btn-nav" onclick="goToSection(1)">Siguiente &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ===== SECTION 1: PURPOSE & BHAG ===== -->
+        <div class="section" id="section-1">
+            <div class="section-header">
+                <h2>2. Purpose &amp; BHAG</h2>
+                <p>Tu proposito es el "por que" detras de tu empresa. El BHAG es tu meta audaz a 10-25 anos.</p>
+            </div>
+
+            <div class="card">
+                <div class="field">
+                    <label><strong>Por que existe tu empresa, mas alla de ganar dinero?</strong></label>
+                    <textarea data-section="purpose" data-key="purpose" placeholder="Piensa en el impacto que quieres dejar..."></textarea>
+                    <div class="hint">Ejemplo: "Existimos para que cada familia tenga acceso a materiales de calidad para construir su hogar."</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="field">
+                    <label><strong>Si el dinero no fuera un problema, en que quisieras que se convirtiera este negocio en 10-25 anos?</strong></label>
+                    <textarea data-section="purpose" data-key="bhag" placeholder="Suena en grande — este es tu BHAG (Big Hairy Audacious Goal)..."></textarea>
+                    <div class="hint">Un BHAG debe asustar un poco y emocionar mucho.</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="field">
+                    <label><strong>Cual es la UNA promesa que le haces a cada cliente?</strong> (Brand Promise)</label>
+                    <input type="text" data-section="purpose" data-key="brand_promise" placeholder="Ej: 'Siempre tendras lo que necesitas, cuando lo necesitas'">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="field">
+                    <label><strong>Que metrica usarias para medir esa promesa?</strong></label>
+                    <input type="text" data-section="purpose" data-key="brand_promise_metric" placeholder="Ej: '% de pedidos entregados en menos de 24 horas'">
+                    <div class="hint">Si no puedes medirla, no es una promesa — es un deseo.</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="field">
+                    <label><strong>Cual es la UNA cosa que tu empresa hace mejor que cualquier otro en tu mercado?</strong> (Core Competency)</label>
+                    <textarea data-section="purpose" data-key="core_competency" placeholder="El diferenciador profundo — no lo que vendes, sino lo que dominas..."></textarea>
+                </div>
+            </div>
+
+            <div class="save-area">
+                <button class="btn-save" onclick="saveSection('purpose')">Guardar Seccion</button>
+                <span class="save-status" id="status-purpose"></span>
+            </div>
+            <div class="section-nav">
+                <button class="btn-nav" onclick="goToSection(0)">&larr; Anterior</button>
+                <button class="btn-nav" onclick="goToSection(2)">Siguiente &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ===== SECTION 2: THE SANDBOX ===== -->
+        <div class="section" id="section-2">
+            <div class="section-header">
+                <h2>3. The Sandbox — Donde Jugamos</h2>
+                <p>Define claramente tu mercado: que vendes, a quien, y donde.</p>
+            </div>
+
+            <div class="card">
+                <div class="field">
+                    <label><strong>Que vendes?</strong> (productos y/o servicios)</label>
+                    <textarea data-section="sandbox" data-key="products" placeholder="Lista tus principales productos o servicios..."></textarea>
+                </div>
+                <div class="field">
+                    <label><strong>Quien es tu cliente ideal?</strong></label>
+                    <textarea data-section="sandbox" data-key="ideal_customer" placeholder="Describe demografica y psicograficamente..."></textarea>
+                </div>
+                <div class="field">
+                    <label><strong>Donde vendes?</strong> (geografia)</label>
+                    <input type="text" data-section="sandbox" data-key="geography" placeholder="Ej: Zona metropolitana de Puebla, Tlaxcala, envios nacionales...">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="field">
+                    <label><strong>Ingresos ultimos 12 meses (MXN)</strong></label>
+                    <input type="number" data-section="sandbox" data-key="revenue_current" placeholder="Ej: 5000000">
+                </div>
+                <div class="field">
+                    <label><strong>Meta de ingresos proximos 12 meses (MXN)</strong></label>
+                    <input type="number" data-section="sandbox" data-key="revenue_target" placeholder="Ej: 7500000">
+                </div>
+                <div class="field">
+                    <label><strong>Numero de empleados</strong></label>
+                    <input type="number" data-section="sandbox" data-key="employees" placeholder="Ej: 12">
+                </div>
+                <div class="field">
+                    <label><strong>Numero de ubicaciones/sucursales</strong></label>
+                    <input type="number" data-section="sandbox" data-key="locations" placeholder="Ej: 2">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="field">
+                    <label><strong>Top 3 competidores</strong></label>
+                    <input type="text" data-section="sandbox" data-key="competitor_1" placeholder="Competidor 1" style="margin-bottom: 8px;">
+                    <input type="text" data-section="sandbox" data-key="competitor_2" placeholder="Competidor 2" style="margin-bottom: 8px;">
+                    <input type="text" data-section="sandbox" data-key="competitor_3" placeholder="Competidor 3">
+                </div>
+                <div class="field">
+                    <label><strong>Que te hace diferente de la competencia?</strong></label>
+                    <textarea data-section="sandbox" data-key="differentiator" placeholder="Lo que tus clientes elegirian sobre la competencia..."></textarea>
+                </div>
+            </div>
+
+            <div class="save-area">
+                <button class="btn-save" onclick="saveSection('sandbox')">Guardar Seccion</button>
+                <span class="save-status" id="status-sandbox"></span>
+            </div>
+            <div class="section-nav">
+                <button class="btn-nav" onclick="goToSection(1)">&larr; Anterior</button>
+                <button class="btn-nav" onclick="goToSection(3)">Siguiente &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ===== SECTION 3: QUARTERLY ROCKS ===== -->
+        <div class="section" id="section-3">
+            <div class="section-header">
+                <h2>4. Quarterly Rocks</h2>
+                <p>Las 3 prioridades mas importantes de este trimestre. Cada Rock tiene dueno y fecha limite.</p>
+            </div>
+
+            <div class="card">
+                <div class="repeat-group">
+                    <div class="group-label">Rock #1 — Prioridad Principal</div>
+                    <div class="field">
+                        <label>Descripcion del Rock</label>
+                        <textarea data-section="rocks" data-key="rock1_desc" placeholder="Que se va a lograr este trimestre?"></textarea>
+                    </div>
+                    <div class="field">
+                        <label>Responsable</label>
+                        <input type="text" data-section="rocks" data-key="rock1_owner" placeholder="Nombre del dueno">
+                    </div>
+                    <div class="field">
+                        <label>Fecha limite</label>
+                        <input type="text" data-section="rocks" data-key="rock1_deadline" placeholder="Ej: 30 Sep 2026">
+                    </div>
+                    <div class="field">
+                        <label>Status</label>
+                        <div class="traffic-light">
+                            <div class="traffic-btn green" onclick="selectTraffic(this, 'rocks', 'rock1_status', 'on_track')">En camino</div>
+                            <div class="traffic-btn yellow" onclick="selectTraffic(this, 'rocks', 'rock1_status', 'at_risk')">En riesgo</div>
+                            <div class="traffic-btn red" onclick="selectTraffic(this, 'rocks', 'rock1_status', 'behind')">Atrasado</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="repeat-group">
+                    <div class="group-label">Rock #2</div>
+                    <div class="field">
+                        <label>Descripcion del Rock</label>
+                        <textarea data-section="rocks" data-key="rock2_desc" placeholder="Que se va a lograr?"></textarea>
+                    </div>
+                    <div class="field">
+                        <label>Responsable</label>
+                        <input type="text" data-section="rocks" data-key="rock2_owner" placeholder="Nombre del dueno">
+                    </div>
+                    <div class="field">
+                        <label>Fecha limite</label>
+                        <input type="text" data-section="rocks" data-key="rock2_deadline" placeholder="Ej: 30 Sep 2026">
+                    </div>
+                    <div class="field">
+                        <label>Status</label>
+                        <div class="traffic-light">
+                            <div class="traffic-btn green" onclick="selectTraffic(this, 'rocks', 'rock2_status', 'on_track')">En camino</div>
+                            <div class="traffic-btn yellow" onclick="selectTraffic(this, 'rocks', 'rock2_status', 'at_risk')">En riesgo</div>
+                            <div class="traffic-btn red" onclick="selectTraffic(this, 'rocks', 'rock2_status', 'behind')">Atrasado</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="repeat-group">
+                    <div class="group-label">Rock #3</div>
+                    <div class="field">
+                        <label>Descripcion del Rock</label>
+                        <textarea data-section="rocks" data-key="rock3_desc" placeholder="Que se va a lograr?"></textarea>
+                    </div>
+                    <div class="field">
+                        <label>Responsable</label>
+                        <input type="text" data-section="rocks" data-key="rock3_owner" placeholder="Nombre del dueno">
+                    </div>
+                    <div class="field">
+                        <label>Fecha limite</label>
+                        <input type="text" data-section="rocks" data-key="rock3_deadline" placeholder="Ej: 30 Sep 2026">
+                    </div>
+                    <div class="field">
+                        <label>Status</label>
+                        <div class="traffic-light">
+                            <div class="traffic-btn green" onclick="selectTraffic(this, 'rocks', 'rock3_status', 'on_track')">En camino</div>
+                            <div class="traffic-btn yellow" onclick="selectTraffic(this, 'rocks', 'rock3_status', 'at_risk')">En riesgo</div>
+                            <div class="traffic-btn red" onclick="selectTraffic(this, 'rocks', 'rock3_status', 'behind')">Atrasado</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="field">
+                    <label><strong>Numero Critico del trimestre</strong> — la metrica en la que todo el equipo se enfoca</label>
+                    <input type="text" data-section="rocks" data-key="critical_number_name" placeholder="Ej: Ventas mensuales, Ticket promedio, Clientes nuevos...">
+                </div>
+                <div class="field">
+                    <label><strong>Valor actual</strong></label>
+                    <input type="number" data-section="rocks" data-key="critical_number_current" placeholder="Ej: 350000">
+                </div>
+                <div class="field">
+                    <label><strong>Meta al final del trimestre</strong></label>
+                    <input type="number" data-section="rocks" data-key="critical_number_target" placeholder="Ej: 500000">
+                </div>
+            </div>
+
+            <div class="save-area">
+                <button class="btn-save" onclick="saveSection('rocks')">Guardar Seccion</button>
+                <span class="save-status" id="status-rocks"></span>
+            </div>
+            <div class="section-nav">
+                <button class="btn-nav" onclick="goToSection(2)">&larr; Anterior</button>
+                <button class="btn-nav" onclick="goToSection(4)">Siguiente &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ===== SECTION 4: MEETING RHYTHM ===== -->
+        <div class="section" id="section-4">
+            <div class="section-header">
+                <h2>5. Meeting Rhythm Assessment</h2>
+                <p>Evalua la disciplina de reuniones de tu equipo. El ritmo de reuniones es el "latido" de una empresa saludable.</p>
+            </div>
+
+            <div class="card">
+                <div class="likert-row">
+                    <div class="statement">Tenemos un huddle diario (reunion de pie, menos de 15 min)</div>
+                    <div class="likert-options">
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'daily_huddle', 1)"><span class="num">1</span>Nunca</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'daily_huddle', 2)"><span class="num">2</span>Rara vez</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'daily_huddle', 3)"><span class="num">3</span>A veces</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'daily_huddle', 4)"><span class="num">4</span>Casi siempre</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'daily_huddle', 5)"><span class="num">5</span>Sin falta</div>
+                    </div>
+                </div>
+
+                <div class="likert-row">
+                    <div class="statement">Tenemos una reunion semanal con agenda consistente</div>
+                    <div class="likert-options">
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'weekly_meeting', 1)"><span class="num">1</span>Nunca</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'weekly_meeting', 2)"><span class="num">2</span>Rara vez</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'weekly_meeting', 3)"><span class="num">3</span>A veces</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'weekly_meeting', 4)"><span class="num">4</span>Casi siempre</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'weekly_meeting', 5)"><span class="num">5</span>Sin falta</div>
+                    </div>
+                </div>
+
+                <div class="likert-row">
+                    <div class="statement">Cada empleado sabe su prioridad #1 de la semana</div>
+                    <div class="likert-options">
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'weekly_priority', 1)"><span class="num">1</span>Nunca</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'weekly_priority', 2)"><span class="num">2</span>Rara vez</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'weekly_priority', 3)"><span class="num">3</span>A veces</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'weekly_priority', 4)"><span class="num">4</span>Casi siempre</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'weekly_priority', 5)"><span class="num">5</span>Sin falta</div>
+                    </div>
+                </div>
+
+                <div class="likert-row">
+                    <div class="statement">Revisamos metricas clave semanalmente como equipo</div>
+                    <div class="likert-options">
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'weekly_metrics', 1)"><span class="num">1</span>Nunca</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'weekly_metrics', 2)"><span class="num">2</span>Rara vez</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'weekly_metrics', 3)"><span class="num">3</span>A veces</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'weekly_metrics', 4)"><span class="num">4</span>Casi siempre</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'weekly_metrics', 5)"><span class="num">5</span>Sin falta</div>
+                    </div>
+                </div>
+
+                <div class="likert-row">
+                    <div class="statement">Feedback de clientes y empleados se discute semanalmente</div>
+                    <div class="likert-options">
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'weekly_feedback', 1)"><span class="num">1</span>Nunca</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'weekly_feedback', 2)"><span class="num">2</span>Rara vez</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'weekly_feedback', 3)"><span class="num">3</span>A veces</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'weekly_feedback', 4)"><span class="num">4</span>Casi siempre</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'weekly_feedback', 5)"><span class="num">5</span>Sin falta</div>
+                    </div>
+                </div>
+
+                <div class="likert-row">
+                    <div class="statement">Hacemos planeacion trimestral (definir Rocks, revisar progreso)</div>
+                    <div class="likert-options">
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'quarterly_planning', 1)"><span class="num">1</span>Nunca</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'quarterly_planning', 2)"><span class="num">2</span>Rara vez</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'quarterly_planning', 3)"><span class="num">3</span>A veces</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'quarterly_planning', 4)"><span class="num">4</span>Casi siempre</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'quarterly_planning', 5)"><span class="num">5</span>Sin falta</div>
+                    </div>
+                </div>
+
+                <div class="likert-row">
+                    <div class="statement">Tenemos una sesion de planeacion anual</div>
+                    <div class="likert-options">
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'annual_planning', 1)"><span class="num">1</span>Nunca</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'annual_planning', 2)"><span class="num">2</span>Rara vez</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'annual_planning', 3)"><span class="num">3</span>A veces</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'annual_planning', 4)"><span class="num">4</span>Casi siempre</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'annual_planning', 5)"><span class="num">5</span>Sin falta</div>
+                    </div>
+                </div>
+
+                <div class="likert-row">
+                    <div class="statement">Los problemas se resuelven en reuniones, no en pasillos</div>
+                    <div class="likert-options">
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'issues_in_meetings', 1)"><span class="num">1</span>Nunca</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'issues_in_meetings', 2)"><span class="num">2</span>Rara vez</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'issues_in_meetings', 3)"><span class="num">3</span>A veces</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'issues_in_meetings', 4)"><span class="num">4</span>Casi siempre</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'meetings', 'issues_in_meetings', 5)"><span class="num">5</span>Sin falta</div>
+                    </div>
+                </div>
+
+                <div class="score-display" id="score-meetings">
+                    <div class="score-value" id="score-meetings-value">--</div>
+                    <div class="score-label">Meeting Rhythm Score (promedio)</div>
+                    <div class="score-bar"><div class="score-bar-fill" id="score-meetings-bar" style="width:0%"></div></div>
+                </div>
+            </div>
+
+            <div class="save-area">
+                <button class="btn-save" onclick="saveSection('meetings')">Guardar Seccion</button>
+                <span class="save-status" id="status-meetings"></span>
+            </div>
+            <div class="section-nav">
+                <button class="btn-nav" onclick="goToSection(3)">&larr; Anterior</button>
+                <button class="btn-nav" onclick="goToSection(5)">Siguiente &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ===== SECTION 5: CEO LEADERSHIP PROFILE ===== -->
+        <div class="section" id="section-5">
+            <div class="section-header">
+                <h2>6. CEO Leadership Profile</h2>
+                <p>Autodiagnostico honesto de tu liderazgo. No hay respuestas correctas — solo claridad.</p>
+            </div>
+
+            <div class="card">
+                <div class="likert-row">
+                    <div class="statement">Delego efectivamente — no lo hago todo yo</div>
+                    <div class="likert-options">
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'delegation', 1)"><span class="num">1</span>Nunca</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'delegation', 2)"><span class="num">2</span>Rara vez</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'delegation', 3)"><span class="num">3</span>A veces</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'delegation', 4)"><span class="num">4</span>Casi siempre</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'delegation', 5)"><span class="num">5</span>Sin falta</div>
+                    </div>
+                </div>
+
+                <div class="likert-row">
+                    <div class="statement">Paso la mayoria de mi tiempo en estrategia, no en operaciones</div>
+                    <div class="likert-options">
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'strategy_time', 1)"><span class="num">1</span>Nunca</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'strategy_time', 2)"><span class="num">2</span>Rara vez</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'strategy_time', 3)"><span class="num">3</span>A veces</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'strategy_time', 4)"><span class="num">4</span>Casi siempre</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'strategy_time', 5)"><span class="num">5</span>Sin falta</div>
+                    </div>
+                </div>
+
+                <div class="likert-row">
+                    <div class="statement">Tengo conversaciones dificiles a tiempo, sin evitarlas</div>
+                    <div class="likert-options">
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'difficult_convos', 1)"><span class="num">1</span>Nunca</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'difficult_convos', 2)"><span class="num">2</span>Rara vez</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'difficult_convos', 3)"><span class="num">3</span>A veces</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'difficult_convos', 4)"><span class="num">4</span>Casi siempre</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'difficult_convos', 5)"><span class="num">5</span>Sin falta</div>
+                    </div>
+                </div>
+
+                <div class="likert-row">
+                    <div class="statement">Conozco las fortalezas y debilidades de cada miembro del equipo</div>
+                    <div class="likert-options">
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'team_knowledge', 1)"><span class="num">1</span>Nunca</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'team_knowledge', 2)"><span class="num">2</span>Rara vez</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'team_knowledge', 3)"><span class="num">3</span>A veces</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'team_knowledge', 4)"><span class="num">4</span>Casi siempre</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'team_knowledge', 5)"><span class="num">5</span>Sin falta</div>
+                    </div>
+                </div>
+
+                <div class="likert-row">
+                    <div class="statement">Doy reconocimiento especifico al menos una vez por semana</div>
+                    <div class="likert-options">
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'recognition', 1)"><span class="num">1</span>Nunca</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'recognition', 2)"><span class="num">2</span>Rara vez</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'recognition', 3)"><span class="num">3</span>A veces</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'recognition', 4)"><span class="num">4</span>Casi siempre</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'recognition', 5)"><span class="num">5</span>Sin falta</div>
+                    </div>
+                </div>
+
+                <div class="likert-row">
+                    <div class="statement">Comparto numeros del negocio transparentemente con el equipo</div>
+                    <div class="likert-options">
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'transparency', 1)"><span class="num">1</span>Nunca</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'transparency', 2)"><span class="num">2</span>Rara vez</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'transparency', 3)"><span class="num">3</span>A veces</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'transparency', 4)"><span class="num">4</span>Casi siempre</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'transparency', 5)"><span class="num">5</span>Sin falta</div>
+                    </div>
+                </div>
+
+                <div class="likert-row">
+                    <div class="statement">Invierto tiempo en mi propio desarrollo como lider</div>
+                    <div class="likert-options">
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'self_development', 1)"><span class="num">1</span>Nunca</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'self_development', 2)"><span class="num">2</span>Rara vez</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'self_development', 3)"><span class="num">3</span>A veces</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'self_development', 4)"><span class="num">4</span>Casi siempre</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'self_development', 5)"><span class="num">5</span>Sin falta</div>
+                    </div>
+                </div>
+
+                <div class="likert-row">
+                    <div class="statement">Tengo una vision clara que puedo articular en una oracion</div>
+                    <div class="likert-options">
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'clear_vision', 1)"><span class="num">1</span>Nunca</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'clear_vision', 2)"><span class="num">2</span>Rara vez</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'clear_vision', 3)"><span class="num">3</span>A veces</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'clear_vision', 4)"><span class="num">4</span>Casi siempre</div>
+                        <div class="likert-btn" onclick="selectLikert(this, 'ceo', 'clear_vision', 5)"><span class="num">5</span>Sin falta</div>
+                    </div>
+                </div>
+
+                <div class="score-display" id="score-ceo">
+                    <div class="score-value" id="score-ceo-value">--</div>
+                    <div class="score-label">CEO Leadership Score (promedio)</div>
+                    <div class="score-bar"><div class="score-bar-fill" id="score-ceo-bar" style="width:0%"></div></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="field">
+                    <label><strong>Que es lo mas dificil de tu trabajo en este momento?</strong></label>
+                    <textarea data-section="ceo" data-key="hardest_part" placeholder="Se honesto — esto es solo para ti y tu asesor..."></textarea>
+                </div>
+                <div class="field">
+                    <label><strong>Que decision has estado posponiendo?</strong></label>
+                    <textarea data-section="ceo" data-key="postponed_decision" placeholder="Esa cosa que sabes que debes hacer pero no has hecho..."></textarea>
+                </div>
+                <div class="field">
+                    <label><strong>Si pudieras cambiar UNA cosa de como trabaja tu equipo, que seria?</strong></label>
+                    <textarea data-section="ceo" data-key="one_team_change" placeholder="El cambio que mas impacto tendria..."></textarea>
+                </div>
+                <div class="field">
+                    <label><strong>Que te quita el sueno sobre el negocio?</strong></label>
+                    <textarea data-section="ceo" data-key="keeps_up_at_night" placeholder="Las preocupaciones que no te dejan dormir..."></textarea>
+                </div>
+                <div class="field">
+                    <label><strong>En que eres TU el mejor? Que solo TU deberias estar haciendo?</strong></label>
+                    <textarea data-section="ceo" data-key="ceo_best_at" placeholder="Tu zona de genio — donde aportas mas valor..."></textarea>
+                </div>
+                <div class="field">
+                    <label><strong>Que estas haciendo que alguien mas deberia hacer?</strong></label>
+                    <textarea data-section="ceo" data-key="should_delegate" placeholder="Tareas que te consumen tiempo pero no requieren al CEO..."></textarea>
+                </div>
+            </div>
+
+            <div class="save-area">
+                <button class="btn-save" onclick="saveSection('ceo')">Guardar Seccion</button>
+                <span class="save-status" id="status-ceo"></span>
+            </div>
+            <div class="section-nav">
+                <button class="btn-nav" onclick="goToSection(4)">&larr; Anterior</button>
+                <button class="btn-nav" onclick="goToSection(6)">Siguiente &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ===== SECTION 6: CUSTOMER INTELLIGENCE ===== -->
+        <div class="section" id="section-6">
+            <div class="section-header">
+                <h2>7. Customer Intelligence</h2>
+                <p>Que tan bien conoces a tus clientes? La voz del cliente debe dirigir tu estrategia.</p>
+            </div>
+
+            <div class="card">
+                <div class="field">
+                    <label><strong>Como recopilas actualmente feedback de clientes?</strong> (selecciona todos los que apliquen)</label>
+                    <div class="checkbox-group" id="feedback-methods">
+                        <div class="checkbox-item" onclick="toggleCheckbox(this, 'customer', 'feedback_google_reviews')">Google Reviews</div>
+                        <div class="checkbox-item" onclick="toggleCheckbox(this, 'customer', 'feedback_whatsapp')">WhatsApp</div>
+                        <div class="checkbox-item" onclick="toggleCheckbox(this, 'customer', 'feedback_in_person')">En persona</div>
+                        <div class="checkbox-item" onclick="toggleCheckbox(this, 'customer', 'feedback_surveys')">Encuestas</div>
+                        <div class="checkbox-item" onclick="toggleCheckbox(this, 'customer', 'feedback_social_media')">Redes sociales</div>
+                        <div class="checkbox-item" onclick="toggleCheckbox(this, 'customer', 'feedback_none')">No recopilamos</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="field">
+                    <label><strong>De que se quejan mas tus clientes?</strong></label>
+                    <textarea data-section="customer" data-key="complaints" placeholder="Las quejas mas frecuentes o dolorosas..."></textarea>
+                </div>
+                <div class="field">
+                    <label><strong>Que es lo que mas elogian tus clientes?</strong></label>
+                    <textarea data-section="customer" data-key="praise" placeholder="Lo que les encanta y repiten..."></textarea>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="field">
+                    <label><strong>Cuantos clientes recurrentes tienes vs. de una sola vez?</strong> (estimado %)</label>
+                    <div style="display:flex; gap:16px; align-items:center;">
+                        <div style="flex:1;">
+                            <input type="number" data-section="customer" data-key="repeat_pct" placeholder="% recurrentes" min="0" max="100" style="text-align:center;">
+                            <div class="hint" style="text-align:center;">% recurrentes</div>
+                        </div>
+                        <div style="color:#64748b; font-size:0.9rem;">+</div>
+                        <div style="flex:1;">
+                            <input type="number" data-section="customer" data-key="onetime_pct" placeholder="% una vez" min="0" max="100" style="text-align:center;">
+                            <div class="hint" style="text-align:center;">% una sola vez</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="field">
+                    <label><strong>Si le preguntaras a 10 clientes "Nos recomendarias?", cuantos dirian que si?</strong></label>
+                    <div class="slider-container">
+                        <input type="range" min="0" max="10" value="5" id="npsSlider" oninput="updateNPS(this.value)">
+                        <div class="slider-value" id="npsValue">5</div>
+                        <div class="slider-labels">
+                            <span>0 — Ninguno</span>
+                            <span>5 — Mitad</span>
+                            <span>10 — Todos</span>
+                        </div>
+                    </div>
+                    <div class="hint" style="margin-top:8px; text-align:center;">Este es tu NPS intuitivo. Meta: 8+</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="field">
+                    <label><strong>Cual es UNA pregunta que quisieras hacerle a cada cliente?</strong></label>
+                    <textarea data-section="customer" data-key="dream_question" placeholder="La pregunta que te daria la informacion mas valiosa..."></textarea>
+                </div>
+            </div>
+
+            <div class="save-area">
+                <button class="btn-save" onclick="saveSection('customer')">Guardar Seccion</button>
+                <span class="save-status" id="status-customer"></span>
+            </div>
+            <div class="section-nav">
+                <button class="btn-nav" onclick="goToSection(5)">&larr; Anterior</button>
+                <button class="btn-nav" disabled>Siguiente &rarr;</button>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://gbkhkbfbarsnpbdkxzii.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdia2hrYmZiYXJzbnBiZGt4emlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQzODAzNzMsImV4cCI6MjA0OTk1NjM3M30.mcOcC2GVEu_wD3xNBzSCC3MwDck3CIdmz4D8adU-bpI';
+const HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+const HEADERS_GET = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` };
+
+const TABLE = 'ceo_gazelles';
+const SECTION_NAMES = ['values', 'purpose', 'sandbox', 'rocks', 'meetings', 'ceo', 'customer'];
+const SECTION_LABELS = ['Core Values', 'Purpose & BHAG', 'The Sandbox', 'Quarterly Rocks', 'Meeting Rhythm', 'CEO Profile', 'Customer Intel'];
+const LIKERT_SECTIONS = { meetings: ['daily_huddle','weekly_meeting','weekly_priority','weekly_metrics','weekly_feedback','quarterly_planning','annual_planning','issues_in_meetings'], ceo: ['delegation','strategy_time','difficult_convos','team_knowledge','recognition','transparency','self_development','clear_vision'] };
+
+let currentSection = 0;
+let sectionData = {};
+let completedSections = new Set();
+let likertValues = {};
+let checkboxValues = {};
+let trafficValues = {};
+
+// ========== NAVIGATION ==========
+
+function goToSection(idx) {
+    currentSection = idx;
+    document.querySelectorAll('.section').forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.querySelectorAll('.nav-item').forEach((n, i) => {
+        n.classList.toggle('active', i === idx);
+    });
+    window.scrollTo(0, 0);
+    closeSidebar();
+}
+
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+
+function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
+// ========== INPUT HANDLERS ==========
+
+function selectLikert(el, section, key, value) {
+    const parent = el.closest('.likert-options');
+    parent.querySelectorAll('.likert-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    if (!likertValues[section]) likertValues[section] = {};
+    likertValues[section][key] = value;
+    updateSectionScore(section);
+}
+
+function selectTraffic(el, section, key, value) {
+    const parent = el.closest('.traffic-light');
+    parent.querySelectorAll('.traffic-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    if (!trafficValues[section]) trafficValues[section] = {};
+    trafficValues[section][key] = value;
+}
+
+function toggleCheckbox(el, section, key) {
+    el.classList.toggle('selected');
+    if (!checkboxValues[section]) checkboxValues[section] = {};
+    checkboxValues[section][key] = el.classList.contains('selected');
+}
+
+function updateNPS(val) {
+    document.getElementById('npsValue').textContent = val;
+    const color = val >= 8 ? '#22c55e' : val >= 5 ? '#f59e0b' : '#ef4444';
+    document.getElementById('npsValue').style.color = color;
+}
+
+// ========== SCORING ==========
+
+function updateSectionScore(section) {
+    if (!LIKERT_SECTIONS[section]) return;
+    const keys = LIKERT_SECTIONS[section];
+    const vals = keys.map(k => (likertValues[section] || {})[k]).filter(v => v !== undefined);
+    if (vals.length === 0) return;
+
+    const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+    const pct = (avg / 5) * 100;
+    const color = avg < 3 ? '#ef4444' : avg <= 3.5 ? '#f59e0b' : '#22c55e';
+    const colorClass = avg < 3 ? 'score-red' : avg <= 3.5 ? 'score-yellow' : 'score-green';
+
+    const scoreEl = document.getElementById(`score-${section}-value`);
+    const barEl = document.getElementById(`score-${section}-bar`);
+    if (scoreEl) {
+        scoreEl.textContent = avg.toFixed(1) + ' / 5.0';
+        scoreEl.style.color = color;
+    }
+    if (barEl) {
+        barEl.style.width = pct + '%';
+        barEl.style.background = color;
+    }
+
+    // Update sidebar badge
+    const sectionIdx = SECTION_NAMES.indexOf(section);
+    const navItem = document.querySelectorAll('.nav-item')[sectionIdx];
+    const badge = navItem.querySelector('.score-badge');
+    if (badge) {
+        badge.textContent = avg.toFixed(1);
+        badge.className = 'score-badge ' + colorClass;
+        badge.style.display = 'inline-block';
+    }
+}
+
+// ========== COLLECT DATA ==========
+
+function collectSectionData(sectionName) {
+    const data = {};
+    // Text/number inputs and textareas
+    document.querySelectorAll(`[data-section="${sectionName}"]`).forEach(el => {
+        const key = el.dataset.key;
+        const val = el.value.trim();
+        if (val) data[key] = el.type === 'number' ? parseFloat(val) : val;
+    });
+    // Likert values
+    if (likertValues[sectionName]) {
+        Object.assign(data, likertValues[sectionName]);
+    }
+    // Traffic light values
+    if (trafficValues[sectionName]) {
+        Object.assign(data, trafficValues[sectionName]);
+    }
+    // Checkbox values
+    if (checkboxValues[sectionName]) {
+        Object.assign(data, checkboxValues[sectionName]);
+    }
+    // NPS slider (customer section)
+    if (sectionName === 'customer') {
+        data.intuitive_nps = parseInt(document.getElementById('npsSlider').value);
+    }
+    // Calculate scores for likert sections
+    if (LIKERT_SECTIONS[sectionName]) {
+        const keys = LIKERT_SECTIONS[sectionName];
+        const vals = keys.map(k => data[k]).filter(v => v !== undefined);
+        if (vals.length > 0) {
+            data._score_avg = parseFloat((vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(2));
+            data._score_count = vals.length;
+        }
+    }
+    return data;
+}
+
+// ========== SAVE ==========
+
+async function saveSection(sectionName) {
+    const statusEl = document.getElementById(`status-${sectionName}`);
+    const data = collectSectionData(sectionName);
+
+    if (Object.keys(data).length === 0) {
+        statusEl.textContent = 'No hay datos para guardar';
+        statusEl.className = 'save-status error';
+        return;
+    }
+
+    statusEl.textContent = 'Guardando...';
+    statusEl.className = 'save-status';
+
+    const payload = {
+        section: sectionName,
+        responses: data,
+        updated_at: new Date().toISOString()
+    };
+
+    try {
+        // Try to update existing record first (upsert via section)
+        const checkRes = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?section=eq.${sectionName}&select=id`, { headers: HEADERS_GET });
+        const existing = await checkRes.json();
+
+        if (Array.isArray(existing) && existing.length > 0) {
+            // Update
+            await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?section=eq.${sectionName}`, {
+                method: 'PATCH', headers: HEADERS,
+                body: JSON.stringify({ responses: data, updated_at: new Date().toISOString() })
+            });
+        } else {
+            // Insert
+            await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`, {
+                method: 'POST', headers: HEADERS,
+                body: JSON.stringify(payload)
+            });
+        }
+
+        sectionData[sectionName] = data;
+        completedSections.add(sectionName);
+        updateProgress();
+        statusEl.textContent = 'Guardado ' + new Date().toLocaleTimeString();
+        statusEl.className = 'save-status success';
+    } catch (e) {
+        console.error('Save error:', e);
+        statusEl.textContent = 'Error al guardar. Intenta de nuevo.';
+        statusEl.className = 'save-status error';
+    }
+}
+
+// ========== LOAD ==========
+
+async function loadAllSections() {
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*`, { headers: HEADERS_GET });
+        const rows = await res.json();
+        if (!Array.isArray(rows)) return;
+
+        rows.forEach(row => {
+            const section = row.section;
+            const data = row.responses || {};
+            sectionData[section] = data;
+            completedSections.add(section);
+
+            // Populate text/number inputs
+            Object.keys(data).forEach(key => {
+                if (key.startsWith('_')) return;
+                const el = document.querySelector(`[data-section="${section}"][data-key="${key}"]`);
+                if (el) {
+                    el.value = data[key];
+                }
+            });
+
+            // Populate likert values
+            if (LIKERT_SECTIONS[section]) {
+                LIKERT_SECTIONS[section].forEach(key => {
+                    if (data[key] !== undefined) {
+                        if (!likertValues[section]) likertValues[section] = {};
+                        likertValues[section][key] = data[key];
+                        // Find and select the button
+                        const allBtns = document.querySelectorAll(`.likert-btn`);
+                        allBtns.forEach(btn => {
+                            const onclick = btn.getAttribute('onclick') || '';
+                            if (onclick.includes(`'${section}'`) && onclick.includes(`'${key}'`) && onclick.includes(`, ${data[key]})`)) {
+                                btn.classList.add('selected');
+                            }
+                        });
+                    }
+                });
+                updateSectionScore(section);
+            }
+
+            // Populate traffic lights
+            ['rock1_status', 'rock2_status', 'rock3_status'].forEach(key => {
+                if (data[key]) {
+                    if (!trafficValues[section]) trafficValues[section] = {};
+                    trafficValues[section][key] = data[key];
+                    const allBtns = document.querySelectorAll('.traffic-btn');
+                    allBtns.forEach(btn => {
+                        const onclick = btn.getAttribute('onclick') || '';
+                        if (onclick.includes(`'${key}'`) && onclick.includes(`'${data[key]}'`)) {
+                            btn.classList.add('selected');
+                            const colorMap = { on_track: 'green', at_risk: 'yellow', behind: 'red' };
+                            btn.classList.add(colorMap[data[key]] || '');
+                        }
+                    });
+                }
+            });
+
+            // Populate checkboxes
+            const checkboxKeys = Object.keys(data).filter(k => k.startsWith('feedback_'));
+            checkboxKeys.forEach(key => {
+                if (data[key]) {
+                    if (!checkboxValues[section]) checkboxValues[section] = {};
+                    checkboxValues[section][key] = true;
+                    const allItems = document.querySelectorAll('.checkbox-item');
+                    allItems.forEach(item => {
+                        const onclick = item.getAttribute('onclick') || '';
+                        if (onclick.includes(`'${key}'`)) {
+                            item.classList.add('selected');
+                        }
+                    });
+                }
+            });
+
+            // NPS slider
+            if (section === 'customer' && data.intuitive_nps !== undefined) {
+                document.getElementById('npsSlider').value = data.intuitive_nps;
+                updateNPS(data.intuitive_nps);
+            }
+
+            // Mark saved status
+            const statusEl = document.getElementById(`status-${section}`);
+            if (statusEl && row.updated_at) {
+                const d = new Date(row.updated_at);
+                statusEl.textContent = 'Ultima vez: ' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
+                statusEl.className = 'save-status success';
+            }
+        });
+
+        updateProgress();
+    } catch (e) {
+        console.error('Load error:', e);
+    }
+}
+
+// ========== PROGRESS ==========
+
+function updateProgress() {
+    const count = completedSections.size;
+    const total = SECTION_NAMES.length;
+    const pct = Math.round((count / total) * 100);
+
+    document.getElementById('progressCount').textContent = `${count}/${total}`;
+    document.getElementById('progressMini').textContent = `${count}/${total}`;
+    document.getElementById('progressBar').style.width = pct + '%';
+
+    // Update nav checkmarks
+    const navItems = document.querySelectorAll('.nav-item');
+    SECTION_NAMES.forEach((name, i) => {
+        if (completedSections.has(name)) {
+            navItems[i].classList.add('completed');
+        } else {
+            navItems[i].classList.remove('completed');
+        }
+    });
+}
+
+// ========== INIT ==========
+loadAllSections();
+</script>
+
+</body>
+</html>

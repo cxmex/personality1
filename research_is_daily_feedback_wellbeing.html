@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Information Systems Theory Applied to Employee Engagement and Well-Being in Small Retail Teams</title>
+    <style>
+        @media print {
+            body { font-size: 11pt; }
+            .no-print { display: none; }
+            .page-break { page-break-before: always; }
+            @page { margin: 2.5cm; size: letter; }
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #fff; color: #1a1a1a; line-height: 1.85;
+            max-width: 800px; margin: 0 auto; padding: 60px 40px;
+        }
+
+        /* Title page */
+        .title-page { text-align: center; padding: 80px 0 60px; }
+        .title-page h1 { font-size: 1.6rem; line-height: 1.4; margin-bottom: 20px; font-weight: 700; }
+        .title-page .subtitle { font-size: 1.1rem; color: #555; font-style: italic; margin-bottom: 30px; }
+        .title-page .author { font-size: 1rem; color: #333; }
+        .title-page .affiliation { font-size: 0.9rem; color: #666; margin-top: 4px; }
+        .title-page .date { font-size: 0.9rem; color: #888; margin-top: 20px; }
+        .title-page .keywords { font-size: 0.85rem; color: #555; margin-top: 30px; text-align: left; padding: 16px; background: #f8f8f8; border-radius: 4px; }
+        .title-page .keywords strong { color: #333; }
+
+        h2 { font-size: 1.2rem; margin: 36px 0 12px; border-bottom: 1px solid #ddd; padding-bottom: 6px; }
+        h3 { font-size: 1.05rem; margin: 24px 0 8px; color: #333; }
+        h4 { font-size: 0.95rem; margin: 18px 0 6px; color: #555; font-style: italic; }
+
+        p { margin-bottom: 14px; text-align: justify; font-size: 0.95rem; }
+        .indent { text-indent: 2em; }
+
+        blockquote {
+            margin: 16px 0 16px 24px; padding: 12px 16px;
+            border-left: 3px solid #ccc; background: #fafafa;
+            font-style: italic; font-size: 0.9rem; color: #444;
+        }
+
+        .figure {
+            margin: 24px 0; padding: 20px; background: #f5f5f5;
+            border: 1px solid #ddd; border-radius: 4px; text-align: center;
+        }
+        .figure-title { font-weight: 700; font-size: 0.85rem; margin-bottom: 12px; }
+        .figure-content { font-family: 'Consolas', monospace; font-size: 0.8rem; line-height: 1.6; text-align: left; padding: 0 20px; }
+        .figure-caption { font-size: 0.8rem; color: #666; margin-top: 10px; font-style: italic; }
+
+        table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.85rem; }
+        th { background: #f0f0f0; padding: 8px 10px; text-align: left; border: 1px solid #ddd; font-weight: 700; }
+        td { padding: 8px 10px; border: 1px solid #ddd; vertical-align: top; }
+
+        .ref { font-size: 0.85rem; margin-bottom: 10px; padding-left: 2em; text-indent: -2em; }
+        .abstract { background: #f8f8f8; padding: 20px; border-radius: 4px; margin: 20px 0; }
+        .abstract h3 { margin-top: 0; }
+
+        .bilingual { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 20px 0; }
+        .bilingual > div { padding: 16px; border-radius: 4px; }
+        .bilingual .es { background: #f0f4ff; border: 1px solid #d0d8ef; }
+        .bilingual .en { background: #f0fff4; border: 1px solid #d0efd8; }
+        .bilingual h4 { margin-top: 0; }
+
+        .model-box {
+            background: #fafafa; border: 2px solid #333; border-radius: 6px;
+            padding: 20px; margin: 20px 0; text-align: center;
+        }
+        .model-box .arrow { color: #999; font-size: 1.2rem; margin: 4px 0; }
+        .model-box .level { padding: 8px; margin: 4px auto; border-radius: 4px; font-size: 0.85rem; font-weight: 600; max-width: 500px; }
+
+        .highlight-box {
+            background: #fff8e1; border: 1px solid #f0d060; border-radius: 4px;
+            padding: 16px; margin: 16px 0; font-size: 0.9rem;
+        }
+
+        .print-btn {
+            position: fixed; top: 20px; right: 20px; padding: 10px 20px;
+            background: #333; color: #fff; border: none; border-radius: 6px;
+            cursor: pointer; font-size: 0.85rem; z-index: 100;
+        }
+        .print-btn:hover { background: #555; }
+
+        /* DFIS Framework Visual */
+        .framework-visual {
+            margin: 30px 0; padding: 30px 20px; background: #fafafa;
+            border: 2px solid #333; border-radius: 8px;
+        }
+        .fw-title {
+            font-size: 1rem; font-weight: 700; text-align: center;
+            margin-bottom: 24px; color: #1a1a1a;
+        }
+        .fw-layer {
+            display: flex; align-items: center; justify-content: center;
+            gap: 12px; margin-bottom: 6px;
+        }
+        .fw-box {
+            padding: 12px 18px; border-radius: 6px; font-size: 0.82rem;
+            font-weight: 600; text-align: center; min-width: 340px;
+            line-height: 1.4;
+        }
+        .fw-moderator {
+            padding: 6px 14px; border-radius: 20px; font-size: 0.72rem;
+            font-weight: 500; text-align: center; color: #555;
+            border: 1px dashed #aaa; background: #fff; max-width: 320px;
+            margin: 0 auto;
+        }
+        .fw-arrow {
+            text-align: center; font-size: 1.1rem; color: #888;
+            margin: 4px 0;
+        }
+        .fw-l1 { background: #e3f2fd; border: 2px solid #1565c0; color: #0d47a1; }
+        .fw-l2 { background: #e8f5e9; border: 2px solid #2e7d32; color: #1b5e20; }
+        .fw-l3 { background: #fff3e0; border: 2px solid #e65100; color: #bf360c; }
+        .fw-l4 { background: #f3e5f5; border: 2px solid #6a1b9a; color: #4a148c; }
+        .fw-l5 { background: #fce4ec; border: 2px solid #b71c1c; color: #b71c1c; }
+        .fw-sub {
+            font-size: 0.72rem; font-weight: 400; display: block;
+            margin-top: 3px; opacity: 0.85;
+        }
+        .proposition-box {
+            background: #f0f4ff; border: 1px solid #c0c8ef; border-radius: 4px;
+            padding: 12px 16px; margin: 10px 0; font-size: 0.88rem;
+        }
+        .proposition-box strong { color: #1a237e; }
+
+        @media (max-width: 600px) {
+            body { padding: 20px 16px; }
+            .bilingual { grid-template-columns: 1fr; }
+            .fw-box { min-width: auto; }
+        }
+    </style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">Print / Save PDF</button>
+
+<!-- ==================== TITLE PAGE ==================== -->
+<div class="title-page">
+    <h1>The Daily Feedback Information System: Applying Information Systems Theory to Employee Engagement, Well-Being, and Team Dynamics in Small Retail Organizations</h1>
+    <div class="subtitle">
+        El Sistema de Informaci&oacute;n de Retroalimentaci&oacute;n Diaria: Aplicando la Teor&iacute;a de Sistemas de Informaci&oacute;n al Compromiso, Bienestar y Din&aacute;mica de Equipo en Peque&ntilde;as Organizaciones de Retail
+    </div>
+    <div class="author">Working Paper &mdash; June 2026</div>
+    <div class="affiliation">Applied Information Systems &amp; Organizational Behavior Research</div>
+    <div class="date">Fundastock Behavioral Science Division</div>
+
+    <div class="keywords">
+        <strong>Keywords:</strong> information systems, daily feedback, employee engagement, well-being, organizational learning, small business, retail, micro-feedback, sociotechnical systems, technology adoption, psychological safety, cybernetics, Mexico, people analytics<br><br>
+        <strong>JEL Classification:</strong> M12 (Personnel Management), M15 (IT Management), M54 (Labor Management), O33 (Technological Change)
+    </div>
+</div>
+
+<!-- ==================== ABSTRACT ==================== -->
+<div class="abstract">
+    <h3>Abstract</h3>
+    <div class="bilingual">
+        <div class="en">
+            <h4>English</h4>
+            <p style="text-align:justify;">Information systems theory has generated a vast body of knowledge about how technology shapes organizational processes, yet this scholarship has overwhelmingly focused on large enterprises pursuing operational efficiency. The application of IS theory to employee well-being &mdash; particularly in the small businesses that constitute 95% of Mexican firms &mdash; remains a critical gap. This paper argues that daily micro-feedback information systems can function simultaneously as measurement instruments and behavioral interventions, creating a dual mechanism through which the act of asking a question both generates data and reshapes organizational behavior. Drawing on information processing theory (Galbraith, 1973), adaptive structuration theory (DeSanctis &amp; Poole, 1994), organizational learning theory (Nonaka &amp; Takeuchi, 1995; Argyris &amp; Sch&ouml;n, 1978), self-determination theory (Deci &amp; Ryan, 2000), cybernetics (Wiener, 1948; Beer, 1972), and the DeLone &amp; McLean IS Success Model (2003), we propose the Daily Feedback Information System (DFIS) model &mdash; a five-layer theoretical framework connecting IS design, adoption, knowledge processes, behavioral outcomes, and well-being. We apply this framework to a real-world case: a five-person retail team in Puebla, Mexico, operating an AI-powered daily feedback platform. Seven testable propositions are advanced. The paper contributes to IS theory by extending it to micro-organizations, establishing the "question-as-intervention" mechanism, and demonstrating how zero-cost cloud architectures can leapfrog the HR infrastructure gap that constrains small business people management.</p>
+        </div>
+        <div class="es">
+            <h4>Espa&ntilde;ol</h4>
+            <p style="text-align:justify;">La teor&iacute;a de sistemas de informaci&oacute;n ha generado un vasto cuerpo de conocimiento sobre c&oacute;mo la tecnolog&iacute;a da forma a los procesos organizacionales, pero esta investigaci&oacute;n se ha enfocado abrumadoramente en grandes empresas que buscan eficiencia operativa. La aplicaci&oacute;n de la teor&iacute;a de SI al bienestar de los empleados &mdash; particularmente en las peque&ntilde;as empresas que constituyen el 95% de las firmas mexicanas &mdash; sigue siendo una brecha cr&iacute;tica. Este art&iacute;culo argumenta que los sistemas de informaci&oacute;n de micro-retroalimentaci&oacute;n diaria pueden funcionar simult&aacute;neamente como instrumentos de medici&oacute;n e intervenciones conductuales. Proponemos el modelo de Sistema de Informaci&oacute;n de Retroalimentaci&oacute;n Diaria (DFIS) &mdash; un marco te&oacute;rico de cinco capas que conecta el dise&ntilde;o del SI, la adopci&oacute;n, los procesos de conocimiento, los resultados conductuales y el bienestar. Aplicamos este marco a un caso real: un equipo de cinco personas en Puebla, M&eacute;xico, operando una plataforma de retroalimentaci&oacute;n diaria impulsada por IA.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 1. INTRODUCTION ==================== -->
+<h2>1. Introduction</h2>
+
+<p class="indent">Small businesses are the backbone of the Mexican economy. According to INEGI (2024), micro and small enterprises account for approximately 95% of all businesses in Mexico, employing over 40% of the formal workforce. These organizations face the same human capital challenges as their larger counterparts &mdash; turnover, disengagement, interpersonal conflict, burnout, and the difficulty of translating individual effort into collective performance &mdash; yet they operate without the HR departments, survey platforms, organizational psychologists, and data analytics teams that Fortune 500 companies deploy to address these problems. The result is a paradox: the organizations that need people management most have the least infrastructure to deliver it.</p>
+
+<p class="indent">The information systems (IS) field has, for decades, studied how technology mediates organizational processes. From management information systems in the 1970s to enterprise resource planning in the 1990s to cloud-based SaaS platforms today, IS research has documented how the design, implementation, and use of technology reshapes how organizations collect, process, and act on information (Laudon &amp; Laudon, 2020). Yet this vast body of scholarship exhibits two conspicuous blind spots. First, it has overwhelmingly focused on large organizations &mdash; the kind that can afford ERP implementations, business intelligence platforms, and IT departments (Devos et al., 2012). Second, when IS research does address organizational outcomes, it typically focuses on efficiency, productivity, and decision-making quality rather than on the human experience of work: engagement, well-being, team cohesion, and psychological safety (Benlian, 2020).</p>
+
+<p class="indent">Meanwhile, the technological landscape has shifted dramatically. The convergence of smartphone ubiquity (even among minimum-wage retail workers in Mexico), cloud database platforms with free tiers (Supabase, Firebase), and large language models capable of sophisticated text analysis (OpenAI, Anthropic) means that a single founder with a laptop can now build an information system with capabilities that would have required a dedicated IT team a decade ago. The barrier is no longer technology &mdash; it is theory. We know how to build the systems; what we lack is a coherent theoretical framework for understanding how a daily feedback IS affects the people who use it, the teams they belong to, and the organizations that deploy it.</p>
+
+<p class="indent">This paper addresses a specific research question: <strong>How can information systems designed for daily employee feedback improve engagement, well-being, and team effectiveness in small retail organizations?</strong> We argue that this question is not merely practical but theoretically significant, because daily micro-feedback systems exhibit a property that distinguishes them from most information systems: the act of measurement is itself an intervention. When an employee is asked "What was the most challenging part of your day?" every afternoon, the question does not passively record information &mdash; it structures attention, promotes reflection, and signals that someone cares about the answer. The IS is simultaneously a sensor and an actuator, a thermometer and a heater.</p>
+
+<p class="indent">This dual nature &mdash; what we term the "question-as-intervention" mechanism &mdash; has profound implications for IS theory, because it means that the traditional separation between information gathering and action-taking collapses. The system changes what it measures. This is not a methodological nuisance to be controlled for (as it is in survey research); it is the primary mechanism through which the IS generates value.</p>
+
+<div class="highlight-box">
+    <strong>Why this matters for retail:</strong> In service industries, the employee experience <em>is</em> the customer experience. A disengaged sales associate does not just produce fewer sales &mdash; they actively repel customers. Heskett et al. (1994) demonstrated this through the service-profit chain: employee satisfaction drives service quality, which drives customer satisfaction, which drives revenue. For a small retail operation where every employee interacts directly with customers, the stakes of engagement are not incremental &mdash; they are existential.
+</div>
+
+<p class="indent">The paper proceeds as follows. Section 2 presents a literature review organized by argument rather than by theory, weaving together threads from information processing theory, sociotechnical systems, organizational learning, self-determination theory, cybernetics, and the emerging literature on algorithmic management. Section 3 proposes the Daily Feedback Information System (DFIS) model, a five-layer framework with seven testable propositions. Section 4 applies this framework to a concrete case: a five-person retail team in Puebla, Mexico, where the platform is being implemented. Section 5 discusses theoretical and practical contributions, and Section 6 concludes.</p>
+
+
+<!-- ==================== 2. LITERATURE REVIEW ==================== -->
+<h2>2. Literature Review</h2>
+
+<p class="indent">The literature relevant to daily feedback information systems spans multiple disciplines that rarely speak to one another: information systems, organizational behavior, social psychology, positive psychology, management science, and cybernetics. Rather than reviewing each discipline in isolation &mdash; a structure that would obscure the connections we wish to draw &mdash; we organize this review around six arguments, each building toward the theoretical framework presented in Section 3.</p>
+
+<h3>2.1 The Information-Behavior Connection: Feedback as Organizational Signal</h3>
+
+<p class="indent">Galbraith's (1973) information processing theory established a foundational principle: organizations are information-processing systems, and their effectiveness depends on the fit between the information processing demands they face and the information processing capacity of their structures. When uncertainty is high &mdash; as it is in retail environments where customer demand, employee availability, and interpersonal dynamics shift daily &mdash; organizations need either to reduce the information they must process (by creating slack resources or self-contained units) or to increase their capacity to process it (by investing in lateral relations and vertical information systems). A daily feedback IS falls squarely in the latter category: it is a vertical information system that increases the organization's capacity to process the soft, interpersonal, emotional information that traditional retail management systems (POS terminals, inventory trackers, scheduling software) completely ignore.</p>
+
+<p class="indent">But feedback is not merely information &mdash; it is a social signal. Kluger and DeNisi's (1996) landmark meta-analysis of feedback interventions examined 131 studies encompassing 12,652 participants and produced a finding that shocked the field: while feedback improved performance on average, more than one-third (38%) of feedback interventions actually decreased performance. This is not a minor qualification &mdash; it means that feedback, naively implemented, is almost as likely to hurt as to help. The critical variable was not whether feedback was given but how it was designed. Feedback that directed attention to the self (threatening ego or identity) impaired performance, while feedback that directed attention to the task (providing specific, actionable information about the work) enhanced it. This finding has direct implications for IS design: a daily question system that asks "How did you feel about your performance today?" (self-directed) will produce different effects than one that asks "What was the biggest obstacle to getting work done today?" (task-directed). The information system's question design is not a UX detail &mdash; it is the primary determinant of whether the system helps or harms.</p>
+
+<p class="indent">Perhaps most provocatively, Morwitz, Johnson, and Schmittlein (1993) documented what they termed the "mere measurement effect": the act of asking people about their intentions changes their subsequent behavior. In their study, consumers who were surveyed about their purchase intentions were significantly more likely to actually make purchases. Subsequent research has confirmed this effect across domains &mdash; asking people about exercise increases exercise (Godin et al., 2008), asking about voting increases voter turnout (Greenwald et al., 1987), and asking about prosocial behavior increases prosocial behavior (Sherman, 1980). The mechanism is cognitive: answering a question activates mental representations, forms implementation intentions, and creates a sense of commitment. For a daily feedback IS, this means that asking an employee "Did you help a teammate today?" is not merely measuring cooperation &mdash; it is promoting it. The IS is not a passive mirror; it is an active sculptor of organizational behavior.</p>
+
+<div class="highlight-box">
+    <strong>Key insight:</strong> The mere measurement effect transforms the theoretical status of a daily feedback IS. It is not just a data collection tool with a behavioral side effect &mdash; the behavioral effect <em>is</em> the primary mechanism of impact. The data collected is valuable, but the real value lies in the daily act of asking.
+</div>
+
+<h3>2.2 Technology as a Social Force: Why the Medium Reshapes the Message</h3>
+
+<p class="indent">The sociotechnical systems (STS) tradition, originating with Trist and Bamforth's (1951) landmark study of coal mining, established that technology and social systems are not independent &mdash; they co-evolve, each shaping the other in a continuous process of mutual adaptation. Trist and Bamforth showed that when longwall mining technology was introduced into British coal mines, it did not simply change the technical process of extraction; it destroyed the social organization of work teams, leading to absenteeism, conflict, and psychological distress. The lesson was clear: a technology that is technically superior can be organizationally destructive if it is designed without regard for the social system it enters.</p>
+
+<p class="indent">This insight was formalized for information systems by DeSanctis and Poole's (1994) Adaptive Structuration Theory (AST), which argued that the effects of a technology cannot be predicted from its features alone &mdash; they emerge from the process of "appropriation," the ways in which groups actually use, modify, and give meaning to a technology in practice. DeSanctis and Poole distinguished between "faithful" appropriation (using the technology as its designers intended) and "ironic" appropriation (using it in ways that contradict or subvert the designers' intent). For a daily feedback system, ironic appropriation might take the form of employees giving performative positive responses to appear engaged, managers cherry-picking data to confirm pre-existing beliefs, or the system being weaponized for surveillance rather than support. AST predicts that these appropriation patterns are not aberrations &mdash; they are the normal, expected process through which a technology becomes embedded in (or rejected by) a social system.</p>
+
+<p class="indent">At the individual level, the Technology Acceptance Model (TAM; Davis, 1989) and its successor, the Unified Theory of Acceptance and Use of Technology (UTAUT; Venkatesh et al., 2003), identify the primary drivers of whether a person will use a new technology: perceived usefulness ("Will this make my work better?") and perceived ease of use ("Can I use this without effort?"), moderated by social influence, facilitating conditions, and individual characteristics. For a daily feedback system targeting retail employees &mdash; many of whom have limited formal education and may associate "systems" with surveillance or additional work &mdash; the TAM/UTAUT framework makes specific predictions: adoption will hinge on whether employees perceive the system as genuinely useful to them (not just to management) and whether answering a daily question feels effortless rather than burdensome. Venkatesh et al. (2003) showed that in organizational settings, social influence (what my coworkers and supervisor think about the system) is a significant predictor of adoption, especially in the early stages. This suggests that the first employees to adopt the system &mdash; and their vocal reaction to it &mdash; will disproportionately determine its fate.</p>
+
+<p class="indent">The implication for practice is stark: a daily feedback IS cannot be designed as a purely technical artifact. It must be designed as a sociotechnical system that accounts for the social dynamics, power relationships, cultural norms, and individual psychology of its users. In a Mexican retail context, this means attending to factors that Western IS research often overlooks: the high-context communication style that characterizes Mexican workplace culture (Hall, 1976), the importance of <em>confianza</em> (trust based on personal relationship) in employer-employee dynamics (Davila &amp; Elvira, 2012), and the sensitivity around any system that might be perceived as <em>vigilancia</em> (surveillance) in a culture where workplace power dynamics are already fraught with tension.</p>
+
+<h3>2.3 From Data to Knowledge to Action: The Learning Organization at Scale</h3>
+
+<p class="indent">The most powerful theoretical contribution of a daily feedback IS may be its capacity to transform an organization's learning processes. Nonaka and Takeuchi's (1995) SECI model describes four modes of knowledge creation: socialization (tacit to tacit, through shared experience), externalization (tacit to explicit, through articulation), combination (explicit to explicit, through systematization), and internalization (explicit to tacit, through learning-by-doing). In a traditional small retail operation, most knowledge is tacit &mdash; it lives in the heads of individual employees and is never systematically captured. The store manager knows that Mondays are difficult for one employee because of a long commute, that two team members have a simmering conflict about shelf-stocking responsibilities, and that the new hire is struggling with customer objections &mdash; but this knowledge exists only as unspoken intuition, vulnerable to forgetting, bias, and the departure of the manager.</p>
+
+<p class="indent">A daily feedback IS performs externalization at scale. When an employee types "Today was tough because the delivery was late and I had to handle it alone while others were on break," they are converting tacit experience into explicit, stored, analyzable text. Over days and weeks, the accumulated responses create what Huber (1991) termed "organizational memory" &mdash; a distributed record of the team's lived experience that can be searched, analyzed, and learned from. With AI-powered natural language processing, this organizational memory becomes not just a passive archive but an active knowledge management system: the AI can detect patterns ("workload complaints increase on Tuesdays and Thursdays"), identify sentiment trends ("Team morale has been declining over the past two weeks"), and surface issues that no individual &mdash; manager or employee &mdash; would notice from their limited vantage point.</p>
+
+<p class="indent">Argyris and Sch&ouml;n (1978) distinguished between single-loop learning (detecting and correcting errors within existing frameworks) and double-loop learning (questioning and modifying the frameworks themselves). Most daily management in small retail operates in single-loop mode: the schedule is wrong, so we fix the schedule; a customer complained, so we apologize. Double-loop learning would ask: "Why do we keep having scheduling problems? Is our assumption about staffing needs wrong? Is the real issue that employees don't communicate availability changes?" Well-designed daily questions can prompt double-loop learning by asking not just "What happened?" but "Why do you think it happened?" and "What would need to change to prevent it?" Over time, the accumulated responses reveal the systemic patterns that single-loop management never addresses.</p>
+
+<p class="indent">Senge's (1990) concept of the "learning organization" &mdash; one where people continually expand their capacity to create the results they truly desire &mdash; has long been considered aspirational for large corporations and irrelevant for small businesses. But a daily feedback IS effectively implements Senge's five disciplines at minimal cost: personal mastery (daily reflection questions), mental models (surfacing assumptions through open-ended prompts), shared vision (asking about alignment and purpose), team learning (aggregating individual insights into collective understanding), and systems thinking (AI-powered pattern detection that reveals systemic dynamics). The daily feedback IS does not just support learning; it <em>is</em> the learning infrastructure.</p>
+
+<p class="indent">Huber (1991) made an argument that connects IS theory directly to organizational learning theory: "An entity learns if, through its processing of information, the range of its potential behaviors is changed" (p. 89). By this definition, organizational learning <em>is</em> information processing. A daily feedback IS that collects, stores, analyzes, and acts on employee insights is, by Huber's definition, a learning system. The quality of organizational learning is therefore a direct function of the quality of the information system &mdash; its reach (does it capture information from all employees?), its fidelity (does it capture honest, nuanced responses?), and its throughput (does the information reach decision-makers in time to act on it?).</p>
+
+<h3>2.4 Engagement and Well-Being Through Information Systems</h3>
+
+<p class="indent">Self-Determination Theory (SDT; Deci &amp; Ryan, 2000; Ryan &amp; Deci, 2017) posits three basic psychological needs whose satisfaction is essential for intrinsic motivation, engagement, and well-being: autonomy (the need to feel volitional and self-directed), competence (the need to feel effective and capable), and relatedness (the need to feel connected and cared for). SDT makes a critical distinction between contexts that <em>support</em> these needs and contexts that <em>thwart</em> them, and research consistently shows that need satisfaction predicts engagement, performance, well-being, and retention, while need frustration predicts burnout, turnover, and psychological distress (Van den Broeck et al., 2016).</p>
+
+<p class="indent">A daily feedback IS can either support or undermine each SDT need, and the difference lies entirely in design. <strong>Autonomy</strong> is supported when employees choose whether, when, and how to respond, and when they see that their input genuinely influences decisions; autonomy is thwarted when participation is mandatory, responses are monitored for compliance, or the system is perceived as a control mechanism. <strong>Competence</strong> is supported when questions prompt reflection on achievements, learning, and growth, and when AI-generated insights help employees understand their own patterns; competence is thwarted when questions focus exclusively on problems, failures, or deficiencies. <strong>Relatedness</strong> is supported when the system facilitates recognition, gratitude, and connection ("Who helped you today?"), and when employees know that a human being reads and responds to their answers; relatedness is thwarted when the system replaces human interaction rather than enhancing it.</p>
+
+<p class="indent">Edmondson's (1999) research on psychological safety &mdash; "a shared belief held by members of a team that the team is safe for interpersonal risk taking" (p. 350) &mdash; identifies a crucial precondition for voice, learning, and collaboration. In teams with low psychological safety, employees withhold concerns, suppress disagreements, and present a curated version of their experience. Edmondson found that the highest-performing medical teams were not those with the fewest errors but those that <em>reported</em> the most errors, because reporting enabled learning. A daily feedback IS with anonymity features creates what we might call an "anonymous voice channel" &mdash; a communication pathway where employees can express concerns that they would never raise face-to-face, particularly in high-power-distance cultures like Mexico's (Hofstede, 2001).</p>
+
+<p class="indent">The business case for engagement is well-established. Harter, Schmidt, and Hayes's (2002) meta-analysis for Gallup, encompassing 7,939 business units and 36 companies, found that engagement was significantly related to customer satisfaction (r = .33), productivity (r = .25), and turnover (r = -.30). The most recent Gallup meta-analysis (Harter, 2024) extends these findings: business units in the top quartile of engagement show 23% higher profitability, 18% higher productivity in sales, and 59% less turnover than those in the bottom quartile. The service-profit chain model (Heskett et al., 1994, 2008) explains the mechanism in service industries: internal service quality (how the organization treats employees) drives employee satisfaction, which drives employee retention and productivity, which drives external service value, which drives customer satisfaction and loyalty, which drives revenue and profit. Each link in this chain is well-documented; the contribution of a daily feedback IS is to strengthen the first link &mdash; internal service quality &mdash; by giving employees a voice and demonstrating that management is listening.</p>
+
+<p class="indent">From positive psychology, Seligman, Steen, Park, and Peterson (2005) demonstrated that simple daily interventions &mdash; writing three good things that happened today, using a signature strength in a new way &mdash; increased happiness and decreased depressive symptoms for six months. These interventions work through attentional mechanisms: by directing attention toward positive experiences, they counteract the negativity bias that characterizes default human cognition (Baumeister et al., 2001). A daily feedback system that includes gratitude questions ("What went well today?" "Who did something you appreciated?") is, in effect, delivering a positive psychology intervention every workday, embedded within the normal rhythm of work rather than requiring a separate wellness program.</p>
+
+<p class="indent">Finally, the Job Demands-Resources (JD-R) model (Bakker &amp; Demerouti, 2007, 2017) provides a framework for understanding how a daily feedback IS fits into the broader ecology of work. The JD-R model posits two parallel processes: job demands (workload, time pressure, emotional demands) trigger a health impairment process leading to burnout, while job resources (autonomy, feedback, social support, development opportunities) trigger a motivational process leading to engagement. Critically, resources buffer the impact of demands &mdash; an employee facing high demands but receiving strong social support and meaningful feedback is less likely to burn out than one facing the same demands without those resources. A daily feedback IS serves as a job resource along multiple dimensions: it provides feedback (the system itself), social support (knowing someone is listening), and autonomy (having a voice in how work is done). The JD-R model predicts that this resource will both directly promote engagement and buffer against the negative effects of the demands that retail work inevitably entails &mdash; long hours, difficult customers, physical fatigue, and low pay.</p>
+
+<h3>2.5 The Cybernetic Organization: Feedback Loops as Self-Governance</h3>
+
+<p class="indent">Cybernetics &mdash; the science of communication and control in systems &mdash; provides perhaps the most fundamental theoretical lens for understanding daily feedback information systems. Wiener (1948) established the core principle: a system that receives feedback about the effects of its actions can self-regulate. A thermostat maintains room temperature not because it "knows" anything about thermodynamics but because it has a sensor (thermometer), a reference signal (desired temperature), a comparator (the difference between actual and desired), and an effector (the heating or cooling system). The daily feedback IS implements exactly this cybernetic architecture for organizational well-being: the daily questions are the sensor, the organization's values and goals are the reference signal, AI analysis computes the gap, and management action is the effector.</p>
+
+<p class="indent">Beer's (1972, 1979) Viable System Model (VSM) extends cybernetic principles to organizational design, arguing that any viable organization &mdash; one capable of surviving in a changing environment &mdash; must implement five necessary and sufficient systems: System 1 (operations), System 2 (coordination), System 3 (internal oversight and optimization), System 4 (environmental scanning and strategy), and System 5 (identity and policy). In a five-person retail team, these functions are typically collapsed into a single manager who is simultaneously operating (selling), coordinating (scheduling), overseeing (monitoring), scanning (watching the market), and governing (setting policy). This is cognitively unsustainable. A daily feedback IS offloads parts of Systems 2 and 3 to technology: the IS coordinates by surfacing scheduling conflicts and workload imbalances before they become crises, and it provides internal oversight by tracking engagement trends and flagging anomalies. Beer would recognize this as "variety amplification" &mdash; increasing the manager's capacity to absorb and respond to the complexity of the human system.</p>
+
+<p class="indent">Deming's Plan-Do-Check-Act (PDCA) cycle, foundational to quality management, maps naturally onto a daily feedback rhythm. In the morning, a question about priorities or challenges constitutes the <em>Plan</em> phase ("What is your biggest goal for today?"). The workday is the <em>Do</em> phase. An end-of-day reflection question constitutes the <em>Check</em> phase ("Did you achieve what you set out to do?"). The manager's response the following morning &mdash; informed by AI analysis of the aggregated responses &mdash; constitutes the <em>Act</em> phase. This daily PDCA cycle, repeated over weeks and months, creates a continuous improvement process that operates at a speed traditional management review cycles (quarterly, annually) cannot match. Deming (1986) argued that most quality problems are systemic rather than individual; a daily feedback IS provides the data density needed to identify systemic patterns rather than blaming individuals.</p>
+
+<p class="indent">DeLone and McLean's (1992, 2003) IS Success Model provides the most widely used framework for evaluating information systems. The updated model identifies six dimensions of IS success: system quality (reliability, usability, response time), information quality (accuracy, completeness, relevance, timeliness), service quality (responsiveness of IS support), use (frequency and nature of system use), user satisfaction (how users feel about the system), and net benefits (the impact on individuals, groups, and organizations). For a daily feedback IS, this framework makes specific predictions: system quality (a question that loads instantly on a phone, takes 30 seconds to answer, and never crashes) and information quality (questions that are relevant, clearly worded, and varied) drive use (daily participation) and satisfaction (employees feel the system is worthwhile), which together drive net benefits (improved engagement, well-being, and business outcomes). Critically, DeLone and McLean (2003) emphasized that net benefits must be assessed from multiple stakeholder perspectives &mdash; what benefits the organization may not benefit the employee, and vice versa. A daily feedback IS must generate net benefits for both to be sustainable.</p>
+
+<h3>2.6 The Dark Side: Algorithmic Management, Surveillance, and the Ethics of Continuous Measurement</h3>
+
+<p class="indent">No discussion of daily employee feedback systems would be complete without confronting the dark side of the technology. Duggan, Sherman, Carbery, and McDonnell (2020) documented the rise of "algorithmic management" &mdash; the use of algorithms to monitor, evaluate, and direct workers &mdash; and identified a growing tension between engagement technology and surveillance technology. The line between "we care about how you're doing" and "we are watching you" is thin, and it is drawn not by the technology itself but by the power dynamics, cultural norms, and design choices that surround it. An Amazon warehouse worker whose every movement is tracked by algorithms (Delfanti, 2021) and a Google engineer who voluntarily completes a daily pulse survey are both subjects of information systems that collect behavioral data &mdash; but the experiences are radically different.</p>
+
+<p class="indent">Wood (2021) argued that algorithmic management fundamentally alters the employment relationship by shifting control from human supervisors (who can be negotiated with, appealed to, and held accountable) to algorithmic systems (which are opaque, non-negotiable, and often unaccountable). For a daily feedback IS, this critique raises urgent design questions: Can employees opt out without consequences? Do they know exactly what data is collected and who sees it? Is anonymity genuinely guaranteed, or can managers identify respondents through contextual clues? Is the AI making recommendations, or is it making decisions? The difference between "the AI suggests that Team Member A may be at flight risk" and "the AI has flagged Team Member A for a retention conversation" is the difference between a decision support tool and an algorithmic manager.</p>
+
+<p class="indent">The consent problem is particularly acute in small teams. In a 5,000-person organization, anonymity is relatively easy to guarantee &mdash; responses are lost in the crowd. In a five-person team, true anonymity is much harder. If four employees answer the daily question and one doesn't, the manager knows who declined. If one response mentions "the morning shift," the manager may be able to identify the respondent. Rosenblat and Stark (2016) argued that digital platforms create "informational asymmetries" that shift power to management; in a small team, these asymmetries are amplified because the manager has intimate knowledge of each employee that can be used to de-anonymize responses.</p>
+
+<p class="indent">Design principles for ethical people analytics IS have emerged from this critical literature. Tursunbayeva, Di Lauro, and Pagliari (2018) proposed transparency (employees know what is collected and why), consent (participation is genuinely voluntary), anonymity (individual responses cannot be linked to individuals), purpose limitation (data is used only for stated purposes), human override (algorithmic recommendations are never automatically acted upon), and benefit sharing (employees see tangible benefits from the system, not just management). To these we add a seventh principle particularly relevant to the daily feedback context: response sovereignty &mdash; employees own their responses and can delete, modify, or export them at any time.</p>
+
+<div class="highlight-box">
+    <strong>The trust paradox:</strong> A daily feedback IS designed to measure and build trust must itself be trusted. If employees do not trust the system &mdash; its anonymity, its purpose, the people behind it &mdash; they will either refuse to participate or provide inauthentic responses, and the system will measure nothing but performative compliance. Trust is not a feature to be engineered; it is an emergent property of consistent, transparent, ethical behavior by the humans who designed and operate the system. The IS can facilitate trust, but it cannot manufacture it.
+</div>
+
+
+<!-- ==================== 3. PROPOSED THEORETICAL FRAMEWORK ==================== -->
+<div class="page-break"></div>
+<h2>3. Proposed Theoretical Framework: The Daily Feedback Information System (DFIS) Model</h2>
+
+<p class="indent">Drawing on the six streams of literature reviewed above, we propose a five-layer theoretical framework for understanding how daily feedback information systems affect employee engagement, well-being, and team effectiveness. The model, depicted in Figure 1, describes a causal chain from IS design through adoption, knowledge processes, and behavioral outcomes to well-being and performance, with each transition moderated by contextual factors identified in the literature.</p>
+
+<!-- ===== VISUAL FRAMEWORK ===== -->
+<div class="framework-visual">
+    <div class="fw-title">Figure 1. The Daily Feedback Information System (DFIS) Model</div>
+
+    <!-- Layer 1 -->
+    <div class="fw-layer">
+        <div class="fw-box fw-l1">
+            <strong>Layer 1: IS Design</strong>
+            <span class="fw-sub">System quality &bull; Question design (task- vs. self-directed) &bull; Delivery channel &bull; Anonymity architecture &bull; Timing &amp; frequency</span>
+        </div>
+    </div>
+    <div class="fw-arrow">&darr;</div>
+    <div class="fw-moderator">Moderated by TAM factors: perceived usefulness, perceived ease of use, social influence (Davis, 1989; Venkatesh et al., 2003)</div>
+    <div class="fw-arrow">&darr;</div>
+
+    <!-- Layer 2 -->
+    <div class="fw-layer">
+        <div class="fw-box fw-l2">
+            <strong>Layer 2: Adoption &amp; Appropriation</strong>
+            <span class="fw-sub">Faithful vs. ironic appropriation &bull; Participation rate &bull; Response quality (depth, honesty) &bull; Sustained use over time</span>
+        </div>
+    </div>
+    <div class="fw-arrow">&darr;</div>
+    <div class="fw-moderator">Moderated by psychological safety (Edmondson, 1999) and organizational trust</div>
+    <div class="fw-arrow">&darr;</div>
+
+    <!-- Layer 3 -->
+    <div class="fw-layer">
+        <div class="fw-box fw-l3">
+            <strong>Layer 3: Knowledge Processes</strong>
+            <span class="fw-sub">Tacit &rarr; explicit conversion (SECI) &bull; AI-powered pattern detection &bull; Organizational memory creation &bull; Single- &amp; double-loop learning</span>
+        </div>
+    </div>
+    <div class="fw-arrow">&darr;</div>
+    <div class="fw-moderator">Moderated by management responsiveness: the action-response loop (do leaders act on insights?)</div>
+    <div class="fw-arrow">&darr;</div>
+
+    <!-- Layer 4 -->
+    <div class="fw-layer">
+        <div class="fw-box fw-l4">
+            <strong>Layer 4: Behavioral Outcomes</strong>
+            <span class="fw-sub">Employee voice &bull; Collaboration &bull; Conflict reduction &bull; Strengths-based task allocation &bull; Reflective practice &bull; Organizational citizenship</span>
+        </div>
+    </div>
+    <div class="fw-arrow">&darr;</div>
+    <div class="fw-moderator">Moderated by SDT need satisfaction: autonomy, competence, relatedness (Deci &amp; Ryan, 2000)</div>
+    <div class="fw-arrow">&darr;</div>
+
+    <!-- Layer 5 -->
+    <div class="fw-layer">
+        <div class="fw-box fw-l5">
+            <strong>Layer 5: Well-Being &amp; Performance</strong>
+            <span class="fw-sub">Job satisfaction &bull; Reduced burnout &bull; Team cohesion &bull; Customer satisfaction &bull; Sales performance &bull; Employee retention</span>
+        </div>
+    </div>
+
+    <div class="figure-caption" style="margin-top: 20px;">Note: Arrows represent theorized causal influence. Dashed boxes represent moderating variables. Feedback loops (not shown for clarity) connect Layer 5 outcomes back to Layer 1 through system redesign and Layer 2 through sustained engagement.</div>
+</div>
+
+<h3>3.1 Layer 1: IS Design</h3>
+
+<p class="indent">The foundation of the model is the design of the information system itself. Drawing on DeLone and McLean (2003), we identify five design dimensions that determine whether the IS enables or undermines subsequent layers: (a) <em>system quality</em> &mdash; reliability, speed, mobile accessibility; (b) <em>question design</em> &mdash; following Kluger and DeNisi (1996), questions must be task-directed rather than self-directed, varied to prevent habituation, and calibrated for the reading level and cultural context of the user population; (c) <em>delivery channel</em> &mdash; web-based, SMS, WhatsApp, or integrated into existing workflows; (d) <em>anonymity architecture</em> &mdash; the degree and credibility of anonymity guarantees; and (e) <em>timing and frequency</em> &mdash; when questions are delivered and how often, which affects both response rates and the mere measurement effect.</p>
+
+<h3>3.2 Layer 2: Adoption and Appropriation</h3>
+
+<p class="indent">Drawing on TAM/UTAUT (Davis, 1989; Venkatesh et al., 2003) and AST (DeSanctis &amp; Poole, 1994), Layer 2 captures the process through which the designed IS becomes an embedded organizational practice &mdash; or fails to do so. We distinguish between four adoption outcomes: (a) <em>enthusiastic adoption</em> (high participation, thoughtful responses), (b) <em>compliant participation</em> (responses are given but are perfunctory), (c) <em>ironic appropriation</em> (the system is used in unintended ways), and (d) <em>rejection</em> (non-use). The transition from Layer 1 to Layer 2 is moderated by TAM factors, with perceived usefulness being the strongest predictor. In small teams, social influence operates through direct observation &mdash; if the most respected team member openly dismisses the system, adoption will fail regardless of design quality.</p>
+
+<h3>3.3 Layer 3: Knowledge Processes</h3>
+
+<p class="indent">When the IS achieves genuine adoption (enthusiastic or at least faithful), it activates knowledge creation and organizational learning processes. Drawing on Nonaka and Takeuchi (1995), daily responses externalize tacit knowledge that would otherwise remain inaccessible. Drawing on Huber (1991), the accumulated responses create organizational memory. And drawing on Argyris and Sch&ouml;n (1978), the pattern-detection capabilities of AI analysis enable double-loop learning by revealing systemic issues that day-to-day management would miss. The transition from Layer 2 to Layer 3 is moderated by a critical variable: management responsiveness. If employees provide honest feedback but see no evidence that management reads, acknowledges, or acts on it, the knowledge creation process stalls. Employees learn that the IS is a data sink, not a communication channel, and response quality deteriorates until the system produces noise rather than signal.</p>
+
+<h3>3.4 Layer 4: Behavioral Outcomes</h3>
+
+<p class="indent">Knowledge processes, when sustained, produce changes in individual and team behavior. These include increased employee voice (Morrison, 2011), more frequent and constructive collaboration, reduced interpersonal conflict (because issues surface before they escalate), strengths-based task allocation (because the IS reveals individual strengths and preferences that enable better job crafting), and habitual reflective practice (the daily question becomes a cognitive habit that persists even without the IS prompt). The transition from Layer 3 to Layer 4 is moderated by SDT need satisfaction: behavioral changes are sustained only if employees experience the IS-mediated process as supporting their autonomy ("I chose to share this"), competence ("This helps me grow"), and relatedness ("We are connected through this").</p>
+
+<h3>3.5 Layer 5: Well-Being and Performance</h3>
+
+<p class="indent">Sustained behavioral changes accumulate into measurable outcomes at individual, team, and organizational levels. Drawing on the JD-R model (Bakker &amp; Demerouti, 2007), the IS-as-resource promotes engagement and buffers against burnout. Drawing on the service-profit chain (Heskett et al., 1994), improved employee well-being translates into better customer experiences and revenue. Drawing on Edmondson (1999), increased psychological safety enables the team learning behaviors that drive innovation and error reduction. These outcomes are not instantaneous; the model predicts a lag of weeks to months between adoption and measurable well-being improvements, and months to quarters between well-being improvements and business performance improvements.</p>
+
+<h3>3.6 Key Propositions</h3>
+
+<div class="proposition-box">
+    <strong>Proposition 1:</strong> Daily micro-feedback IS increases employee voice behavior (frequency and quality of upward communication) more than periodic survey instruments, controlling for question content. <em>Mechanism:</em> Higher frequency creates more opportunities for voice; lower per-instance effort reduces the activation threshold for speaking up.
+</div>
+
+<div class="proposition-box">
+    <strong>Proposition 2:</strong> The mere measurement effect means that daily feedback questions function as behavioral interventions, producing changes in the measured behavior independent of any management response to the data. <em>Mechanism:</em> Cognitive activation, implementation intentions, and commitment effects (Morwitz et al., 1993).
+</div>
+
+<div class="proposition-box">
+    <strong>Proposition 3:</strong> Management responsiveness &mdash; the degree to which leaders visibly acknowledge and act on feedback &mdash; moderates ALL relationships in the DFIS model. Without responsiveness, the system degenerates from a communication channel to a data sink. <em>Mechanism:</em> Reinforcement learning; employees learn whether feedback leads to change or is ignored.
+</div>
+
+<div class="proposition-box">
+    <strong>Proposition 4:</strong> Anonymity design moderates the relationship between IS adoption and honest participation. Credible anonymity increases response honesty, particularly in high-power-distance cultures (Hofstede, 2001) and teams with low baseline psychological safety. <em>Mechanism:</em> Reduced social desirability bias and fear of retaliation.
+</div>
+
+<div class="proposition-box">
+    <strong>Proposition 5:</strong> AI-augmented analysis enables pattern detection that human managers miss, because AI can process the volume and complexity of daily textual responses that exceed human cognitive capacity. <em>Mechanism:</em> Computational capacity for natural language processing and longitudinal trend analysis; absence of recency bias, halo effect, and selective attention.
+</div>
+
+<div class="proposition-box">
+    <strong>Proposition 6:</strong> The system's impact on well-being is fully mediated by SDT need satisfaction. A daily feedback IS that satisfies autonomy, competence, and relatedness needs improves well-being; one that frustrates these needs (through mandatory participation, evaluative questioning, or replacing human connection) decreases well-being. <em>Mechanism:</em> Basic psychological need satisfaction as the universal pathway to well-being (Ryan &amp; Deci, 2017).
+</div>
+
+<div class="proposition-box">
+    <strong>Proposition 7:</strong> In small teams (&lt;10 members), the DFIS model operates through direct interpersonal mechanisms (individual relationships, face-to-face follow-up, personal trust) rather than through organizational culture or institutional processes. <em>Mechanism:</em> In small teams, every employee has a direct relationship with the manager and with every teammate; there is no organizational "culture" separate from the sum of these dyadic relationships.
+</div>
+
+<table>
+    <caption style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">Table 1. Mapping Theoretical Foundations to DFIS Model Layers</caption>
+    <tr>
+        <th>DFIS Layer</th>
+        <th>Primary Theories</th>
+        <th>Key Constructs</th>
+        <th>Moderators</th>
+    </tr>
+    <tr>
+        <td>Layer 1: IS Design</td>
+        <td>DeLone &amp; McLean (2003); Kluger &amp; DeNisi (1996)</td>
+        <td>System quality, information quality, question framing</td>
+        <td>&mdash;</td>
+    </tr>
+    <tr>
+        <td>Layer 2: Adoption</td>
+        <td>TAM (Davis, 1989); UTAUT (Venkatesh et al., 2003); AST (DeSanctis &amp; Poole, 1994)</td>
+        <td>Perceived usefulness, ease of use, faithful vs. ironic appropriation</td>
+        <td>TAM factors, social influence</td>
+    </tr>
+    <tr>
+        <td>Layer 3: Knowledge</td>
+        <td>SECI (Nonaka &amp; Takeuchi, 1995); Huber (1991); Argyris &amp; Sch&ouml;n (1978)</td>
+        <td>Externalization, organizational memory, double-loop learning</td>
+        <td>Management responsiveness</td>
+    </tr>
+    <tr>
+        <td>Layer 4: Behavior</td>
+        <td>SDT (Deci &amp; Ryan, 2000); Edmondson (1999); Morrison (2011)</td>
+        <td>Voice, collaboration, reflective practice</td>
+        <td>Autonomy, competence, relatedness</td>
+    </tr>
+    <tr>
+        <td>Layer 5: Outcomes</td>
+        <td>JD-R (Bakker &amp; Demerouti, 2007); Service-profit chain (Heskett et al., 1994); Seligman et al. (2005)</td>
+        <td>Engagement, well-being, customer satisfaction, retention</td>
+        <td>Industry context, team size</td>
+    </tr>
+</table>
+
+
+<!-- ==================== 4. APPLICATION ==================== -->
+<div class="page-break"></div>
+<h2>4. Application: The Plaza Teresa Case</h2>
+
+<h3>4.1 Organizational Context</h3>
+
+<p class="indent">Plaza Teresa is a small retail operation in Puebla, Mexico, selling phone cases and accessories across two locations with a team of five employees. The business is founder-managed, with the owner (who is also the researcher developing this framework) directly overseeing daily operations. Like the vast majority of Mexican micro-enterprises, Plaza Teresa has no HR department, no employee survey platform, no organizational psychologist on staff, and until recently, no systematic method for understanding the human dynamics that drive &mdash; or undermine &mdash; business performance.</p>
+
+<p class="indent">The current people management infrastructure, developed over the past several months, includes: (a) a weekly feedback questionnaire based on Edmondson's psychological safety research and Dalio's radical transparency principles, delivered via a custom-built web application; (b) personality assessments (DISC, Big Five, MBTI, Allport values, Terman cognitive ability, and competency-based evaluations) administered during onboarding through a FastAPI-based platform backed by Supabase; and (c) an anonymous suggestion box accessible via a dedicated web endpoint. These tools represent a significant advance over the zero-infrastructure baseline, but they have three critical limitations that motivate the daily feedback IS proposal.</p>
+
+<p class="indent">First, the weekly questionnaire captures a snapshot of team dynamics every seven days, meaning that interpersonal conflicts, workload imbalances, and morale shifts can develop for up to six days before surfacing. In a retail environment where a single bad day can lose a customer permanently, this latency is too high. Second, the weekly format creates a "survey burden" effect where employees must retrospectively reconstruct their week's experience in a single sitting, introducing recency bias (the most recent day's events dominate recall) and recall bias (memorable events are overweighted relative to routine ones). Third, the current system collects data but lacks the analytical capacity to detect patterns across employees and across time &mdash; the founder reads responses individually but cannot systematically identify that, for example, three employees independently mentioned workload fairness in different weeks, or that one employee's engagement scores have been steadily declining over a month.</p>
+
+<h3>4.2 Mapping the DFIS Framework to Plaza Teresa</h3>
+
+<p class="indent"><strong>Layer 1: IS Design.</strong> The proposed system delivers a single daily question to each employee via a web endpoint accessible on their smartphones. Questions are drawn from a rotating bank designed to cover multiple domains: task feedback ("What was the biggest obstacle to getting work done today?"), interpersonal dynamics ("Did a teammate do something you appreciated today?"), well-being ("On a scale of 1-5, how was your energy level today?"), learning ("What did you learn today?"), and open voice ("Is there anything on your mind that you'd like to share?"). Each question takes less than 30 seconds to answer. Responses are stored in Supabase with timestamps but without employee identifiers for questions marked as anonymous. The system runs on the same FastAPI infrastructure as the existing assessment platform, requiring zero additional technology investment.</p>
+
+<p class="indent"><strong>Layer 2: Adoption and Appropriation.</strong> TAM analysis for this context predicts favorable adoption conditions. Perceived usefulness is high because employees have already experienced the weekly questionnaire and have seen their feedback lead to concrete changes (schedule adjustments, role modifications, conflict mediation). Perceived ease of use is high because the interaction requires a single tap to open the link and 15-30 seconds to type or select a response. Social influence is favorable because the founder has established a culture of feedback openness. The primary risk is ironic appropriation &mdash; employees giving perfunctory or performative responses to "check the box" &mdash; which the system addresses through question variety (different questions each day prevent scripted responses) and visible responsiveness (the founder acts on insights within 24 hours).</p>
+
+<p class="indent"><strong>Layer 3: Knowledge Processes.</strong> This is where the AI integration becomes transformative. Claude (Anthropic's large language model) serves as the analytical engine, processing daily responses to: (a) detect sentiment trends over time, (b) identify recurring themes across employees, (c) flag anomalies (sudden drops in engagement, unexpected topics), (d) generate a daily manager briefing summarizing the team's collective state, and (e) suggest specific actions based on the patterns detected. This AI-powered analysis implements Nonaka and Takeuchi's externalization at scale: tacit knowledge that individual employees carry in their heads ("I've been frustrated about the shelf organization for weeks") becomes explicit, stored, and actionable. It also implements Argyris and Sch&ouml;n's double-loop learning: when the AI identifies that workload complaints spike every Tuesday and Thursday, the manager does not just adjust the Tuesday schedule (single-loop) but questions the underlying staffing model (double-loop).</p>
+
+<p class="indent"><strong>Layer 4: Expected Behavioral Outcomes.</strong> Based on the literature, we anticipate several behavioral changes. First, increased voice from employees who currently have low psychological safety scores &mdash; the weekly feedback data shows that one employee (scoring 1/5 on safety) rarely offers input in person but might use an anonymous daily channel to express concerns. Second, earlier conflict detection: the current weekly system catches conflicts after they have escalated; a daily system should surface tensions when they are still manageable disagreements rather than entrenched grievances. Third, strengths-based task allocation: as the AI accumulates data on what each employee finds energizing versus draining, the founder can adjust task assignments to better match individual strengths, implementing job crafting (Wrzesniewski &amp; Dutton, 2001) at the team level.</p>
+
+<p class="indent"><strong>Layer 5: Projected Impact.</strong> Based on meta-analytic evidence from Gallup (Harter, 2024), Heskett et al. (2008), and the JD-R literature, we project the following ranges for measurable outcomes over a 6-12 month implementation period:</p>
+
+<table>
+    <caption style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">Table 2. Projected Impact of DFIS Implementation at Plaza Teresa</caption>
+    <tr>
+        <th>Metric</th>
+        <th>Current Baseline</th>
+        <th>Projected Range</th>
+        <th>Evidence Source</th>
+    </tr>
+    <tr>
+        <td>Employee turnover</td>
+        <td>Industry average ~60%/year</td>
+        <td>24-59% reduction</td>
+        <td>Gallup Q12 meta-analysis (Harter, 2024)</td>
+    </tr>
+    <tr>
+        <td>Sales per employee</td>
+        <td>Baseline TBD</td>
+        <td>5-20% increase</td>
+        <td>Service-profit chain (Heskett et al., 2008)</td>
+    </tr>
+    <tr>
+        <td>Time spent on conflict resolution</td>
+        <td>Estimated 3-5 hrs/week (founder)</td>
+        <td>25-40% reduction</td>
+        <td>CPP (2008) workplace conflict study</td>
+    </tr>
+    <tr>
+        <td>Psychological safety (team avg.)</td>
+        <td>3.2/5.0 (current survey)</td>
+        <td>3.8-4.2/5.0</td>
+        <td>Edmondson (1999) intervention studies</td>
+    </tr>
+    <tr>
+        <td>Customer satisfaction</td>
+        <td>No baseline (NPS TBD)</td>
+        <td>r = .33 with engagement</td>
+        <td>Harter et al. (2002) meta-analysis</td>
+    </tr>
+</table>
+
+<h3>4.3 Measurement Plan</h3>
+
+<p class="indent">Evaluating the DFIS requires a multi-level measurement strategy that captures IS success metrics, behavioral indicators, well-being outcomes, and business results. Following DeLone and McLean (2003), we propose four measurement categories:</p>
+
+<p><strong>IS Success Metrics.</strong> Response rate (proportion of employees answering each day), response quality (word count for open-ended questions, variance for scaled questions &mdash; zero-variance responses suggest disengagement), time-to-complete (seconds from question delivery to response submission, with increases suggesting fatigue), and sustained use (participation trends over weeks and months, watching for the "novelty decay" effect where initial enthusiasm fades).</p>
+
+<p><strong>Behavioral Metrics.</strong> Psychological safety trend (tracked through bi-weekly Edmondson-based items embedded in the daily question rotation), conflict frequency and severity (coded from daily responses and manager observation), recognition network density (how frequently each team member mentions appreciating a specific colleague, revealing social network structure), and voice frequency (number of substantive suggestions, concerns, or ideas surfaced through the system per week).</p>
+
+<p><strong>Well-Being Metrics.</strong> Daily mood trend (single-item mood rating embedded once or twice per week), weekly satisfaction (included in the existing weekly questionnaire for continuity), quarterly Employee Net Promoter Score (eNPS: "How likely are you to recommend this workplace to a friend?"), and qualitative well-being indicators (thematic analysis of open-ended responses for burnout language, engagement language, and growth language).</p>
+
+<p><strong>Business Metrics.</strong> Sales per employee (tracked through POS data), customer satisfaction (NPS survey at point of sale, to be implemented), employee turnover rate (annualized), inventory movement (as a proxy for operational efficiency), and absenteeism rate. These business metrics will be analyzed with a 3-6 month lag relative to behavioral and well-being metrics, consistent with the service-profit chain's predicted temporal sequence.</p>
+
+
+<!-- ==================== 5. DISCUSSION ==================== -->
+<div class="page-break"></div>
+<h2>5. Discussion</h2>
+
+<h3>5.1 Theoretical Contributions</h3>
+
+<p class="indent">This paper makes three contributions to information systems theory. First, it extends IS theory to micro-organizations. The vast majority of IS research examines large enterprises or, at smallest, medium-sized firms with dedicated IT functions. By theorizing how IS design, adoption, and impact operate in a five-person team with no IT infrastructure, we address a population that represents the numerical majority of organizations worldwide but is nearly invisible in IS scholarship. The DFIS model's Proposition 7 &mdash; that in small teams, IS effects operate through direct interpersonal mechanisms rather than organizational culture &mdash; represents a boundary condition for existing IS theories that typically assume organizational-level mediators.</p>
+
+<p class="indent">Second, the paper establishes the "question-as-intervention" mechanism as a theoretically significant property of feedback information systems. By integrating Morwitz et al.'s (1993) mere measurement effect into IS theory, we reframe daily feedback systems from passive data collection tools to active behavioral interventions. This reframing has implications beyond our specific context: any IS that regularly solicits user input (customer surveys, patient portals, student evaluations) may exhibit this dual measurement-intervention property, and IS researchers should account for it when evaluating system impacts.</p>
+
+<p class="indent">Third, the DFIS model provides a multilevel, multi-theory framework that integrates constructs from IS (DeLone &amp; McLean, TAM, AST), organizational behavior (SDT, psychological safety, voice), knowledge management (SECI, organizational learning), positive psychology (well-being interventions, gratitude effects), and cybernetics (feedback loops, viable systems) into a coherent causal chain with testable propositions. While each of these theoretical traditions has been applied to organizational technology separately, the DFIS model is the first to connect them in a chain that runs from IS design through behavioral change to well-being outcomes, with moderators identified at each transition.</p>
+
+<h3>5.2 Practical Contributions</h3>
+
+<p class="indent">For practitioners, the paper demonstrates that a sophisticated people analytics IS can be built and operated at near-zero cost using open-source frameworks (FastAPI), free-tier cloud databases (Supabase), consumer hardware (employees' personal smartphones), and AI APIs (priced per token at fractions of a cent). This architecture &mdash; what we term a "zero-cost IS infrastructure" &mdash; eliminates the capital expenditure barrier that has historically prevented small businesses from implementing evidence-based people management practices. The insight is not that small businesses should buy enterprise HR software; it is that the same cloud infrastructure that democratized e-commerce, social media, and financial technology can democratize organizational science.</p>
+
+<p class="indent">The framework also provides actionable design guidelines. From the literature, we extract five principles for practitioners designing daily feedback systems: (1) make questions task-directed, not self-directed (Kluger &amp; DeNisi, 1996); (2) make participation genuinely voluntary and demonstrate this by accepting non-responses without consequence (SDT; Deci &amp; Ryan, 2000); (3) close the loop visibly &mdash; when employees see their feedback lead to changes, participation and honesty increase (Proposition 3); (4) rotate question types to prevent habituation and cover multiple domains of the work experience; and (5) provide aggregated, anonymized insights back to employees, not just to management, to create a bidirectional information flow rather than a unidirectional surveillance channel.</p>
+
+<h3>5.3 Limitations</h3>
+
+<p class="indent">Several limitations constrain the generalizability and testability of the proposed framework. First, the case context is a single five-person team, which limits statistical power for quantitative analysis. While the daily data collection frequency partially compensates (generating hundreds of data points per month), the nested structure (responses within individuals within a single team) constrains the analytical approaches available. Second, the five-person team size means that Proposition 7 (interpersonal mechanisms dominate) is tested by design rather than by variation &mdash; confirming that the model works through interpersonal mechanisms in a small team does not tell us where the threshold lies for organizational-level mechanisms to emerge. Third, the Mexican cultural context introduces specificity: the roles of <em>confianza</em>, high power distance, and collectivist values in moderating IS adoption and impact may differ substantially in individualist, low-power-distance cultures. Fourth, the founder-as-researcher dual role introduces potential bias &mdash; the founder has strong incentives for the system to succeed, which may color data interpretation. Future research should include external evaluators. Fifth, the framework is currently conceptual; empirical validation of the seven propositions requires longitudinal data collection that, as of this writing, is in its early stages.</p>
+
+<h3>5.4 Future Research Directions</h3>
+
+<p class="indent">Several avenues for future research emerge from this framework. First, multi-site validation: deploying the DFIS across multiple small retail operations (ideally 20-30 teams) would enable multilevel modeling that separates team-level and individual-level effects. Second, longitudinal impact analysis: tracking the seven propositions over 12-24 months would reveal temporal dynamics, including whether the mere measurement effect (Proposition 2) habituates over time or is sustained by question variety. Third, AI coaching as IS extension: rather than limiting the AI role to analysis and reporting, future work could explore AI-generated personalized coaching messages delivered to individual employees based on their response patterns &mdash; transforming the IS from a passive analytical tool to an active developmental resource. Fourth, cross-cultural validation: testing the DFIS model in different cultural contexts (high vs. low power distance, individualist vs. collectivist) would establish boundary conditions for the framework. Fifth, comparative IS design studies: systematically varying question design, anonymity architecture, and feedback mechanisms across teams would enable causal identification of which Layer 1 design choices most strongly influence downstream outcomes.</p>
+
+<p class="indent">A particularly promising direction is the integration of behavioral assessment data (DISC, Big Five, etc.) with daily feedback data. If the IS knows that Employee A scores high on Dominance (DISC) and Employee B scores high on Steadiness, the AI can contextualize their daily responses differently: A's report of frustration might reflect a desire for faster decision-making, while B's similar report might reflect a desire for more stability. This personality-contextualized feedback analysis represents a frontier where psychometric assessment and information systems converge.</p>
+
+
+<!-- ==================== 6. CONCLUSION ==================== -->
+<h2>6. Conclusion</h2>
+
+<p class="indent">The daily feedback information system is not just a tool. It is an organizational design choice that reshapes how a team communicates, how it learns, and how it performs. By asking a single question every day, the IS creates a channel for voice where none existed, a record of experience where memory is fallible, and a pattern-detection capability where human cognition is bounded. The act of asking is itself an intervention: it signals that someone cares, it directs attention to what matters, and it creates the expectation of response. When that expectation is met &mdash; when management acts on what it hears &mdash; a virtuous cycle begins in which voice produces change, change reinforces voice, and the organization learns to learn.</p>
+
+<p class="indent">For the 95% of Mexican businesses that are micro and small enterprises, this matters enormously. These organizations cannot hire organizational psychologists, subscribe to enterprise survey platforms, or build people analytics teams. But they can ask one question a day. The technological barriers have evaporated: a smartphone, a free cloud database, and an AI API are all the infrastructure required. What remains is the theoretical framework to guide design, the ethical principles to prevent harm, and the courage to listen to what employees actually say.</p>
+
+<p class="indent">The DFIS model proposed here &mdash; five layers, seven propositions, grounded in six streams of theory &mdash; provides a map for this territory. It is a map, not the territory itself: the propositions must be tested, the framework must be refined, and the dark side must be vigilantly guarded against. Algorithmic management and surveillance are not distant risks &mdash; they are the default outcome when technology is deployed without ethical intentionality. The daily feedback IS must be designed for empowerment, not surveillance; for dialogue, not data extraction; for the employee's benefit, not just management's convenience.</p>
+
+<p class="indent">If designed well, the daily feedback IS represents something more than an incremental improvement in people management. It represents a democratization of organizational science &mdash; a way for any business, regardless of size or budget, to apply the same principles of feedback, learning, engagement, and well-being that have been theorized in academic journals and practiced in Fortune 500 companies for decades. The question is not whether small businesses need these tools. The question is whether we can design information systems worthy of the trust they require.</p>
+
+
+<!-- ==================== REFERENCES ==================== -->
+<div class="page-break"></div>
+<h2>References</h2>
+
+<p class="ref">Argyris, C., &amp; Sch&ouml;n, D. A. (1978). <em>Organizational learning: A theory of action perspective</em>. Addison-Wesley.</p>
+
+<p class="ref">Bakker, A. B., &amp; Demerouti, E. (2007). The Job Demands-Resources model: State of the art. <em>Journal of Managerial Psychology</em>, 22(3), 309&ndash;328. https://doi.org/10.1108/02683940710733115</p>
+
+<p class="ref">Bakker, A. B., &amp; Demerouti, E. (2017). Job demands&ndash;resources theory: Taking stock and looking forward. <em>Journal of Occupational Health Psychology</em>, 22(3), 273&ndash;285. https://doi.org/10.1037/ocp0000056</p>
+
+<p class="ref">Baumeister, R. F., Bratslavsky, E., Finkenauer, C., &amp; Vohs, K. D. (2001). Bad is stronger than good. <em>Review of General Psychology</em>, 5(4), 323&ndash;370. https://doi.org/10.1037/1089-2680.5.4.323</p>
+
+<p class="ref">Beer, S. (1972). <em>Brain of the firm: The managerial cybernetics of organization</em>. Allen Lane.</p>
+
+<p class="ref">Beer, S. (1979). <em>The heart of enterprise</em>. John Wiley &amp; Sons.</p>
+
+<p class="ref">Benlian, A. (2020). A daily field investigation of technology-driven stress spillovers from work to home. <em>MIS Quarterly</em>, 44(3), 1259&ndash;1300. https://doi.org/10.25300/MISQ/2020/14587</p>
+
+<p class="ref">CPP, Inc. (2008). <em>Workplace conflict and how businesses can harness it to thrive</em>. CPP Global Human Capital Report.</p>
+
+<p class="ref">Davila, A., &amp; Elvira, M. M. (2012). Humanistic leadership: Lessons from Latin America. <em>Journal of World Business</em>, 47(4), 548&ndash;554. https://doi.org/10.1016/j.jwb.2012.01.004</p>
+
+<p class="ref">Davis, F. D. (1989). Perceived usefulness, perceived ease of use, and user acceptance of information technology. <em>MIS Quarterly</em>, 13(3), 319&ndash;340. https://doi.org/10.2307/249008</p>
+
+<p class="ref">Deci, E. L., &amp; Ryan, R. M. (2000). The "what" and "why" of goal pursuits: Human needs and the self-determination of behavior. <em>Psychological Inquiry</em>, 11(4), 227&ndash;268. https://doi.org/10.1207/S15327965PLI1104_01</p>
+
+<p class="ref">Delfanti, A. (2021). The warehouse: Workers and robots at Amazon. <em>Pluto Press</em>.</p>
+
+<p class="ref">DeLone, W. H., &amp; McLean, E. R. (1992). Information systems success: The quest for the dependent variable. <em>Information Systems Research</em>, 3(1), 60&ndash;95. https://doi.org/10.1287/isre.3.1.60</p>
+
+<p class="ref">DeLone, W. H., &amp; McLean, E. R. (2003). The DeLone and McLean model of information systems success: A ten-year update. <em>Journal of Management Information Systems</em>, 19(4), 9&ndash;30. https://doi.org/10.1080/07421222.2003.11045748</p>
+
+<p class="ref">Deming, W. E. (1986). <em>Out of the crisis</em>. MIT Center for Advanced Engineering Study.</p>
+
+<p class="ref">DeSanctis, G., &amp; Poole, M. S. (1994). Capturing the complexity in advanced technology use: Adaptive structuration theory. <em>Organization Science</em>, 5(2), 121&ndash;147. https://doi.org/10.1287/orsc.5.2.121</p>
+
+<p class="ref">Devos, J., Van Landeghem, H., &amp; Reijers, H. (2012). SME maturity and IT alignment. In <em>Proceedings of the European Conference on Information Systems</em>.</p>
+
+<p class="ref">Duggan, J., Sherman, U., Carbery, R., &amp; McDonnell, A. (2020). Algorithmic management and app-work in the gig economy: A research agenda for employment relations and HRM. <em>Human Resource Management Journal</em>, 30(1), 114&ndash;132. https://doi.org/10.1111/1748-8583.12258</p>
+
+<p class="ref">Edmondson, A. (1999). Psychological safety and learning behavior in work teams. <em>Administrative Science Quarterly</em>, 44(2), 350&ndash;383. https://doi.org/10.2307/2666999</p>
+
+<p class="ref">Galbraith, J. R. (1973). <em>Designing complex organizations</em>. Addison-Wesley.</p>
+
+<p class="ref">Godin, G., Sheeran, P., Conner, M., Delage, G., Germain, M., B&eacute;langer-Gravel, A., &amp; Naccache, H. (2008). Which survey questions change behavior? Randomized controlled trial of mere measurement interventions. <em>Health Psychology</em>, 27(3), 379&ndash;387. https://doi.org/10.1037/0278-6133.27.3.379</p>
+
+<p class="ref">Greenwald, A. G., Carnot, C. G., Beach, R., &amp; Young, B. (1987). Increasing voting behavior by asking people if they expect to vote. <em>Journal of Applied Psychology</em>, 72(2), 315&ndash;318. https://doi.org/10.1037/0021-9010.72.2.315</p>
+
+<p class="ref">Hall, E. T. (1976). <em>Beyond culture</em>. Doubleday.</p>
+
+<p class="ref">Harter, J. K. (2024). <em>State of the global workplace: 2024 report</em>. Gallup Press.</p>
+
+<p class="ref">Harter, J. K., Schmidt, F. L., &amp; Hayes, T. L. (2002). Business-unit-level relationship between employee satisfaction, employee engagement, and business outcomes: A meta-analysis. <em>Journal of Applied Psychology</em>, 87(2), 268&ndash;279. https://doi.org/10.1037/0021-9010.87.2.268</p>
+
+<p class="ref">Heskett, J. L., Jones, T. O., Loveman, G. W., Sasser, W. E., &amp; Schlesinger, L. A. (1994). Putting the service-profit chain to work. <em>Harvard Business Review</em>, 72(2), 164&ndash;174.</p>
+
+<p class="ref">Heskett, J. L., Sasser, W. E., &amp; Schlesinger, L. A. (2008). <em>The service profit chain</em>. Free Press.</p>
+
+<p class="ref">Hofstede, G. (2001). <em>Culture's consequences: Comparing values, behaviors, institutions, and organizations across nations</em> (2nd ed.). Sage.</p>
+
+<p class="ref">Huber, G. P. (1991). Organizational learning: The contributing processes and the literatures. <em>Organization Science</em>, 2(1), 88&ndash;115. https://doi.org/10.1287/orsc.2.1.88</p>
+
+<p class="ref">INEGI. (2024). <em>Censos Econ&oacute;micos 2024: Resultados preliminares</em>. Instituto Nacional de Estad&iacute;stica y Geograf&iacute;a.</p>
+
+<p class="ref">Kluger, A. N., &amp; DeNisi, A. (1996). The effects of feedback interventions on performance: A historical review, a meta-analysis, and a preliminary feedback intervention theory. <em>Psychological Bulletin</em>, 119(2), 254&ndash;284. https://doi.org/10.1037/0033-2909.119.2.254</p>
+
+<p class="ref">Laudon, K. C., &amp; Laudon, J. P. (2020). <em>Management information systems: Managing the digital firm</em> (16th ed.). Pearson.</p>
+
+<p class="ref">Morrison, E. W. (2011). Employee voice behavior: Integration and directions for future research. <em>Academy of Management Annals</em>, 5(1), 373&ndash;412. https://doi.org/10.5465/19416520.2011.574506</p>
+
+<p class="ref">Morwitz, V. G., Johnson, E., &amp; Schmittlein, D. (1993). Does measuring intent change behavior? <em>Journal of Consumer Research</em>, 20(1), 46&ndash;61. https://doi.org/10.1086/209332</p>
+
+<p class="ref">Nonaka, I., &amp; Takeuchi, H. (1995). <em>The knowledge-creating company: How Japanese companies create the dynamics of innovation</em>. Oxford University Press.</p>
+
+<p class="ref">Rosenblat, A., &amp; Stark, L. (2016). Algorithmic labor and information asymmetries: A case study of Uber's drivers. <em>International Journal of Communication</em>, 10, 3758&ndash;3784.</p>
+
+<p class="ref">Ryan, R. M., &amp; Deci, E. L. (2017). <em>Self-determination theory: Basic psychological needs in motivation, development, and wellness</em>. Guilford Press.</p>
+
+<p class="ref">Seligman, M. E. P., Steen, T. A., Park, N., &amp; Peterson, C. (2005). Positive psychology progress: Empirical validation of interventions. <em>American Psychologist</em>, 60(5), 410&ndash;421. https://doi.org/10.1037/0003-066X.60.5.410</p>
+
+<p class="ref">Senge, P. M. (1990). <em>The fifth discipline: The art and practice of the learning organization</em>. Doubleday.</p>
+
+<p class="ref">Sherman, S. J. (1980). On the self-erasing nature of errors of prediction. <em>Journal of Personality and Social Psychology</em>, 39(2), 211&ndash;221. https://doi.org/10.1037/0022-3514.39.2.211</p>
+
+<p class="ref">Trist, E. L., &amp; Bamforth, K. W. (1951). Some social and psychological consequences of the longwall method of coal-getting. <em>Human Relations</em>, 4(1), 3&ndash;38. https://doi.org/10.1177/001872675100400101</p>
+
+<p class="ref">Tursunbayeva, A., Di Lauro, S., &amp; Pagliari, C. (2018). People analytics &mdash; A scoping review of conceptual boundaries and value propositions. <em>International Journal of Information Management</em>, 43, 224&ndash;247. https://doi.org/10.1016/j.ijinfomgt.2018.07.012</p>
+
+<p class="ref">Van den Broeck, A., Ferris, D. L., Chang, C.-H., &amp; Rosen, C. C. (2016). A review of self-determination theory's basic psychological needs at work. <em>Journal of Management</em>, 42(5), 1195&ndash;1229. https://doi.org/10.1177/0149206316632058</p>
+
+<p class="ref">Venkatesh, V., Morris, M. G., Davis, G. B., &amp; Davis, F. D. (2003). User acceptance of information technology: Toward a unified view. <em>MIS Quarterly</em>, 27(3), 425&ndash;478. https://doi.org/10.2307/30036540</p>
+
+<p class="ref">Wiener, N. (1948). <em>Cybernetics: Or control and communication in the animal and the machine</em>. MIT Press.</p>
+
+<p class="ref">Wood, A. J. (2021). Algorithmic management: Consequences for work organisation and working conditions. <em>JRC Working Papers Series on Labour, Education and Technology</em>, 2021/07.</p>
+
+<p class="ref">Wrzesniewski, A., &amp; Dutton, J. E. (2001). Crafting a job: Revisioning employees as active crafters of their work. <em>Academy of Management Review</em>, 26(2), 179&ndash;201. https://doi.org/10.5465/amr.2001.4378011</p>
+
+<hr style="margin: 40px 0 20px; border: none; border-top: 1px solid #ccc;">
+<p style="text-align:center; font-size:0.8rem; color:#888;">Generated by Fundastock Research &mdash; June 2026<br>Working paper. Not yet peer-reviewed. Please cite as: Fundastock (2026). The Daily Feedback Information System: Applying IS Theory to Employee Engagement and Well-Being in Small Retail Organizations. Working Paper.</p>
+
+</body>
+</html>

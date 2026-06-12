@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Pregunta Diaria — Intervencion + Medicion para Equipos Retail</title>
+    <style>
+        @media print {
+            body { font-size: 10.5pt; }
+            .no-print { display: none !important; }
+            .page-break { page-break-before: always; }
+            @page { margin: 1.8cm; size: letter; }
+            .card { break-inside: avoid; }
+            .section { break-inside: avoid; }
+            table { break-inside: avoid; font-size: 9.5pt; }
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #fff;
+            color: #1a1a2e;
+            line-height: 1.7;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 50px 40px 40px;
+        }
+
+        h1, h2, h3, h4 { font-family: 'Georgia', 'Times New Roman', serif; color: #111827; }
+        h1 { font-size: 1.9rem; margin-bottom: 8px; border-bottom: 3px solid #2563eb; padding-bottom: 12px; }
+        h2 { font-size: 1.45rem; margin: 40px 0 16px; color: #1e40af; border-left: 4px solid #2563eb; padding-left: 14px; }
+        h3 { font-size: 1.15rem; margin: 24px 0 10px; color: #374151; }
+        h4 { font-size: 1rem; margin: 16px 0 6px; color: #4b5563; }
+
+        p { margin-bottom: 12px; }
+        ul, ol { margin: 0 0 16px 24px; }
+        li { margin-bottom: 6px; }
+
+        .subtitle { font-size: 1.05rem; color: #6b7280; margin-bottom: 30px; font-style: italic; }
+        .meta { font-size: 0.85rem; color: #9ca3af; margin-bottom: 40px; }
+
+        .print-btn {
+            position: fixed; top: 20px; right: 20px; padding: 10px 22px;
+            background: #2563eb; color: #fff; border: none; border-radius: 6px;
+            cursor: pointer; font-size: 0.85rem; font-weight: 600; z-index: 1000;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+        }
+        .print-btn:hover { background: #1d4ed8; }
+
+        .science-box {
+            background: #f0f4ff; border: 1px solid #c7d2fe; border-radius: 8px;
+            padding: 20px 24px; margin: 20px 0;
+        }
+        .science-box h4 { color: #3730a3; margin-top: 0; }
+
+        .warning-box {
+            background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px;
+            padding: 16px 20px; margin: 16px 0;
+        }
+
+        .key-insight {
+            background: #ecfdf5; border: 1px solid #6ee7b7; border-radius: 8px;
+            padding: 20px 24px; margin: 20px 0;
+        }
+        .key-insight strong { color: #065f46; }
+
+        .dual-box {
+            background: #faf5ff; border: 1px solid #c4b5fd; border-radius: 8px;
+            padding: 20px 24px; margin: 20px 0;
+        }
+
+        .card {
+            border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px 24px;
+            margin: 16px 0; background: #fafafa;
+        }
+        .card .tag {
+            display: inline-block; padding: 2px 10px; border-radius: 12px;
+            font-size: 0.75rem; font-weight: 600; margin-right: 6px; margin-bottom: 6px;
+        }
+        .tag-employee { background: #dbeafe; color: #1e40af; }
+        .tag-management { background: #fce7f3; color: #9d174d; }
+        .tag-dual { background: #e0e7ff; color: #4338ca; }
+        .tag-gratitude { background: #d1fae5; color: #065f46; }
+        .tag-strengths { background: #fef3c7; color: #92400e; }
+        .tag-connection { background: #ede9fe; color: #5b21b6; }
+        .tag-purpose { background: #fce7f3; color: #831843; }
+        .tag-friction { background: #fee2e2; color: #991b1b; }
+        .tag-decision { background: #ffedd5; color: #9a3412; }
+        .tag-fairness { background: #cffafe; color: #155e75; }
+        .tag-warning { background: #fef2f2; color: #7f1d1d; }
+
+        .question-text {
+            font-size: 1.1rem; font-weight: 600; color: #111827;
+            margin: 10px 0 8px; font-style: italic;
+        }
+        .question-text::before { content: '"'; }
+        .question-text::after { content: '"'; }
+
+        .mechanism { font-size: 0.88rem; color: #6b7280; margin-top: 6px; }
+
+        table {
+            width: 100%; border-collapse: collapse; margin: 16px 0;
+            font-size: 0.9rem;
+        }
+        th { background: #1e40af; color: #fff; padding: 10px 12px; text-align: left; font-weight: 600; }
+        td { padding: 10px 12px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+        tr:nth-child(even) { background: #f9fafb; }
+        tr:hover { background: #eef2ff; }
+        .day-mon { border-left: 3px solid #2563eb; }
+        .day-tue { border-left: 3px solid #059669; }
+        .day-wed { border-left: 3px solid #d97706; }
+        .day-thu { border-left: 3px solid #7c3aed; }
+        .day-fri { border-left: 3px solid #dc2626; }
+        .day-sat { border-left: 3px solid #0891b2; }
+
+        .ref { font-size: 0.82rem; color: #6b7280; }
+        .ref-list { font-size: 0.85rem; line-height: 1.8; }
+        .ref-list li { margin-bottom: 4px; }
+
+        .whatsapp-example {
+            background: #dcf8c6; border-radius: 12px; padding: 16px 20px;
+            margin: 12px 0; max-width: 380px; font-size: 0.92rem;
+            font-family: -apple-system, sans-serif; position: relative;
+        }
+        .whatsapp-example::before {
+            content: 'WhatsApp'; font-size: 0.7rem; color: #25d366;
+            font-weight: 700; display: block; margin-bottom: 6px;
+        }
+
+        .flow-diagram {
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px; margin: 20px 0; flex-wrap: wrap; font-size: 0.9rem;
+        }
+        .flow-step {
+            background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px;
+            padding: 8px 14px; text-align: center;
+        }
+        .flow-arrow { color: #6366f1; font-weight: bold; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">Imprimir / PDF</button>
+
+<h1>Sistema de Pregunta Diaria</h1>
+<p class="subtitle">La pregunta como intervencion: cada dia que preguntas, cambias al equipo</p>
+<p class="meta">
+    Generado: 12 de junio de 2026 &bull; Equipo: 5 personas (retail) &bull;
+    Canal: WhatsApp &bull; Frecuencia: 1 pregunta diaria, 6 dias/semana
+</p>
+
+<!-- ============================================================ -->
+<h2>Parte 1: La Ciencia — Por Que Preguntar ES Intervenir</h2>
+<!-- ============================================================ -->
+
+<div class="key-insight">
+    <strong>Insight central:</strong> La pregunta diaria no es solo un termometro. Es una medicina. Cada vez que le preguntas a alguien "Que hiciste bien hoy?" estas activando circuitos neuronales de gratitud, reconocimiento y pertenencia. Cada vez que preguntas "Que te freno hoy?" estas legitimando que hablen de problemas antes de que exploten. <em>La pregunta misma cambia al equipo.</em>
+</div>
+
+<h3>1.1 El Efecto de Mera Medicion (Mere-Measurement Effect)</h3>
+<div class="science-box">
+    <h4>Que dice la ciencia</h4>
+    <p>Morwitz, Johnson & Schmittlein (1993) descubrieron que <strong>simplemente preguntar a alguien si planea comprar algo aumenta la probabilidad de que lo compre</strong>. Williams, Block & Fitzsimons (2006) mostraron que preguntar a estudiantes sobre sus intenciones de hacer ejercicio aumento las tasas de ejercicio reportado de 14% a 26% dos meses despues.</p>
+    <p>Sprott et al. (2006) formalizaron esto como el <strong>question-behavior effect (QBE)</strong>: responder una pregunta sobre un comportamiento aumenta la probabilidad de realizarlo. Un meta-analisis de Wood et al. (2016) confirmo efectos pequenos pero significativos en 116 estudios.</p>
+    <h4>Aplicacion a nuestro sistema</h4>
+    <p>Si preguntas "Reconociste a un companero hoy?" — el acto de responder hace que manana sea mas probable que lo hagan. Si preguntas "Pediste ayuda cuando la necesitaste?" — el acto de reflexionar sobre pedir ayuda normaliza el comportamiento. <strong>La pregunta es la intervencion.</strong></p>
+    <p class="ref">Morwitz, V.G., Johnson, E., & Schmittlein, D. (1993). Does measuring intent change behavior? <em>Journal of Consumer Research</em>, 20(1), 46-61. | Sprott, D.E., et al. (2006). The question-behavior effect. <em>Social Influence</em>, 1(3), 189-196. | Wood, C., et al. (2016). The impact of asking intention questions on subsequent behavior: A meta-analysis. <em>Personality and Social Psychology Review</em>, 20(3), 245-268.</p>
+</div>
+
+<h3>1.2 Las Tres Cosas Buenas (Seligman's Three Good Things)</h3>
+<div class="science-box">
+    <h4>Que dice la ciencia</h4>
+    <p>Seligman, Steen, Park & Peterson (2005) demostraron que escribir tres cosas buenas que pasaron en el dia durante una semana <strong>aumento la felicidad y redujo sintomas de depresion hasta por 6 meses</strong>. El efecto fue mas fuerte en participantes que continuaron el ejercicio mas alla de la semana inicial.</p>
+    <p>En entornos laborales, un estudio con 15 lideres de enfermeria mostro que el ejercicio de Three Good Things durante 8 semanas aumento significativamente su "compassion satisfaction" (satisfaccion por compasion) y redujo burnout.</p>
+    <h4>Aplicacion</h4>
+    <p>Nuestras preguntas de gratitud ("Que salio bien hoy?", "Quien te ayudo?") no solo miden — <strong>entrenan al cerebro para buscar lo positivo</strong>. Despues de 2-3 semanas, los empleados empiezan a notar cosas buenas durante el dia porque saben que les van a preguntar.</p>
+    <p class="ref">Seligman, M.E.P., Steen, T.A., Park, N., & Peterson, C. (2005). Positive psychology progress: Empirical validation of interventions. <em>American Psychologist</em>, 60(5), 410-421.</p>
+</div>
+
+<h3>1.3 Appreciative Inquiry — Preguntar por Fortalezas Crea Fortalezas</h3>
+<div class="science-box">
+    <h4>Que dice la ciencia</h4>
+    <p>Cooperrider & Srivastva (1987) fundaron la Indagacion Apreciativa con un principio radical: <strong>las organizaciones evolucionan en la direccion de las preguntas que hacen consistentemente</strong>. El "Principio de Simultaneidad" dice que la pregunta misma comienza a crear el futuro — preguntar sobre fortalezas amplifica fortalezas.</p>
+    <p>Cooperrider lo ilustra asi: una encuesta organizacional sobre "causas de baja moral" produce oleadas de conversaciones negativas que reducen aun mas la moral. En cambio, preguntar "Cuando fue la ultima vez que te sentiste realmente orgulloso de tu trabajo?" activa memorias positivas y crea una narrativa de fortaleza.</p>
+    <h4>Aplicacion</h4>
+    <p>La mitad de nuestras preguntas estan intencionalmente formuladas en positivo. No preguntamos "Que salio mal?" todos los dias. Alternamos con "Que habilidad usaste hoy de la que te sientes orgulloso?" porque <strong>lo que preguntas, crece</strong>.</p>
+    <p class="ref">Cooperrider, D.L., & Srivastva, S. (1987). Appreciative inquiry in organizational life. <em>Research in Organizational Change and Development</em>, 1, 129-169. | Cooperrider, D.L., & Godwin, L. (2015). Appreciative Inquiry: The strengths revolution. In Donaldson, S.I. (Ed.), <em>Positive Organizational Scholarship</em>.</p>
+</div>
+
+<h3>1.4 El Efecto Pigmalion Aplicado a Preguntas</h3>
+<div class="science-box">
+    <h4>Que dice la ciencia</h4>
+    <p>Rosenthal & Jacobson (1968) demostraron que cuando los maestros creian que ciertos estudiantes iban a sobresalir, esos estudiantes efectivamente mejoraron su desempeno — independientemente de su capacidad real. Las expectativas positivas se convierten en profecias auto-cumplidas.</p>
+    <h4>Aplicacion</h4>
+    <p>Cuando preguntas "En que momento del dia te sentiste mas 'en tu zona'?" estas implicitamente comunicando: <em>"Creo que tienes momentos de excelencia. Quiero saber de ellos."</em> La pregunta presupone competencia, y esa presuposicion cambia como se ve el empleado a si mismo.</p>
+    <p class="ref">Rosenthal, R., & Jacobson, L. (1968). <em>Pygmalion in the classroom</em>. Holt, Rinehart & Winston. | Eden, D. (1990). Pygmalion in management: Productivity as a self-fulfilling prophecy. <em>Lexington Books</em>.</p>
+</div>
+
+<h3>1.5 Parametros de Diseno: Frecuencia, Fatiga y Timing</h3>
+<div class="science-box">
+    <h4>Que dice la investigacion</h4>
+    <ul>
+        <li><strong>Cantidad por dia:</strong> 1 pregunta es ideal para daily. Mas de 2 genera fatiga en menos de 6 semanas (Formbricks, 2026; LSA Global research).</li>
+        <li><strong>Tiempo de respuesta:</strong> Menos de 60 segundos. Si toma mas, no responden.</li>
+        <li><strong>Mejor momento:</strong> <strong>Al final del turno</strong> (30 min antes de irse). La reflexion de cierre es mas efectiva que la de apertura porque tienen material del dia para procesar. Los lunes, una pregunta de apertura funciona mejor.</li>
+        <li><strong>Fatiga:</strong> Se instala en 6-8 semanas con pulsos semanales. Con rotacion de temas y preguntas que se sienten diferentes cada dia, se puede sostener 3+ meses. La clave: <strong>que vean que sus respuestas generan acciones</strong> (si no, dejan de contestar en 3 semanas).</li>
+        <li><strong>Rotacion:</strong> Ciclo de 30 dias (no se repite la misma pregunta en el mismo mes). Mes 2 usa variantes. Mes 3 repite el ciclo original (ya olvidaron las preguntas exactas).</li>
+    </ul>
+</div>
+
+<div class="warning-box">
+    <strong>Regla de oro anti-fatiga:</strong> Cada viernes, en la junta semanal, comparte al menos 1 dato del sistema de preguntas y 1 accion que tomaste basandote en las respuestas. Si el equipo nunca ve que sus respuestas importan, dejaran de contestar. Esto es mas importante que la pregunta misma.
+</div>
+
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h2>Parte 2: Banco de Preguntas — Lado Empleado (Engagement + Felicidad)</h2>
+<!-- ============================================================ -->
+
+<p>30 preguntas disenadas para que <strong>el acto de responder</strong> sea la intervencion. Cada pregunta activa un mecanismo psicologico especifico.</p>
+
+<h3>Tema A: Gratitud y Positividad (7 preguntas)</h3>
+<p class="ref">Base: Seligman et al. (2005) Three Good Things + Emmons & McCullough (2003) gratitude interventions</p>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-gratitude">Gratitud</span>
+    <p class="question-text">Que fue lo mejor que te paso hoy en el trabajo?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Three Good Things simplificado. Obliga al cerebro a buscar el momento positivo entre todo lo que paso. Despues de 2 semanas, empiezan a notar lo bueno DURANTE el dia ("esto lo voy a poner en mi respuesta").</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-gratitude">Gratitud</span>
+    <p class="question-text">Quien te echo la mano hoy? Que hizo?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Activa reconocimiento de apoyo social. Efecto QBE: si te preguntan quien te ayudo, manana es mas probable que TU ayudes a alguien (reciprocidad anticipada). <strong>Dato para management:</strong> mapea la red de apoyo — si alguien nunca es mencionado, esta aislado.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-gratitude">Gratitud</span>
+    <p class="question-text">Que momento del dia te saco una sonrisa?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Micro-savoring (Fredrickson, 2001 broaden-and-build theory). Recordar momentos positivos amplia el repertorio de pensamiento-accion y construye recursos psicologicos. Pregunta de bajo esfuerzo, alta conexion emocional.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-gratitude">Gratitud</span>
+    <p class="question-text">Que le agradeces al dia de hoy, aunque sea algo chiquito?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Gratitud abierta (no limitada al trabajo). Emmons & McCullough (2003): la gratitud general mejora bienestar mas que gratitud especifica. El "aunque sea algo chiquito" baja la barrera — no necesitas algo grandioso.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-gratitude">Gratitud</span>
+    <p class="question-text">Hubo algun cliente que te hizo sentir bien hoy? Que paso?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Conecta el trabajo con impacto positivo. Investigacion de Adam Grant (2007): empleados que ven el impacto de su trabajo en otros muestran un aumento de 171% en ingresos generados. <strong>Dato para management:</strong> revela que tipo de interacciones motivan al equipo.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-gratitude">Gratitud</span>
+    <p class="question-text">Si pudieras repetir un momento de hoy, cual seria?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Variante de "peak experiences" (Maslow). Identificar lo que vale la pena repetir revela valores y motivadores personales. Respuestas recurrentes muestran que tareas alinean con fortalezas.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-gratitude">Gratitud</span>
+    <p class="question-text">Hoy pudiste hacer algo bueno por alguien? Que fue?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Acts of kindness (Lyubomirsky, 2005): realizar actos de bondad aumenta felicidad. Preguntar sobre ellos refuerza el comportamiento (QBE). <strong>Dato dual:</strong> mapea quien inicia comportamiento prosocial.</p>
+</div>
+
+<h3>Tema B: Fortalezas y Crecimiento (8 preguntas)</h3>
+<p class="ref">Base: Appreciative Inquiry (Cooperrider, 1987) + Clifton StrengthsFinder + Csikszentmihalyi Flow (1990)</p>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-strengths">Fortalezas</span>
+    <p class="question-text">Que habilidad usaste hoy de la que te sientes orgulloso/a?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Appreciative Inquiry pura. Presupone que tienen habilidades valiosas (Pigmalion). Identificar fortalezas usadas aumenta autoeficacia (Bandura, 1977). Respuestas revelan que competencias perciben como propias.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-strengths">Fortalezas</span>
+    <p class="question-text">Que aprendiste hoy, aunque sea algo pequeno?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Growth mindset (Dweck, 2006). Preguntar "que aprendiste" normaliza que el trabajo es un espacio de aprendizaje, no solo ejecucion. <strong>Dato para management:</strong> si nadie reporta aprendizaje en 2+ semanas, el trabajo se volvio puramente mecanico — riesgo de aburrimiento y rotacion.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-strengths">Fortalezas</span>
+    <p class="question-text">En que momento del dia te sentiste mas en tu zona, haciendo lo que mejor haces?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Flow state (Csikszentmihalyi, 1990). Identificar cuando entran en "flow" revela la interseccion entre habilidad y reto optimo. <strong>Dato para management:</strong> asignar mas de esas tareas a esa persona = engagement natural.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-strengths">Fortalezas</span>
+    <p class="question-text">Resolviste algun problema hoy? Como le hiciste?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Competencia percibida (Deci & Ryan, SDT, 2000). Recordar que resolvieron algo activa la necesidad basica de competencia. <strong>Dato para management:</strong> revela problemas operativos y la creatividad del equipo para resolverlos.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-strengths">Fortalezas</span>
+    <p class="question-text">Que cosa del trabajo te gustaria aprender a hacer mejor?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Orientacion al crecimiento. Preguntar sobre deseos de aprendizaje comunica: "Invertimos en tu desarrollo." Gallup Q12 item 6: "Someone at work encourages my development." <strong>Dato:</strong> identifica necesidades de capacitacion antes de que sean problemas.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-strengths">Fortalezas</span>
+    <p class="question-text">Hoy hiciste algo diferente a lo normal? Que fue?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Detecta innovacion espontanea y variacion en rutinas. <strong>Dato dual:</strong> si la respuesta es positiva = autonomia y creatividad. Si siempre es "no" = trabajo demasiado rigido (riesgo de rotacion por aburrimiento).</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-strengths">Fortalezas</span>
+    <p class="question-text">Alguien del equipo te enseno algo hoy, o tu le ensenaste a alguien?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Social learning (Bandura). Preguntar sobre ensenanza entre pares la normaliza y la incentiva (QBE). <strong>Dato:</strong> mapea flujo de conocimiento — quien ensena, quien aprende, donde hay silos.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-strengths">Fortalezas</span>
+    <p class="question-text">De 1 a 5, que tanta energia te queda al final del dia?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Indicador biometrico simple. No es estrictamente de "fortalezas" pero mide desgaste. <strong>Dato critico:</strong> tendencia a la baja en energia = burnout incipiente. Si una persona siempre marca 1-2 y las demas 3-4, esa persona tiene un problema de carga o ajuste.</p>
+</div>
+
+<h3>Tema C: Conexion y Pertenencia (8 preguntas)</h3>
+<p class="ref">Base: Baumeister & Leary (1995) Need to Belong + Gallup Q12 "best friend at work" + Edmondson (1999) Psychological Safety</p>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-connection">Conexion</span>
+    <p class="question-text">Tuviste una conversacion con alguien del equipo que no fuera solo de trabajo?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Baumeister & Leary: la necesidad de pertenencia es tan basica como el hambre. Conversaciones no-laborales construyen vinculos que previenen conflictos. Gallup: tener un "best friend at work" = 7x mas engagement. <strong>Dato:</strong> frecuencia baja = equipo desconectado.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-connection">Conexion</span>
+    <p class="question-text">Que es algo que admiras o aprecias de alguien de tu equipo?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Peer appreciation (Gallup: reconocimiento entre pares = 2.7x engagement). Al formular la apreciacion, el empleado refuerza sus vinculos positivos. <strong>Dato:</strong> construye la "red de reconocimiento" — quien nunca es mencionado esta en riesgo.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-connection">Conexion</span>
+    <p class="question-text">Te sentiste parte del equipo hoy?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Directa a "belongingness" (SDT: relatedness). Respuesta binaria o escala 1-5. <strong>Alerta:</strong> si alguien dice "no" mas de 2 veces en un mes, esta en proceso de desenganche.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-connection">Conexion</span>
+    <p class="question-text">Hubo algun momento incomodo con alguien hoy? (no tienes que dar detalles, solo si o no)</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Deteccion temprana de friccion interpersonal con baja barrera. El "no tienes que dar detalles" reduce la amenaza. <strong>Dato:</strong> patron de "si" repetido entre las mismas personas = conflicto latente que necesita intervencion.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-connection">Conexion</span>
+    <p class="question-text">Con quien del equipo te gusto trabajar hoy? Por que?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Refuerza vinculos positivos al articularlos. Sociometria (Moreno, 1934): mapear preferencias revela estructura informal del equipo. <strong>Dato:</strong> si alguien nunca es elegido, necesita integracion activa.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-connection">Conexion</span>
+    <p class="question-text">Alguien te hizo sentir valorado/a hoy? Quien y como?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Gallup Q12 item 4 adaptado: "In the last seven days, I have received recognition." Preguntar diario es mas granular. <strong>Dato:</strong> si la respuesta es consistentemente "nadie", hay un deficit de reconocimiento que predice rotacion.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-connection">Conexion</span>
+    <p class="question-text">Pediste ayuda hoy? Se la pediste a quien?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Edmondson: pedir ayuda es el indicador #1 de seguridad psicologica. Si nadie pide ayuda, o hay miedo o hay silos. El QBE funciona aqui: preguntar sobre pedir ayuda normaliza pedir ayuda. <strong>Dato:</strong> a quien le piden ayuda = lideres informales.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-connection">Conexion</span>
+    <p class="question-text">Si un amigo te preguntara como es tu equipo de trabajo, que le dirias hoy?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Variante de eNPS narrativo. Al imaginar la conversacion con un externo, el empleado formula su evaluacion real del equipo sin filtros corporativos. <strong>Dato:</strong> las metaforas y adjetivos que usan son oro puro para entender clima laboral.</p>
+</div>
+
+<h3>Tema D: Proposito y Significado (7 preguntas)</h3>
+<p class="ref">Base: Wrzesniewski & Dutton (2001) Job Crafting + Deci & Ryan SDT (2000) + Grant (2007) Prosocial Motivation</p>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-purpose">Proposito</span>
+    <p class="question-text">Ayudaste a un cliente hoy de una forma que se sintio bien?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Grant (2007): ver el impacto de tu trabajo en otros aumenta motivacion intrinseca masivamente. En retail, la conexion con el cliente ES el proposito. Preguntar lo hace visible. <strong>Dato:</strong> si nadie reporta interacciones positivas con clientes, hay un problema de servicio o de trafico.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-purpose">Proposito</span>
+    <p class="question-text">Que parte de tu trabajo se sintio mas significativa hoy?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Job crafting (Wrzesniewski & Dutton, 2001). Cuando identificas que parte del trabajo tiene significado, empiezas a hacer mas de eso. <strong>Dato:</strong> revela que tareas el equipo valora vs. cuales ven como relleno.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-purpose">Proposito</span>
+    <p class="question-text">Si pudieras cambiar UNA cosa de como trabajamos, cual seria?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Voice behavior (Morrison, 2011). Dar voz genera pertenencia y compromiso. El "UNA cosa" fuerza priorizacion — revela la friccion MAS importante para esa persona. <strong>Dato critico para management:</strong> si 3/5 personas dicen lo mismo, es una prioridad clara.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-purpose">Proposito</span>
+    <p class="question-text">Hoy sentiste que tu trabajo importa? Por que si o por que no?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Directly measures meaning at work (SDT: autonomy, competence, relatedness). La pregunta "por que" fuerza articulacion — el proceso de explicar refuerza o revela ausencia de sentido. <strong>Alerta:</strong> respuestas de "no" repetidas = riesgo alto de renuncia.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-purpose">Proposito</span>
+    <p class="question-text">Que te motivo a venir a trabajar hoy?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Explora motivacion intrinseca vs extrinseca. Respuestas como "el dinero" o "no tuve opcion" indican motivacion puramente extrinseca. Respuestas como "mis companeros" o "un proyecto que tengo" indican engagement real.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-purpose">Proposito</span>
+    <p class="question-text">Hiciste algo hoy que te acerco a ser mejor en lo que haces?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Mastery orientation (Dweck). Pregunta que presupone crecimiento continuo (Pigmalion). <strong>Dato:</strong> si consistentemente "no", el trabajo no ofrece desarrollo — Factor #1 de rotacion en millennials/Gen Z.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-employee">Empleado</span><span class="tag tag-purpose">Proposito</span>
+    <p class="question-text">Que consejo le darias al equipo para manana?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Empowerment a traves de expertise. Pedir consejo comunica: "Tu opinion tiene valor." Cialdini (2001): pedir consejo es mas poderoso que pedir opinion porque implica que la persona tiene expertise. <strong>Dato:</strong> los consejos revelan problemas operativos vistos desde abajo.</p>
+</div>
+
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h2>Parte 3: Banco de Preguntas — Lado Management (Friccion + Decisiones)</h2>
+<!-- ============================================================ -->
+
+<p>30 preguntas que parecen simples pero extraen datos operativos criticos. Formuladas para que el empleado se sienta escuchado, no interrogado.</p>
+
+<h3>Tema E: Friccion y Cuellos de Botella (8 preguntas)</h3>
+<p class="ref">Base: Lean Manufacturing (Toyota) + Goldratt Theory of Constraints + Edmondson (1999)</p>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-friction">Friccion</span>
+    <p class="question-text">Que te freno o te hizo mas lento hoy?</p>
+    <p class="mechanism"><strong>Dato:</strong> Identifica cuellos de botella operativos (inventario, sistema POS, esperar a alguien, falta de material). Si la misma friccion aparece 3+ veces en una semana, es un problema sistemico. <strong>Engagement:</strong> preguntar "que te freno" comunica "quiero quitarte obstaculos."</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-friction">Friccion</span>
+    <p class="question-text">Tuviste que esperar por algo o por alguien hoy?</p>
+    <p class="mechanism"><strong>Dato:</strong> Lean: "waiting waste" es uno de los 7 desperdicios. En retail, esperar por llaves, autorizaciones, entregas, o companeros que no llegan es tiempo muerto que frustra. Patron: si alguien siempre "espera por la misma persona" = cuello de botella humano.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-friction">Friccion</span>
+    <p class="question-text">Hubo algun momento donde no supiste que hacer o como proceder?</p>
+    <p class="mechanism"><strong>Dato:</strong> Detecta vacios de capacitacion y procesos no documentados. En retail, esto se traduce en: politica de devolucion no clara, descuento no autorizado, cliente dificil sin protocolo. <strong>Engagement:</strong> preguntar esto normaliza "no saber" como algo reportable, no vergonzoso.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-friction">Friccion</span>
+    <p class="question-text">Algo del inventario, acomodo, o sistema te causo problemas hoy?</p>
+    <p class="mechanism"><strong>Dato:</strong> Pregunta especifica para retail. Detecta problemas de stock, acomodo confuso, software lento, o cualquier herramienta que falle. <strong>Accionable:</strong> cada problema reportado es una tarea de mejora concreta.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-friction">Friccion</span>
+    <p class="question-text">Que es algo que deberiamos dejar de hacer porque no sirve?</p>
+    <p class="mechanism"><strong>Dato:</strong> Detecta procesos inutiles que el equipo mantiene por inercia. Lean: "muda" (desperdicio). <strong>Engagement:</strong> preguntar esto da agencia — si actuas sobre una respuesta, el equipo sabe que su voz tiene poder real.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-friction">Friccion</span>
+    <p class="question-text">Cuantas veces tuviste que buscar algo que no encontrabas?</p>
+    <p class="mechanism"><strong>Dato:</strong> Lean: "motion waste" y "search waste". En retail = producto mal ubicado, herramienta perdida, informacion no accesible. Metrica simple: si el promedio semanal de "busquedas frustradas" es >2 por persona/dia, hay un problema de organizacion.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-friction">Friccion</span>
+    <p class="question-text">Si fueras el jefe por un dia, que arreglarias primero?</p>
+    <p class="mechanism"><strong>Dato:</strong> Perspective-taking inverso. Revela la friccion #1 percibida desde abajo. <strong>Engagement:</strong> la pregunta implica que su perspectiva tiene valor ejecutivo. Muy poderosa para hacer sentir al empleado que su opinion importa. Las respuestas repetidas son prioridades claras.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-friction">Friccion</span>
+    <p class="question-text">Paso algo hoy que te frustro?</p>
+    <p class="mechanism"><strong>Dato:</strong> Captura emocional directa. La frustracion es la antesala del conflicto y la renuncia. <strong>Engagement:</strong> validar la frustracion ("es normal sentirla, quiero saber que la causa") es una intervencion de seguridad psicologica. <strong>Alerta:</strong> misma fuente de frustracion >3 veces = urgente.</p>
+</div>
+
+<h3>Tema F: Toma de Decisiones (8 preguntas)</h3>
+<p class="ref">Base: Dalio Principles + Kahneman (2011) Thinking Fast & Slow + Klein (1998) Naturalistic Decision Making</p>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-decision">Decisiones</span>
+    <p class="question-text">Tuviste que tomar alguna decision hoy donde no estabas seguro/a de que hacer?</p>
+    <p class="mechanism"><strong>Dato:</strong> Identifica zonas de ambiguedad en autoridad y procesos. En retail: descuentos, devoluciones, manejo de quejas, horarios. <strong>Accion:</strong> cada decision incierta es un protocolo que falta documentar.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-decision">Decisiones</span>
+    <p class="question-text">Hubo alguna regla o proceso que no te hizo sentido hoy?</p>
+    <p class="mechanism"><strong>Dato:</strong> Detecta reglas obsoletas, contradictorias, o que el equipo no entiende. Dalio: si una regla no tiene sentido para quien la ejecuta, no se va a seguir consistentemente. <strong>Engagement:</strong> preguntar esto dice "las reglas se pueden cuestionar."</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-decision">Decisiones</span>
+    <p class="question-text">Hubo algun problema que pudiste resolver tu solo/a, o necesitaste escalar?</p>
+    <p class="mechanism"><strong>Dato:</strong> Mide nivel de autonomia real vs percibida. Si todo se escala, hay centralizacion excesiva. Si nada se escala, puede haber decisiones malas sin supervision. <strong>Ideal:</strong> mix de ambos con tendencia a mayor autonomia sobre el tiempo.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-decision">Decisiones</span>
+    <p class="question-text">Si tuvieras que calificar del 1 al 5 que tan claro tenias hoy que se esperaba de ti, que numero pones?</p>
+    <p class="mechanism"><strong>Dato:</strong> Role clarity (Salas et al., 1999: el UNICO tipo de team building que consistentemente mejora desempeno). Promedio <3.5 = las expectativas no son claras. <strong>Alerta:</strong> si es siempre bajo, los lunes hay que arrancar con prioridades explicitas.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-decision">Decisiones</span>
+    <p class="question-text">Que informacion te hubiera sido util tener hoy y no la tenias?</p>
+    <p class="mechanism"><strong>Dato:</strong> Detecta huecos de comunicacion. En retail: precios actualizados, promociones vigentes, inventario de otra sucursal, politica nueva. Cada hueco de informacion es un error de comunicacion gerencial corregible.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-decision">Decisiones</span>
+    <p class="question-text">Hoy te toco hacer algo que no deberia ser tu responsabilidad?</p>
+    <p class="mechanism"><strong>Dato:</strong> Role overload y role conflict (Rizzo et al., 1970). Si alguien frecuentemente hace cosas "que no le tocan" puede significar: (a) falta personal, (b) roles mal definidos, (c) alguien no esta haciendo su parte. Las 3 son accionables.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-decision">Decisiones</span>
+    <p class="question-text">Que decision tomaste hoy de la que te sientes seguro/a?</p>
+    <p class="mechanism"><strong>Mecanismo dual:</strong> Appreciative Inquiry aplicada a decisiones (pregunta positiva). Refuerza confianza del empleado en sus decisiones. <strong>Dato:</strong> revela que tipo de decisiones el equipo maneja bien sin supervision — areas donde se puede dar mas autonomia.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-decision">Decisiones</span>
+    <p class="question-text">Si algo salio mal hoy, que harias diferente si pudieras repetirlo?</p>
+    <p class="mechanism"><strong>Mecanismo:</strong> Dalio's "Pain + Reflection = Progress". Reflexion post-error sin culpa. <strong>Engagement:</strong> la pregunta dice "los errores son datos, no castigos." <strong>Dato:</strong> revela raiz de problemas operativos desde la perspectiva del operador.</p>
+</div>
+
+<h3>Tema G: Justicia y Equidad (7 preguntas)</h3>
+<p class="ref">Base: Adams Equity Theory (1963) + Colquitt et al. (2001) Organizational Justice Meta-Analysis + Greenberg (1990)</p>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-fairness">Justicia</span>
+    <p class="question-text">Sientes que el trabajo estuvo bien repartido hoy?</p>
+    <p class="mechanism"><strong>Dato:</strong> Distributive justice (Adams, 1963). Percepcion de inequidad es el predictor #1 de resentimiento entre companeros. Si una persona siempre siente que carga mas, hay un problema objetivo o perceptual — ambos necesitan atencion. <strong>Alerta:</strong> respuestas negativas 3+ veces/semana = conflicto inminente.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-fairness">Justicia</span>
+    <p class="question-text">Te sentiste escuchado/a cuando compartiste una idea u opinion hoy?</p>
+    <p class="mechanism"><strong>Dato:</strong> Voice and procedural justice (Colquitt et al., 2001). Ser ignorado cuando hablas es una de las formas mas daninas de exclusion en equipos pequenos. <strong>Alerta:</strong> respuestas negativas sistematicas de la misma persona = esa persona se va a desconectar o irse.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-fairness">Justicia</span>
+    <p class="question-text">Sientes que las reglas se aplican igual para todos en el equipo?</p>
+    <p class="mechanism"><strong>Dato:</strong> Procedural justice. Greenberg (1990): la percepcion de justicia procedimental afecta mas el compromiso que la justicia distributiva. Si hay "favoritos" reales o percibidos, se erosiona la confianza de todo el equipo. <strong>Pregunta de alta sensibilidad</strong> — usar cada 2-3 semanas maximo.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-fairness">Justicia</span>
+    <p class="question-text">Alguien te pidio hacer algo que sentiste injusto hoy?</p>
+    <p class="mechanism"><strong>Dato:</strong> Interactional justice. Detecta micro-abusos de poder, asignacion injusta de tareas, o trato desigual. En equipos de 5, un solo acto percibido como injusto puede envenenar una semana entera.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-fairness">Justicia</span>
+    <p class="question-text">Del 1 al 5, que tan justo sientes que fue tu dia de trabajo hoy?</p>
+    <p class="mechanism"><strong>Dato:</strong> Indicador agregado de justicia organizacional. Simple, trackeable, comparable semana a semana. <strong>Alerta:</strong> promedio del equipo <3.0 = problema sistemico de equidad. Una persona consistentemente <3 = riesgo de renuncia.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-fairness">Justicia</span>
+    <p class="question-text">Hoy tuviste acceso a todo lo que necesitabas para hacer bien tu trabajo?</p>
+    <p class="mechanism"><strong>Dato:</strong> Gallup Q12 item 2: "I have the materials and equipment I need to do my work right." En retail: producto para vender, sistema funcionando, informacion actualizada. "No" repetido = falla gerencial basica.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-fairness">Justicia</span>
+    <p class="question-text">Te sientes comodo/a con tu horario y tus responsabilidades esta semana?</p>
+    <p class="mechanism"><strong>Dato:</strong> Work-life interface y role satisfaction. Los horarios son la fuente #1 de conflicto en retail. Preguntar proactivamente previene que acumulen resentimiento silencioso. <strong>Usar:</strong> los lunes (inicio de semana = inicio de horario).</p>
+</div>
+
+<h3>Tema H: Senales de Alerta Temprana (7 preguntas)</h3>
+<p class="ref">Base: Hom et al. (2012) Turnover Theory + Maslach Burnout Inventory + Edmondson Psychological Safety</p>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-warning">Alerta</span>
+    <p class="question-text">Del 1 al 5, que tan motivado/a te sientes ahorita?</p>
+    <p class="mechanism"><strong>Dato:</strong> Pulso de engagement crudo. Tendencia a la baja sostenida (3+ dias) = alerta temprana de desenganche. <strong>Patron:</strong> si todo el equipo baja al mismo tiempo, paso algo organizacional. Si solo una persona baja, es individual.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-warning">Alerta</span>
+    <p class="question-text">Hay algo que te estas guardando y que quisieras decir?</p>
+    <p class="mechanism"><strong>Dato:</strong> La pregunta mas poderosa del sistema. Edmondson: "voice" suprimida es el indicador mas fuerte de baja seguridad psicologica. <strong>Uso:</strong> No mas de 1 vez cada 2 semanas (si se abusa, pierden confianza en que es seguro responder). Respuestas "si" sin detalle = hay miedo pero quieren hablar. Busca 1-on-1.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-warning">Alerta</span>
+    <p class="question-text">Hoy pensaste en buscar otro trabajo? (se honesto, no pasa nada)</p>
+    <p class="mechanism"><strong>Dato:</strong> Turnover intention. Hom et al. (2012): la intencion de irse es el predictor mas fuerte de rotacion real. <strong>Uso extremo:</strong> maximo 1 vez al mes. Si alguien dice "si", NO reaccionar con panico — tener una conversacion tranquila y privada. <strong>Engagement:</strong> preguntar esto dice "prefiero saber a que te vayas sin aviso."</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-warning">Alerta</span>
+    <p class="question-text">Que tan cansado/a estas hoy comparado con un dia normal?</p>
+    <p class="mechanism"><strong>Dato:</strong> Burnout indicator. Maslach: el agotamiento emocional es la primera dimension del burnout. Si alguien reporta cansancio extremo >3 dias seguidos, es una senal seria. <strong>Diferencia:</strong> cansancio fisico (carga de trabajo) vs emocional (clima laboral). Ambos importan.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-warning">Alerta</span>
+    <p class="question-text">Hay algo en el equipo que sientes que esta a punto de reventar?</p>
+    <p class="mechanism"><strong>Dato:</strong> Early conflict detection. Los empleados de piso SIEMPRE saben antes que management cuando algo esta mal. Esta pregunta les da permiso de ser centinelas. <strong>Uso:</strong> cada 2-3 semanas. <strong>Alerta maxima:</strong> si 2+ personas mencionan lo mismo, actuar esta semana.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-warning">Alerta</span>
+    <p class="question-text">Como te sientes con respecto al equipo en una palabra?</p>
+    <p class="mechanism"><strong>Dato:</strong> Affect labeling (Lieberman et al., 2007: nombrar emociones reduce su intensidad — la pregunta misma es terapeutica). Las palabras elegidas son un termometro instantaneo. Trackear frecuencia de palabras positivas vs negativas por semana. <strong>Herramienta:</strong> nube de palabras mensual para la junta.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-management">Management</span><span class="tag tag-warning">Alerta</span>
+    <p class="question-text">Que necesitas de mi (tu jefe) que no te estoy dando?</p>
+    <p class="mechanism"><strong>Dato:</strong> Gallup Q12 item 5 + LMX theory (Graen & Uhl-Bien, 1995): la calidad de la relacion lider-miembro predice engagement, desempeno y rotacion. <strong>Engagement:</strong> la pregunta modela humildad gerencial. <strong>Uso:</strong> cada 2 semanas, pero CRUCIAL actuar sobre al menos 1 respuesta.</p>
+</div>
+
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h2>Parte 4: Las 10 Preguntas de Doble Proposito</h2>
+<!-- ============================================================ -->
+
+<div class="dual-box">
+    <strong>El santo grial:</strong> Preguntas que hacen que el empleado se sienta valorado, escuchado, y conectado (intervencion de engagement) Y AL MISMO TIEMPO dan datos accionables a management. El empleado experimenta la pregunta como interes genuino. Management extrae patrones.
+</div>
+
+<div class="card">
+    <span class="tag tag-dual">Doble Proposito</span> <strong>#1</strong>
+    <p class="question-text">Quien merece un reconocimiento hoy y por que?</p>
+    <p><strong>Lado empleado:</strong> Dar reconocimiento a otros activa el circuito de recompensa del que da, no solo del que recibe (Algoe & Haidt, 2009). Fortalece vinculos.</p>
+    <p><strong>Lado management:</strong> Construye mapa sociometrico de reconocimiento. Quien nunca es mencionado = aislamiento. Quien siempre es mencionado = lider informal. Quien nunca reconoce a otros = posible desenganche o conflicto latente.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-dual">Doble Proposito</span> <strong>#2</strong>
+    <p class="question-text">Que fue lo mas dificil de hoy y como lo manejaste?</p>
+    <p><strong>Lado empleado:</strong> Narrativa de resiliencia. Al articular como manejaron algo dificil, refuerzan su autoeficacia (Bandura). La dificultad se convierte en historia de competencia.</p>
+    <p><strong>Lado management:</strong> Revela problemas operativos REALES y como el equipo los resuelve (o no). Si "lo mas dificil" es siempre interpersonal vs operativo, indica el tipo de intervencion que se necesita.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-dual">Doble Proposito</span> <strong>#3</strong>
+    <p class="question-text">Hoy tuviste que improvisar para resolver algo? Que hiciste?</p>
+    <p><strong>Lado empleado:</strong> Celebra la creatividad y la agencia. "Improvisar" se reencuadra como habilidad, no como falta de proceso.</p>
+    <p><strong>Lado management:</strong> Cada improvisacion es un proceso que falta documentar. Si el equipo improvisa constantemente en el mismo tema, hay un hueco operativo sistematico.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-dual">Doble Proposito</span> <strong>#4</strong>
+    <p class="question-text">Que le dirias a un empleado nuevo que va a empezar manana en tu puesto?</p>
+    <p><strong>Lado empleado:</strong> Posiciona al empleado como experto y mentor. Aumenta estatus percibido y sentido de importancia.</p>
+    <p><strong>Lado management:</strong> Captura conocimiento tacito. Los consejos revelan reglas no escritas, peligros ocultos, y la cultura real (vs. la declarada). Util para onboarding real.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-dual">Doble Proposito</span> <strong>#5</strong>
+    <p class="question-text">Que parte de tu dia sientes que fue una perdida de tiempo?</p>
+    <p><strong>Lado empleado:</strong> Validacion. Decir "esto fue inutil" sin consecuencias es liberador. Comunica: "tu tiempo es valioso para nosotros."</p>
+    <p><strong>Lado management:</strong> Lean waste detection desde la perspectiva del operador. Cada "perdida de tiempo" reportada es una oportunidad de mejora de proceso con ROI inmediato.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-dual">Doble Proposito</span> <strong>#6</strong>
+    <p class="question-text">Hubo alguna situacion con un cliente que el equipo deberia saber?</p>
+    <p><strong>Lado empleado:</strong> Posiciona al empleado como fuente de inteligencia de mercado. Su experiencia con clientes tiene valor estrategico.</p>
+    <p><strong>Lado management:</strong> Customer intelligence en tiempo real. Quejas recurrentes, tendencias de producto, preguntas frecuentes — todo desde la linea de contacto.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-dual">Doble Proposito</span> <strong>#7</strong>
+    <p class="question-text">Si tuvieras 5 minutos con el dueno de la empresa, que le dirias?</p>
+    <p><strong>Lado empleado:</strong> Empoderamiento radical. La pregunta dice: "Tu perspectiva merece llegar hasta arriba."</p>
+    <p><strong>Lado management:</strong> Unfiltered upward communication. Lo que dirian al dueno es lo que realmente importa para ellos. Revelan prioridades, frustraciones, y sugerencias que no salen en canales normales.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-dual">Doble Proposito</span> <strong>#8</strong>
+    <p class="question-text">De lo que hiciste hoy, que deberiamos hacer SIEMPRE asi?</p>
+    <p><strong>Lado empleado:</strong> Appreciative Inquiry: buscar lo que funciona y amplificarlo. El empleado es el curador de mejores practicas.</p>
+    <p><strong>Lado management:</strong> Captura de best practices desde abajo. Estandarizacion basada en lo que realmente funciona, no en lo que management cree que funciona.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-dual">Doble Proposito</span> <strong>#9</strong>
+    <p class="question-text">Con una palabra describe como te sientes sobre el equipo ahora mismo. Por que esa palabra?</p>
+    <p><strong>Lado empleado:</strong> Affect labeling (Lieberman et al., 2007): nombrar la emocion reduce su intensidad negativa y amplifica la positiva. Es terapeutico.</p>
+    <p><strong>Lado management:</strong> Barometro emocional del equipo. Trackear las palabras por semana crea un mapa de sentimiento. Shift de palabras positivas a negativas = algo cambio. La pregunta "por que" da el contexto que la palabra sola no da.</p>
+</div>
+
+<div class="card">
+    <span class="tag tag-dual">Doble Proposito</span> <strong>#10</strong>
+    <p class="question-text">Que nota del 1 al 10 le pones al dia de hoy? Por que?</p>
+    <p><strong>Lado empleado:</strong> Cierre reflexivo con agencia. Poner nota da sensacion de control y evaluacion personal. El "por que" fuerza procesamiento cognitivo del dia.</p>
+    <p><strong>Lado management:</strong> Single-number tracking. Promedio diario del equipo. Tendencia semanal. Correlacion con eventos (inventario, dia de pago, visita de proveedor). El "por que" da el contexto cualitativo. <strong>Es el KPI mas simple y poderoso del sistema.</strong></p>
+</div>
+
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h2>Parte 5: Calendario de 30 Dias</h2>
+<!-- ============================================================ -->
+
+<div class="key-insight">
+    <strong>Estructura del calendario:</strong> 6 dias/semana (lunes-sabado). 1 pregunta por dia. Patron semanal: Lunes y Jueves = pregunta de engagement (empleado). Martes y Viernes = pregunta de operacion (management). Miercoles y Sabado = pregunta de doble proposito. Esto alterna el tono para que nunca se sienta monotono ni interrogatorio.
+</div>
+
+<h3>Semana 1 (Introduccion — preguntas faciles y positivas)</h3>
+<table>
+    <thead>
+        <tr><th>Dia</th><th>Pregunta (WhatsApp)</th><th>Tipo</th><th>Mide</th><th>Patron a observar</th></tr>
+    </thead>
+    <tbody>
+        <tr class="day-mon">
+            <td><strong>Lun 1</strong></td>
+            <td>Que fue lo mejor que te paso hoy en el trabajo?</td>
+            <td><span class="tag tag-employee">Empleado</span><span class="tag tag-gratitude">Gratitud</span></td>
+            <td>Positividad, Three Good Things</td>
+            <td>Facilidad/dificultad para encontrar algo positivo</td>
+        </tr>
+        <tr class="day-tue">
+            <td><strong>Mar 2</strong></td>
+            <td>Que te freno o te hizo mas lento hoy?</td>
+            <td><span class="tag tag-management">Management</span><span class="tag tag-friction">Friccion</span></td>
+            <td>Cuellos de botella</td>
+            <td>Repeticion de la misma friccion</td>
+        </tr>
+        <tr class="day-wed">
+            <td><strong>Mie 3</strong></td>
+            <td>Quien merece un reconocimiento hoy y por que?</td>
+            <td><span class="tag tag-dual">Doble</span></td>
+            <td>Red de reconocimiento + engagement</td>
+            <td>Quien nunca es mencionado</td>
+        </tr>
+        <tr class="day-thu">
+            <td><strong>Jue 4</strong></td>
+            <td>Que habilidad usaste hoy de la que te sientes orgulloso/a?</td>
+            <td><span class="tag tag-employee">Empleado</span><span class="tag tag-strengths">Fortalezas</span></td>
+            <td>Autoeficacia, Appreciative Inquiry</td>
+            <td>Diversidad de habilidades mencionadas</td>
+        </tr>
+        <tr class="day-fri">
+            <td><strong>Vie 5</strong></td>
+            <td>Hubo alguna regla o proceso que no te hizo sentido hoy?</td>
+            <td><span class="tag tag-management">Management</span><span class="tag tag-decision">Decisiones</span></td>
+            <td>Claridad de procesos</td>
+            <td>Misma regla cuestionada multiples veces</td>
+        </tr>
+        <tr class="day-sat">
+            <td><strong>Sab 6</strong></td>
+            <td>Que nota del 1 al 10 le pones a la semana? Por que?</td>
+            <td><span class="tag tag-dual">Doble</span></td>
+            <td>Satisfaccion semanal + contexto</td>
+            <td>Promedio del equipo, outliers</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>Semana 2 (Profundizando conexion)</h3>
+<table>
+    <thead>
+        <tr><th>Dia</th><th>Pregunta (WhatsApp)</th><th>Tipo</th><th>Mide</th><th>Patron a observar</th></tr>
+    </thead>
+    <tbody>
+        <tr class="day-mon">
+            <td><strong>Lun 7</strong></td>
+            <td>Que te motivo a venir a trabajar hoy?</td>
+            <td><span class="tag tag-employee">Empleado</span><span class="tag tag-purpose">Proposito</span></td>
+            <td>Motivacion intrinseca vs extrinseca</td>
+            <td>Proporcion "dinero" vs "equipo/crecimiento"</td>
+        </tr>
+        <tr class="day-tue">
+            <td><strong>Mar 8</strong></td>
+            <td>Tuviste que esperar por algo o por alguien hoy?</td>
+            <td><span class="tag tag-management">Management</span><span class="tag tag-friction">Friccion</span></td>
+            <td>Waiting waste (Lean)</td>
+            <td>Siempre la misma espera/persona</td>
+        </tr>
+        <tr class="day-wed">
+            <td><strong>Mie 9</strong></td>
+            <td>Que fue lo mas dificil de hoy y como lo manejaste?</td>
+            <td><span class="tag tag-dual">Doble</span></td>
+            <td>Resiliencia + problemas operativos</td>
+            <td>Dificultad interpersonal vs operativa</td>
+        </tr>
+        <tr class="day-thu">
+            <td><strong>Jue 10</strong></td>
+            <td>Que es algo que admiras o aprecias de alguien de tu equipo?</td>
+            <td><span class="tag tag-employee">Empleado</span><span class="tag tag-connection">Conexion</span></td>
+            <td>Vinculos positivos, peer appreciation</td>
+            <td>Quien nunca es apreciado</td>
+        </tr>
+        <tr class="day-fri">
+            <td><strong>Vie 11</strong></td>
+            <td>Algo del inventario, acomodo, o sistema te causo problemas hoy?</td>
+            <td><span class="tag tag-management">Management</span><span class="tag tag-friction">Friccion</span></td>
+            <td>Problemas operativos especificos retail</td>
+            <td>Problemas recurrentes de herramientas</td>
+        </tr>
+        <tr class="day-sat">
+            <td><strong>Sab 12</strong></td>
+            <td>Con una palabra describe como te sientes sobre el equipo. Por que esa palabra?</td>
+            <td><span class="tag tag-dual">Doble</span></td>
+            <td>Barometro emocional</td>
+            <td>Shift de palabras positivas a negativas</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>Semana 3 (Introduciendo preguntas mas profundas)</h3>
+<table>
+    <thead>
+        <tr><th>Dia</th><th>Pregunta (WhatsApp)</th><th>Tipo</th><th>Mide</th><th>Patron a observar</th></tr>
+    </thead>
+    <tbody>
+        <tr class="day-mon">
+            <td><strong>Lun 13</strong></td>
+            <td>En que momento del dia te sentiste mas en tu zona, haciendo lo que mejor haces?</td>
+            <td><span class="tag tag-employee">Empleado</span><span class="tag tag-strengths">Fortalezas</span></td>
+            <td>Flow state, fortalezas en accion</td>
+            <td>Tareas que generan flow = dar mas de esas</td>
+        </tr>
+        <tr class="day-tue">
+            <td><strong>Mar 14</strong></td>
+            <td>Si fueras el jefe por un dia, que arreglarias primero?</td>
+            <td><span class="tag tag-management">Management</span><span class="tag tag-friction">Friccion</span></td>
+            <td>Friccion #1 percibida desde abajo</td>
+            <td>Si 3/5 dicen lo mismo = prioridad clara</td>
+        </tr>
+        <tr class="day-wed">
+            <td><strong>Mie 15</strong></td>
+            <td>Hoy tuviste que improvisar para resolver algo? Que hiciste?</td>
+            <td><span class="tag tag-dual">Doble</span></td>
+            <td>Creatividad + huecos de proceso</td>
+            <td>Improvisacion en el mismo tema = proceso faltante</td>
+        </tr>
+        <tr class="day-thu">
+            <td><strong>Jue 16</strong></td>
+            <td>Pediste ayuda hoy? Se la pediste a quien?</td>
+            <td><span class="tag tag-employee">Empleado</span><span class="tag tag-connection">Conexion</span></td>
+            <td>Seguridad psicologica + red de ayuda</td>
+            <td>Si nadie pide ayuda = hay miedo o silos</td>
+        </tr>
+        <tr class="day-fri">
+            <td><strong>Vie 17</strong></td>
+            <td>Sientes que el trabajo estuvo bien repartido hoy?</td>
+            <td><span class="tag tag-management">Management</span><span class="tag tag-fairness">Justicia</span></td>
+            <td>Justicia distributiva</td>
+            <td>Misma persona siempre dice "no" = conflicto</td>
+        </tr>
+        <tr class="day-sat">
+            <td><strong>Sab 18</strong></td>
+            <td>Que le dirias a un empleado nuevo que empieza manana en tu puesto?</td>
+            <td><span class="tag tag-dual">Doble</span></td>
+            <td>Conocimiento tacito + cultura real</td>
+            <td>Consejos negativos = cultura toxica</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>Semana 4 (Senales profundas + cierre de ciclo)</h3>
+<table>
+    <thead>
+        <tr><th>Dia</th><th>Pregunta (WhatsApp)</th><th>Tipo</th><th>Mide</th><th>Patron a observar</th></tr>
+    </thead>
+    <tbody>
+        <tr class="day-mon">
+            <td><strong>Lun 19</strong></td>
+            <td>Quien te echo la mano hoy? Que hizo?</td>
+            <td><span class="tag tag-employee">Empleado</span><span class="tag tag-gratitude">Gratitud</span></td>
+            <td>Red de apoyo, reciprocidad</td>
+            <td>Quien nunca es mencionado = aislado</td>
+        </tr>
+        <tr class="day-tue">
+            <td><strong>Mar 20</strong></td>
+            <td>Que informacion te hubiera sido util tener hoy y no la tenias?</td>
+            <td><span class="tag tag-management">Management</span><span class="tag tag-decision">Decisiones</span></td>
+            <td>Huecos de comunicacion</td>
+            <td>Misma info faltante = falla de sistema</td>
+        </tr>
+        <tr class="day-wed">
+            <td><strong>Mie 21</strong></td>
+            <td>Que parte de tu dia sientes que fue una perdida de tiempo?</td>
+            <td><span class="tag tag-dual">Doble</span></td>
+            <td>Lean waste + validacion</td>
+            <td>Mismo desperdicio = proceso eliminable</td>
+        </tr>
+        <tr class="day-thu">
+            <td><strong>Jue 22</strong></td>
+            <td>Hoy sentiste que tu trabajo importa? Por que si o por que no?</td>
+            <td><span class="tag tag-employee">Empleado</span><span class="tag tag-purpose">Proposito</span></td>
+            <td>Meaning at work (SDT)</td>
+            <td>"No" repetido = riesgo alto de renuncia</td>
+        </tr>
+        <tr class="day-fri">
+            <td><strong>Vie 23</strong></td>
+            <td>Del 1 al 5, que tan motivado/a te sientes ahorita?</td>
+            <td><span class="tag tag-management">Management</span><span class="tag tag-warning">Alerta</span></td>
+            <td>Engagement crudo</td>
+            <td>Baja sostenida 3+ dias = desenganche</td>
+        </tr>
+        <tr class="day-sat">
+            <td><strong>Sab 24</strong></td>
+            <td>Si tuvieras 5 minutos con el dueno de la empresa, que le dirias?</td>
+            <td><span class="tag tag-dual">Doble</span></td>
+            <td>Comunicacion ascendente sin filtro</td>
+            <td>Temas repetidos = prioridades reales</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>Semana 5 (Cierre del ciclo mensual + preguntas de alto impacto)</h3>
+<table>
+    <thead>
+        <tr><th>Dia</th><th>Pregunta (WhatsApp)</th><th>Tipo</th><th>Mide</th><th>Patron a observar</th></tr>
+    </thead>
+    <tbody>
+        <tr class="day-mon">
+            <td><strong>Lun 25</strong></td>
+            <td>Que momento del dia te saco una sonrisa?</td>
+            <td><span class="tag tag-employee">Empleado</span><span class="tag tag-gratitude">Gratitud</span></td>
+            <td>Micro-savoring, positividad</td>
+            <td>Dificultad para encontrar algo = clima negativo</td>
+        </tr>
+        <tr class="day-tue">
+            <td><strong>Mar 26</strong></td>
+            <td>Hay algo que te estas guardando y que quisieras decir?</td>
+            <td><span class="tag tag-management">Management</span><span class="tag tag-warning">Alerta</span></td>
+            <td>Voz suprimida</td>
+            <td>"Si" repetido = seguridad psicologica baja</td>
+        </tr>
+        <tr class="day-wed">
+            <td><strong>Mie 27</strong></td>
+            <td>De lo que hiciste hoy, que deberiamos hacer SIEMPRE asi?</td>
+            <td><span class="tag tag-dual">Doble</span></td>
+            <td>Best practices + empoderamiento</td>
+            <td>Ideas repetidas = estandarizar</td>
+        </tr>
+        <tr class="day-thu">
+            <td><strong>Jue 28</strong></td>
+            <td>Si un amigo te preguntara como es tu equipo de trabajo, que le dirias hoy?</td>
+            <td><span class="tag tag-employee">Empleado</span><span class="tag tag-connection">Conexion</span></td>
+            <td>eNPS narrativo, percepcion de equipo</td>
+            <td>Metaforas y adjetivos usados</td>
+        </tr>
+        <tr class="day-fri">
+            <td><strong>Vie 29</strong></td>
+            <td>Que necesitas de mi (tu jefe) que no te estoy dando?</td>
+            <td><span class="tag tag-management">Management</span><span class="tag tag-warning">Alerta</span></td>
+            <td>Relacion lider-miembro (LMX)</td>
+            <td>Temas repetidos = falla gerencial</td>
+        </tr>
+        <tr class="day-sat">
+            <td><strong>Sab 30</strong></td>
+            <td>Que nota del 1 al 10 le pones al MES? Que fue lo mejor y lo peor?</td>
+            <td><span class="tag tag-dual">Doble</span></td>
+            <td>Satisfaccion mensual + resumen</td>
+            <td>Comparar con nota semanal dia 6</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h2>Parte 6: Guia de Implementacion por WhatsApp</h2>
+<!-- ============================================================ -->
+
+<h3>6.1 Flujo Diario</h3>
+<div class="flow-diagram">
+    <div class="flow-step">5:30 PM<br><small>30 min antes de cerrar</small></div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-step">Manager envia pregunta<br><small>al grupo de WhatsApp</small></div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-step">Equipo responde<br><small>en privado al manager</small></div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-step">Manager registra<br><small>en hoja de calculo</small></div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-step">Lunes: comparte<br><small>1 insight + 1 accion</small></div>
+</div>
+
+<h3>6.2 Formato del Mensaje de WhatsApp</h3>
+
+<div class="whatsapp-example">
+    Hola equipo! 👋 Pregunta del dia:<br><br>
+    <strong>Quien merece un reconocimiento hoy y por que?</strong><br><br>
+    Responde por privado. No hay respuesta mala. 🙏<br><br>
+    <small style="color:#888">Tip: puedes contestar con audio si te es mas facil</small>
+</div>
+
+<h3>6.3 Reglas de Operacion</h3>
+<ol>
+    <li><strong>Siempre por privado.</strong> Las respuestas van en mensaje privado al manager, NUNCA en el grupo. Esto protege honestidad.</li>
+    <li><strong>Manager responde tambien.</strong> El manager contesta la misma pregunta en el grupo (publica). Modela vulnerabilidad (Edmondson).</li>
+    <li><strong>Nunca castigar una respuesta.</strong> Si alguien dice algo incomodo, la unica respuesta valida es "Gracias por tu honestidad." Cualquier consecuencia negativa mata el sistema en 48 horas.</li>
+    <li><strong>Permitir audios.</strong> En Mexico retail, muchos prefieren audio a texto. Acepta ambos formatos.</li>
+    <li><strong>No presionar.</strong> Si alguien no responde un dia, no pasa nada. Si no responde 3 dias seguidos, pregunta en privado si todo esta bien (ESO es dato).</li>
+    <li><strong>Limite de tiempo:</strong> Enviar la pregunta 30 min antes de cerrar. Dar hasta el fin del turno para responder. No insistir despues.</li>
+    <li><strong>Sabados = pregunta de cierre semanal.</strong> Siempre una pregunta que cierre la semana con reflexion (nota numerica + cualitativa).</li>
+</ol>
+
+<h3>6.4 Mensaje de Lanzamiento (Copiar y Pegar)</h3>
+
+<div class="whatsapp-example">
+    Hola equipo! 🙌<br><br>
+    A partir de hoy vamos a hacer algo nuevo. Cada dia antes de cerrar, voy a mandar UNA pregunta al grupo. La idea es simple:<br><br>
+    ✅ No es evaluacion<br>
+    ✅ No hay respuesta correcta o incorrecta<br>
+    ✅ Me responden por privado (nadie mas ve tu respuesta)<br>
+    ✅ Yo tambien voy a contestar<br><br>
+    Para que? Porque quiero que este equipo sea un lugar donde se sientan bien, donde puedan decir lo que piensan, y donde yo pueda mejorar como jefe.<br><br>
+    Toma menos de 1 minuto. Pueden contestar con texto o audio.<br><br>
+    Empezamos hoy con la primera! 💪
+</div>
+
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h2>Parte 7: Sintesis Semanal — Como Leer los Datos</h2>
+<!-- ============================================================ -->
+
+<h3>7.1 Hoja de Registro Semanal</h3>
+<p>Usar una hoja de calculo simple (Google Sheets o Excel) con esta estructura:</p>
+
+<table>
+    <thead>
+        <tr><th>Dia</th><th>Pregunta</th><th>Carlos</th><th>Nayeli</th><th>Rocio</th><th>Luis</th><th>Marcos</th><th>Temas clave</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>Lun</td><td>Lo mejor del dia</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>
+        <tr><td>Mar</td><td>Que te freno</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>
+        <tr><td>Mie</td><td>Reconocimiento</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>
+        <tr><td>Jue</td><td>Habilidad</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>
+        <tr><td>Vie</td><td>Proceso roto</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>
+        <tr><td>Sab</td><td>Nota semanal</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>
+    </tbody>
+</table>
+
+<h3>7.2 Los 7 Patrones que Buscar Cada Semana</h3>
+
+<div class="card">
+    <h4>Patron 1: Positividad Declinante</h4>
+    <p><strong>Senal:</strong> Las respuestas a preguntas de gratitud se vuelven mas cortas, genericas, o no llegan.</p>
+    <p><strong>Significa:</strong> El equipo esta perdiendo energia positiva. Algo esta drenando moral.</p>
+    <p><strong>Accion:</strong> En la junta del lunes, comparte algo positivo TU primero. Revisa carga de trabajo y conflictos recientes.</p>
+</div>
+
+<div class="card">
+    <h4>Patron 2: Friccion Repetida</h4>
+    <p><strong>Senal:</strong> La misma queja operativa aparece 3+ veces en una semana (o la misma queja de 2+ personas diferentes).</p>
+    <p><strong>Significa:</strong> Problema sistemico, no incidental.</p>
+    <p><strong>Accion:</strong> Escalar o resolver esta semana. En la junta del lunes, decir: "3 personas mencionaron [X]. Esta semana lo arreglo. Asi lo vamos a hacer: [...]"</p>
+</div>
+
+<div class="card">
+    <h4>Patron 3: Aislamiento</h4>
+    <p><strong>Senal:</strong> Una persona nunca es mencionada en preguntas de reconocimiento o ayuda. O una persona nunca reconoce a nadie.</p>
+    <p><strong>Significa:</strong> Exclusion social incipiente o auto-aislamiento. Riesgo de rotacion.</p>
+    <p><strong>Accion:</strong> 1-on-1 informal. "Oye, como te sientes en el equipo? Me interesa saber." No mencionar las respuestas de la pregunta.</p>
+</div>
+
+<div class="card">
+    <h4>Patron 4: Inequidad Percibida</h4>
+    <p><strong>Senal:</strong> La misma persona reporta trabajo mal repartido, injusticia, o falta de reconocimiento mas de 2 veces.</p>
+    <p><strong>Significa:</strong> Percepcion (o realidad) de trato desigual. Esto erosiona confianza rapidisimo en equipos chicos.</p>
+    <p><strong>Accion:</strong> Revisar objetivamente la distribucion de tareas. Hablar con la persona en privado. Si hay favoritismo real (incluso inconsciente), corregirlo esta semana.</p>
+</div>
+
+<div class="card">
+    <h4>Patron 5: Silencio</h4>
+    <p><strong>Senal:</strong> Alguien deja de contestar 3+ dias seguidos. O siempre contesta "todo bien" sin detalle.</p>
+    <p><strong>Significa:</strong> O no confian en el sistema, o estan tan desconectados que no les importa. Ambos son malos.</p>
+    <p><strong>Accion:</strong> Busca en privado: "Oye, note que no has contestado ultimamente. Todo bien? No te preocupes si no quieres contestar, pero quiero saber que estas bien."</p>
+</div>
+
+<div class="card">
+    <h4>Patron 6: Caida Numerica</h4>
+    <p><strong>Senal:</strong> Las notas cuantitativas (motivacion 1-5, nota del dia 1-10) caen 2+ puntos de una semana a otra.</p>
+    <p><strong>Significa:</strong> Evento negativo. Algo paso entre ambas mediciones.</p>
+    <p><strong>Accion:</strong> Correlacionar con eventos de la semana. Que cambio? Nuevo horario? Conflicto? Visita de cliente dificil? Ausencia de alguien?</p>
+</div>
+
+<div class="card">
+    <h4>Patron 7: Voz Suprimida</h4>
+    <p><strong>Senal:</strong> En la pregunta "Hay algo que te estas guardando?", mas de 2 personas dicen "si" (con o sin detalles).</p>
+    <p><strong>Significa:</strong> Seguridad psicologica critica. Hay cosas sin decir que se estan acumulando.</p>
+    <p><strong>Accion:</strong> No forzar en grupo. Hacer 1-on-1 con cada persona. "He notado que el equipo tiene cosas que decir pero no se siente comodo. Yo tambien tengo cosas que mejorar. Me ayudas?" Modela vulnerabilidad.</p>
+</div>
+
+<h3>7.3 Reporte para la Junta del Lunes</h3>
+<p>Cada lunes, en los primeros 5 minutos de la junta semanal, compartir:</p>
+
+<div class="card" style="background: #eff6ff; border-color: #93c5fd;">
+    <h4>Template de Reporte Semanal (2 minutos)</h4>
+    <ol>
+        <li><strong>Un dato positivo:</strong> "Esta semana, [nombre] fue la persona mas reconocida por el equipo. [Nombre], gracias por [lo que hizo]." (Refuerza comportamiento positivo publicamente)</li>
+        <li><strong>Un problema detectado + accion:</strong> "Varias personas mencionaron que [friccion]. Esta semana voy a [accion concreta] para resolverlo." (Demuestra que las respuestas generan cambio)</li>
+        <li><strong>La nota del equipo:</strong> "La nota promedio de la semana fue [X]/10. [Subio/bajo] respecto a la semana pasada." (Trackea tendencia)</li>
+    </ol>
+</div>
+
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h2>Parte 8: Alertas y Umbrales</h2>
+<!-- ============================================================ -->
+
+<table>
+    <thead>
+        <tr><th>Indicador</th><th>Saludable</th><th>Atencion</th><th>Urgente</th><th>Accion inmediata</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nota semanal (1-10)</td>
+            <td style="background:#d1fae5">&gt; 7.0</td>
+            <td style="background:#fef3c7">5.0 - 7.0</td>
+            <td style="background:#fee2e2">&lt; 5.0</td>
+            <td>1-on-1 con quien puso la nota mas baja</td>
+        </tr>
+        <tr>
+            <td>Motivacion (1-5)</td>
+            <td style="background:#d1fae5">&gt; 3.5</td>
+            <td style="background:#fef3c7">2.5 - 3.5</td>
+            <td style="background:#fee2e2">&lt; 2.5</td>
+            <td>Conversacion inmediata si baja 3 dias seguidos</td>
+        </tr>
+        <tr>
+            <td>Tasa de respuesta</td>
+            <td style="background:#d1fae5">&gt; 80%</td>
+            <td style="background:#fef3c7">60 - 80%</td>
+            <td style="background:#fee2e2">&lt; 60%</td>
+            <td>Revisar si las preguntas son relevantes / si hay fatiga</td>
+        </tr>
+        <tr>
+            <td>Friccion repetida</td>
+            <td style="background:#d1fae5">0-1 /semana</td>
+            <td style="background:#fef3c7">2 /semana</td>
+            <td style="background:#fee2e2">3+ /semana</td>
+            <td>Resolver el problema operativo esta semana</td>
+        </tr>
+        <tr>
+            <td>Persona nunca reconocida</td>
+            <td style="background:#d1fae5">Todos mencionados en el mes</td>
+            <td style="background:#fef3c7">1 persona no mencionada en 2 semanas</td>
+            <td style="background:#fee2e2">1 persona no mencionada en 3+ semanas</td>
+            <td>1-on-1 + integracion activa</td>
+        </tr>
+        <tr>
+            <td>Voz suprimida ("guardandome algo")</td>
+            <td style="background:#d1fae5">0-1 "si"</td>
+            <td style="background:#fef3c7">2 "si"</td>
+            <td style="background:#fee2e2">3+ "si"</td>
+            <td>1-on-1 con todo el equipo</td>
+        </tr>
+        <tr>
+            <td>Intencion de irse</td>
+            <td style="background:#d1fae5">0</td>
+            <td style="background:#fef3c7">—</td>
+            <td style="background:#fee2e2">Cualquier "si"</td>
+            <td>Conversacion privada, no reactiva, dentro de 24 hrs</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- ============================================================ -->
+<h2>Parte 9: Integracion con el Sistema Semanal Existente</h2>
+<!-- ============================================================ -->
+
+<div class="key-insight">
+    <strong>Este sistema COMPLEMENTA, no reemplaza, el sistema semanal de feedback (team_feedback_system.json / weekly_team_questionnaire.json).</strong> Las preguntas diarias son micro-datos. La junta semanal es donde se procesan, se discuten, y se toman acciones.
+</div>
+
+<table>
+    <thead>
+        <tr><th>Componente</th><th>Frecuencia</th><th>Proposito</th><th>Canal</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>Pregunta diaria</strong> (este documento)</td>
+            <td>6 dias/semana</td>
+            <td>Micro-intervencion + micro-dato</td>
+            <td>WhatsApp privado</td>
+        </tr>
+        <tr>
+            <td><strong>Cuestionario semanal</strong> (weekly_team_questionnaire.json)</td>
+            <td>Cada lunes</td>
+            <td>Medicion formal de 6 dimensiones + NPS</td>
+            <td>Google Form / Supabase</td>
+        </tr>
+        <tr>
+            <td><strong>Junta semanal</strong> (team_feedback_system.json)</td>
+            <td>Cada lunes</td>
+            <td>Discusion en vivo, ejercicios, compromisos</td>
+            <td>Presencial, 25-30 min</td>
+        </tr>
+        <tr>
+            <td><strong>Sintesis semanal del manager</strong></td>
+            <td>Domingo noche</td>
+            <td>Revisar respuestas diarias, preparar reporte</td>
+            <td>Hoja de calculo personal</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>Flujo Semanal Integrado</h3>
+<div class="flow-diagram">
+    <div class="flow-step"><strong>Lun-Sab</strong><br>Pregunta diaria<br><small>WhatsApp 5:30pm</small></div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-step"><strong>Domingo</strong><br>Manager revisa<br><small>datos de la semana</small></div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-step"><strong>Lunes AM</strong><br>Junta semanal<br><small>Comparte 1 insight +<br>1 accion de las preguntas</small></div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-step"><strong>Lunes AM</strong><br>Cuestionario semanal<br><small>12 preguntas formales</small></div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-step"><strong>Lun-Sab</strong><br>Nuevo ciclo<br><small>de preguntas diarias</small></div>
+</div>
+
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h2>Parte 10: Referencias Completas</h2>
+<!-- ============================================================ -->
+
+<div class="ref-list">
+<h3>Intervencion por Pregunta (Question-Behavior Effect)</h3>
+<ul>
+    <li>Morwitz, V.G., Johnson, E., & Schmittlein, D. (1993). Does measuring intent change behavior? <em>Journal of Consumer Research</em>, 20(1), 46-61.</li>
+    <li>Sprott, D.E., Spangenberg, E.R., Block, L.G., Fitzsimons, G.J., Morwitz, V.G., & Williams, P. (2006). The question-behavior effect: What we know and where we go from here. <em>Social Influence</em>, 1(3), 189-196.</li>
+    <li>Wood, C., Conner, M., Miles, E., Sandberg, T., Taylor, N., Godin, G., & Sheeran, P. (2016). The impact of asking intention or self-prediction questions on subsequent behavior: A meta-analysis. <em>Personality and Social Psychology Review</em>, 20(3), 245-268.</li>
+    <li>Williams, P., Block, L.G., & Fitzsimons, G.J. (2006). Simply asking questions about health behaviors increases both healthy and unhealthy behaviors. <em>Social Influence</em>, 1(2), 117-127.</li>
+</ul>
+
+<h3>Positividad, Gratitud y Bienestar</h3>
+<ul>
+    <li>Seligman, M.E.P., Steen, T.A., Park, N., & Peterson, C. (2005). Positive psychology progress: Empirical validation of interventions. <em>American Psychologist</em>, 60(5), 410-421.</li>
+    <li>Emmons, R.A., & McCullough, M.E. (2003). Counting blessings versus burdens: An experimental investigation of gratitude and subjective well-being in daily life. <em>Journal of Personality and Social Psychology</em>, 84(2), 377-389.</li>
+    <li>Fredrickson, B.L. (2001). The role of positive emotions in positive psychology: The broaden-and-build theory. <em>American Psychologist</em>, 56(3), 218-226.</li>
+    <li>Lyubomirsky, S., Sheldon, K.M., & Schkade, D. (2005). Pursuing happiness: The architecture of sustainable change. <em>Review of General Psychology</em>, 9(2), 111-131.</li>
+</ul>
+
+<h3>Appreciative Inquiry y Fortalezas</h3>
+<ul>
+    <li>Cooperrider, D.L., & Srivastva, S. (1987). Appreciative inquiry in organizational life. <em>Research in Organizational Change and Development</em>, 1, 129-169.</li>
+    <li>Cooperrider, D.L., & Godwin, L. (2015). Appreciative Inquiry: Organization development and the strengths revolution. In Donaldson, S.I. (Ed.), <em>Positive Organizational Scholarship</em>.</li>
+    <li>Csikszentmihalyi, M. (1990). <em>Flow: The psychology of optimal experience</em>. Harper & Row.</li>
+    <li>Dweck, C.S. (2006). <em>Mindset: The new psychology of success</em>. Random House.</li>
+</ul>
+
+<h3>Expectativas y Efecto Pigmalion</h3>
+<ul>
+    <li>Rosenthal, R., & Jacobson, L. (1968). <em>Pygmalion in the classroom: Teacher expectation and pupils' intellectual development</em>. Holt, Rinehart & Winston.</li>
+    <li>Eden, D. (1990). <em>Pygmalion in management: Productivity as a self-fulfilling prophecy</em>. Lexington Books.</li>
+    <li>Bandura, A. (1977). Self-efficacy: Toward a unifying theory of behavioral change. <em>Psychological Review</em>, 84(2), 191-215.</li>
+</ul>
+
+<h3>Seguridad Psicologica y Voz</h3>
+<ul>
+    <li>Edmondson, A.C. (1999). Psychological safety and learning behavior in work teams. <em>Administrative Science Quarterly</em>, 44(2), 350-383.</li>
+    <li>Frazier, M.L., Fainshmidt, S., Klinger, R.L., Pezeshkan, A., & Vracheva, V. (2017). Psychological safety: A meta-analytic review and extension. <em>Personnel Psychology</em>, 70(1), 113-165.</li>
+    <li>Morrison, E.W. (2011). Employee voice behavior: Integration and directions for future research. <em>Academy of Management Annals</em>, 5(1), 373-412.</li>
+    <li>Lieberman, M.D., Eisenberger, N.I., Crockett, M.J., Tom, S.M., Pfeifer, J.H., & Way, B.M. (2007). Putting feelings into words: Affect labeling disrupts amygdala activity in response to affective stimuli. <em>Psychological Science</em>, 18(5), 421-428.</li>
+</ul>
+
+<h3>Engagement, Reconocimiento y Pertenencia</h3>
+<ul>
+    <li>Harter, J.K., & Schmidt, F.L. (2020). Gallup Q12 meta-analysis (10th edition). Gallup Organization.</li>
+    <li>Baumeister, R.F., & Leary, M.R. (1995). The need to belong: Desire for interpersonal attachments as a fundamental human motivation. <em>Psychological Bulletin</em>, 117(3), 497-529.</li>
+    <li>Deci, E.L., & Ryan, R.M. (2000). The "what" and "why" of goal pursuits: Human needs and the self-determination of behavior. <em>Psychological Inquiry</em>, 11(4), 227-268.</li>
+    <li>Grant, A.M. (2007). Relational job design and the motivation to make a prosocial difference. <em>Academy of Management Review</em>, 32(2), 393-417.</li>
+    <li>Algoe, S.B., & Haidt, J. (2009). Witnessing excellence in action: The 'other-praising' emotions of elevation, gratitude, and admiration. <em>Journal of Positive Psychology</em>, 4(2), 105-127.</li>
+</ul>
+
+<h3>Justicia Organizacional</h3>
+<ul>
+    <li>Adams, J.S. (1963). Towards an understanding of inequity. <em>Journal of Abnormal and Social Psychology</em>, 67(5), 422-436.</li>
+    <li>Colquitt, J.A., Conlon, D.E., Wesson, M.J., Porter, C.O.L.H., & Ng, K.Y. (2001). Justice at the millennium: A meta-analytic review of 25 years of organizational justice research. <em>Journal of Applied Psychology</em>, 86(3), 425-445.</li>
+    <li>Greenberg, J. (1990). Organizational justice: Yesterday, today, and tomorrow. <em>Journal of Management</em>, 16(2), 399-432.</li>
+</ul>
+
+<h3>Rotacion, Burnout y Senales de Alerta</h3>
+<ul>
+    <li>Hom, P.W., Mitchell, T.R., Lee, T.W., & Griffeth, R.W. (2012). Reviewing employee turnover: Focusing on proximal withdrawal states and an expanded criterion. <em>Psychological Bulletin</em>, 138(5), 831-858.</li>
+    <li>Maslach, C., & Leiter, M.P. (2008). Early predictors of job burnout and engagement. <em>Journal of Applied Psychology</em>, 93(3), 498-512.</li>
+    <li>Rizzo, J.R., House, R.J., & Lirtzman, S.I. (1970). Role conflict and ambiguity in complex organizations. <em>Administrative Science Quarterly</em>, 15(2), 150-163.</li>
+</ul>
+
+<h3>Equipos y Team Building</h3>
+<ul>
+    <li>Salas, E., Rozell, D., Mullen, B., & Driskell, J.E. (1999). The effect of team building on performance: An integration. <em>Small Group Research</em>, 30(3), 309-329.</li>
+    <li>Klein, C., DiazGranados, D., Salas, E., Le, H., Burke, C.S., Lyons, R., & Goodwin, G.F. (2009). Does team building work? <em>Small Group Research</em>, 40(2), 181-222.</li>
+    <li>Graen, G.B., & Uhl-Bien, M. (1995). Relationship-based approach to leadership: Development of leader-member exchange (LMX) theory. <em>Leadership Quarterly</em>, 6(2), 219-247.</li>
+    <li>Wrzesniewski, A., & Dutton, J.E. (2001). Crafting a job: Revisioning employees as active crafters of their work. <em>Academy of Management Review</em>, 26(2), 179-201.</li>
+    <li>Cialdini, R.B. (2001). <em>Influence: Science and practice</em> (4th ed.). Allyn & Bacon.</li>
+</ul>
+
+<h3>Lean y Operaciones</h3>
+<ul>
+    <li>Ohno, T. (1988). <em>Toyota Production System: Beyond large-scale production</em>. Productivity Press.</li>
+    <li>Goldratt, E.M. (1984). <em>The Goal: A process of ongoing improvement</em>. North River Press.</li>
+</ul>
+</div>
+
+<!-- ============================================================ -->
+<h2>Parte 11: Resumen Ejecutivo</h2>
+<!-- ============================================================ -->
+
+<div class="card" style="background:#eef2ff; border-color: #818cf8;">
+    <h3 style="margin-top:0">El sistema en 60 segundos</h3>
+    <ul>
+        <li><strong>Que:</strong> 1 pregunta diaria por WhatsApp, 6 dias/semana, respondida en privado en menos de 1 minuto</li>
+        <li><strong>Patron semanal:</strong> Lun/Jue = engagement del empleado | Mar/Vie = datos para management | Mie/Sab = doble proposito</li>
+        <li><strong>Ciclo:</strong> 30 preguntas = 1 mes. Mes 2 usa variantes. Mes 3 repite.</li>
+        <li><strong>Ciencia central:</strong> El Question-Behavior Effect (Morwitz 1993, Sprott 2006, Wood 2016) demuestra que preguntar sobre un comportamiento aumenta la probabilidad de realizarlo. Preguntar sobre gratitud genera gratitud. Preguntar sobre ayuda genera ayuda. La pregunta ES la intervencion.</li>
+        <li><strong>Datos para management:</strong> Red de reconocimiento (sociometria), cuellos de botella repetidos (Lean), justicia percibida (Adams), senales de rotacion (Hom 2012), seguridad psicologica (Edmondson 1999)</li>
+        <li><strong>Integracion:</strong> Los datos diarios alimentan el reporte semanal, que se comparte en la junta del lunes (2 minutos). El cuestionario semanal de 12 preguntas sigue en paralelo para tracking formal.</li>
+        <li><strong>Regla #1:</strong> Siempre actuar sobre al menos 1 respuesta por semana. Si el equipo no ve que sus respuestas generan cambios, dejan de contestar en 3 semanas.</li>
+    </ul>
+</div>
+
+<p style="text-align:center; color:#9ca3af; margin-top:40px; font-size:0.85rem;">
+    Sistema disenado para Terex Retail Team &bull; Basado en 30+ fuentes de investigacion &bull; Listo para WhatsApp
+</p>
+
+</body>
+</html>

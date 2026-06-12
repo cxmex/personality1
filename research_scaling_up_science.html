@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Science Behind Scaling Up &mdash; Research Foundations of the Rockefeller Habits</title>
+    <style>
+        @media print {
+            body { font-size: 11pt; }
+            .no-print { display: none !important; }
+            .page-break { page-break-before: always; }
+            @page { margin: 2cm; size: letter; }
+            .callout-box, .finding-box, .critique-box, .application-box { break-inside: avoid; }
+            table { break-inside: avoid; }
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #fff;
+            color: #1a1a2e;
+            line-height: 1.7;
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 60px 40px 40px;
+        }
+        h1, h2, h3, h4 { font-family: 'Georgia', 'Times New Roman', serif; color: #111827; }
+
+        .print-btn {
+            position: fixed; top: 20px; right: 20px; padding: 10px 22px;
+            background: #2563eb; color: #fff; border: none; border-radius: 6px;
+            cursor: pointer; font-size: 0.85rem; font-weight: 600; z-index: 1000;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+        }
+        .print-btn:hover { background: #1d4ed8; }
+
+        .title-page {
+            text-align: center; padding: 80px 0 40px;
+            border-bottom: 3px solid #2563eb; margin-bottom: 40px;
+        }
+        .title-page .logo { font-size: 0.85rem; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: #2563eb; margin-bottom: 40px; }
+        .title-page h1 { font-size: 1.75rem; line-height: 1.35; margin-bottom: 16px; font-weight: 700; }
+        .title-page .subtitle { font-size: 1rem; color: #6b7280; font-style: italic; margin-bottom: 30px; line-height: 1.5; }
+        .title-page .meta { font-size: 0.85rem; color: #9ca3af; margin-top: 30px; }
+        .title-page .meta strong { color: #6b7280; }
+
+        .section-number {
+            display: inline-block; background: #2563eb; color: #fff;
+            width: 32px; height: 32px; line-height: 32px; text-align: center;
+            border-radius: 50%; font-size: 0.85rem; font-weight: 700; margin-right: 10px;
+            vertical-align: middle; font-family: -apple-system, sans-serif;
+        }
+        h2 { font-size: 1.3rem; margin: 40px 0 18px; padding-bottom: 8px; border-bottom: 2px solid #e5e7eb; line-height: 1.4; }
+        h3 { font-size: 1.05rem; margin: 28px 0 10px; color: #374151; }
+        h4 { font-size: 0.95rem; margin: 20px 0 8px; color: #4b5563; }
+        p { margin-bottom: 14px; font-size: 0.95rem; text-align: justify; }
+
+        /* Finding box (gold) */
+        .finding-box {
+            background: #fffbeb; border-left: 4px solid #f59e0b;
+            padding: 16px 20px; margin: 20px 0; border-radius: 0 6px 6px 0;
+        }
+        .finding-box strong { color: #d97706; }
+
+        /* Critique box (red) */
+        .critique-box {
+            background: #fef2f2; border-left: 4px solid #dc2626;
+            padding: 16px 20px; margin: 20px 0; border-radius: 0 6px 6px 0;
+        }
+        .critique-box strong { color: #dc2626; }
+
+        /* Application box (green) */
+        .application-box {
+            background: #f0fdf4; border-left: 4px solid #16a34a;
+            padding: 16px 20px; margin: 20px 0; border-radius: 0 6px 6px 0;
+        }
+        .application-box strong { color: #16a34a; }
+
+        /* Blue callout */
+        .callout-box {
+            background: #f0f4ff; border-left: 4px solid #2563eb;
+            padding: 22px; margin: 24px 0; text-align: center; border-radius: 0 6px 6px 0;
+        }
+        .callout-box .big-number { font-size: 3rem; font-weight: 700; color: #2563eb; line-height: 1.1; font-family: 'Georgia', serif; }
+        .callout-box .big-number.red { color: #dc2626; }
+        .callout-box .big-number.green { color: #16a34a; }
+        .callout-box .big-number.gold { color: #d97706; }
+        .callout-box .label { font-size: 0.95rem; color: #374151; margin-top: 4px; }
+        .callout-box .source-line { font-size: 0.78rem; color: #9ca3af; margin-top: 6px; }
+
+        .stat-row { display: flex; gap: 16px; margin: 24px 0; flex-wrap: wrap; }
+        .stat-card {
+            flex: 1; min-width: 160px; background: #f9fafb; border: 1px solid #e5e7eb;
+            border-radius: 8px; padding: 18px; text-align: center;
+        }
+        .stat-card .num { font-size: 1.8rem; font-weight: 700; font-family: 'Georgia', serif; color: #2563eb; }
+        .stat-card .num.red { color: #dc2626; }
+        .stat-card .num.green { color: #16a34a; }
+        .stat-card .num.gold { color: #d97706; }
+        .stat-card .desc { font-size: 0.82rem; color: #6b7280; margin-top: 4px; }
+
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.85rem; }
+        thead th {
+            background: #f3f4f6; font-weight: 700; text-align: left; padding: 10px 12px;
+            border-bottom: 2px solid #d1d5db; font-size: 0.82rem; text-transform: uppercase;
+            letter-spacing: 0.5px; color: #374151;
+        }
+        tbody td { padding: 10px 12px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:nth-child(even) { background: #f9fafb; }
+
+        blockquote {
+            border-left: 3px solid #d1d5db; padding: 12px 20px; margin: 18px 0;
+            background: #f9fafb; color: #4b5563; font-style: italic;
+        }
+        ul, ol { margin: 12px 0 12px 24px; font-size: 0.95rem; }
+        li { margin-bottom: 6px; }
+
+        .toc {
+            background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;
+            padding: 24px 30px; margin: 30px 0;
+        }
+        .toc h3 { margin-top: 0; }
+        .toc ol { margin: 12px 0 0 20px; }
+        .toc li { margin-bottom: 4px; font-size: 0.9rem; }
+        .toc a { color: #2563eb; text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+
+        .ref-list { font-size: 0.82rem; color: #6b7280; margin-top: 30px; padding-top: 20px; border-top: 2px solid #e5e7eb; }
+        .ref-list h3 { margin-bottom: 12px; }
+        .ref-list ol { margin-left: 20px; }
+        .ref-list li { margin-bottom: 8px; line-height: 1.5; }
+
+        .verdict-table td:nth-child(2) { font-weight: 700; }
+        .verdict-strong { color: #16a34a; }
+        .verdict-moderate { color: #d97706; }
+        .verdict-weak { color: #dc2626; }
+        .verdict-retracted { color: #991b1b; text-decoration: line-through; }
+    </style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">Print / Save PDF</button>
+
+<!-- ==================== TITLE PAGE ==================== -->
+<div class="title-page">
+    <div class="logo">Research Brief</div>
+    <h1>The Science Behind Scaling Up</h1>
+    <div class="subtitle">
+        A critical research synthesis of the academic foundations underlying<br>
+        the Rockefeller Habits / Gazelles framework by Verne Harnish
+    </div>
+    <div class="meta">
+        <strong>Purpose:</strong> Evaluate scientific rigor before application &mdash; not implementation advice<br>
+        <strong>Date:</strong> June 2026<br>
+        <strong>Sources:</strong> 40+ academic papers, meta-analyses, and replications
+    </div>
+</div>
+
+<!-- ==================== EXECUTIVE SUMMARY ==================== -->
+<div class="callout-box" style="text-align: left;">
+    <strong style="color: #2563eb; font-size: 1.05rem;">Executive Summary</strong><br><br>
+    Verne Harnish&rsquo;s Scaling Up framework draws&mdash;sometimes explicitly, often implicitly&mdash;from multiple streams of organizational science. Some underlying research is among the <strong>strongest in all of psychology</strong> (Locke &amp; Latham&rsquo;s goal-setting theory, d = 0.52&ndash;0.82). Some has <strong>partially collapsed</strong> under replication scrutiny (ego depletion, positivity ratio). And some was <strong>never peer-reviewed science</strong> to begin with (Reichheld&rsquo;s original NPS claim, much of the balanced scorecard literature). Harnish himself has acknowledged that some of his observations are &ldquo;not scientific at all.&rdquo;<br><br>
+    This brief examines the actual evidence base across eight domains so you can decide where the science is solid, where it is suggestive, and where it is missing.
+</div>
+
+<!-- ==================== TABLE OF CONTENTS ==================== -->
+<div class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+        <li><a href="#s1">Meeting Cadence Science</a></li>
+        <li><a href="#s2">Goal-Setting Science (The &ldquo;Rocks&rdquo; Foundation)</a></li>
+        <li><a href="#s3">KPI / Scorecard Science</a></li>
+        <li><a href="#s4">Strategy Simplification (One-Page Plan)</a></li>
+        <li><a href="#s5">Team Feedback Science</a></li>
+        <li><a href="#s6">Customer Feedback Science</a></li>
+        <li><a href="#s7">Employee Engagement Science</a></li>
+        <li><a href="#s8">The &ldquo;Rhythm&rdquo; Concept</a></li>
+        <li><a href="#verdict">Evidence Quality Verdict</a></li>
+        <li><a href="#refs">References</a></li>
+    </ol>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ====================================================================== -->
+<!--                    SECTION 1: MEETING CADENCE                          -->
+<!-- ====================================================================== -->
+<h2 id="s1"><span class="section-number">1</span> Meeting Cadence Science</h2>
+
+<h3>1.1 Daily Standups and Coordination</h3>
+
+<p><strong>Key researchers:</strong> Stray, Sj&oslash;berg &amp; Dyb&aring; (2016); European Journal of Work and Organizational Psychology (2025)</p>
+
+<div class="finding-box">
+    <strong>Core finding:</strong> Daily standup meetings are directly and positively related to psychological safety, and indirectly related to work satisfaction and team performance via psychological safety as a mediator. The mechanism: accountability, predictability, task-related feedback, and common knowledge creation.
+</div>
+
+<div class="critique-box">
+    <strong>Limitation:</strong> The #1 factor contributing to negative attitudes toward daily standups was the frequency being perceived as <em>too high</em>. Most research comes from Agile software teams, not retail. The relationship is not linear&mdash;there is likely an optimal frequency depending on task interdependence and team size.
+</div>
+
+<h3>1.2 Communication Rhythm and Alignment</h3>
+
+<p><strong>Researchers:</strong> Brown et al. (2021), multi-team systems research</p>
+
+<p>Explicit coordination cannot occur without communication. A common time frame for organizing interactions is essential for team effectiveness. The rhythmic time structure of interactions appears to be a <em>natural feature</em> of effective team coordination, suggesting imposed meeting rhythms may simply formalize what high-performing teams do naturally.</p>
+
+<h3>1.3 Cognitive Load and the &ldquo;Three Questions&rdquo;</h3>
+
+<p><strong>Researchers:</strong> George A. Miller (1956); Nelson Cowan (2001); John Sweller (1988)</p>
+
+<p>Miller established working memory holds ~7 &plusmn; 2 items. Cowan (2001) revised this to approximately <strong>4 items</strong> when controlling for chunking. Sweller&rsquo;s Cognitive Load Theory showed working memory can only process limited information elements simultaneously.</p>
+
+<div class="application-box">
+    <strong>Connection to Scaling Up:</strong> Harnish&rsquo;s daily huddle prescribes exactly three agenda items (&ldquo;What&rsquo;s up,&rdquo; &ldquo;Daily metrics,&rdquo; &ldquo;Where are you stuck&rdquo;), aligning with the ~4 item cognitive limit. He does not cite cognitive load theory directly&mdash;this is likely intuitive design that happens to align with the science.
+</div>
+
+<div class="page-break"></div>
+
+<!-- ====================================================================== -->
+<!--                    SECTION 2: GOAL-SETTING                             -->
+<!-- ====================================================================== -->
+<h2 id="s2"><span class="section-number">2</span> Goal-Setting Science (The &ldquo;Rocks&rdquo; Foundation)</h2>
+
+<h3>2.1 Locke &amp; Latham&rsquo;s Goal-Setting Theory</h3>
+
+<p><strong>Researchers:</strong> Edwin Locke &amp; Gary Latham (1990 book; 2002 retrospective in <em>American Psychologist</em>)</p>
+
+<div class="callout-box">
+    <div class="big-number green">96%</div>
+    <div class="label">of studies confirm: specific, difficult goals outperform vague &ldquo;do your best&rdquo; goals</div>
+    <div class="source-line">Locke &amp; Latham (2002) &mdash; validated across 100+ tasks, 40,000+ participants, 8+ countries</div>
+</div>
+
+<table>
+    <thead>
+        <tr><th>Comparison</th><th>Effect Size (d)</th><th>Meaning</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>Hard goals vs. easy goals</td><td><strong>0.52&ndash;0.82</strong></td><td>Medium to large effect</td></tr>
+        <tr><td>Specific difficult vs. &ldquo;do your best&rdquo;</td><td><strong>0.42&ndash;0.80</strong></td><td>&ldquo;Do your best&rdquo; is nearly as bad as no goal</td></tr>
+        <tr><td>Average performance increase</td><td colspan="2"><strong>~17%</strong> over baseline</td></tr>
+    </tbody>
+</table>
+
+<p><strong>Key moderators:</strong> Goal commitment (public commitment helps), self-efficacy, feedback (goals + feedback outperform either alone), task complexity (effect strongest for simple tasks), and participation (assigned goals work if rationale is given).</p>
+
+<div class="finding-box">
+    <strong>This is one of the most validated theories in all of organizational psychology.</strong> The Rocks concept sits on the strongest research foundation of any element in Scaling Up.
+</div>
+
+<h3>2.2 SMART vs. FAST Goals</h3>
+
+<p><strong>Researcher:</strong> Donald Sull, MIT Sloan (2018)</p>
+
+<p>Based on analyzing <strong>500,000+ goals</strong>, Sull argued SMART goals &ldquo;undervalue ambition, focus narrowly on individual performance, and ignore the importance of discussing goals throughout the year.&rdquo; FAST goals (<strong>F</strong>requently discussed, <strong>A</strong>mbitious, <strong>S</strong>pecific, <strong>T</strong>ransparent) better align with goal-setting research.</p>
+
+<div class="critique-box">
+    <strong>Key insight:</strong> The &ldquo;A&rdquo; in SMART (Achievable) directly contradicts Locke &amp; Latham&rsquo;s finding that <em>difficult</em> goals outperform easy ones. SMART goals may be inadvertently encouraging mediocrity.
+</div>
+
+<h3>2.3 The Goal Gradient Effect: Why 13 Weeks Beats 52 Weeks</h3>
+
+<p><strong>Researchers:</strong> Clark Hull (1932, 1934); Kivetz, Urminsky &amp; Zheng (2006)</p>
+
+<p>Hull&rsquo;s hypothesis: <strong>effort expenditure increases as distance to a goal decreases.</strong> Kivetz et al. (2006) validated this in human behavior&mdash;people accelerate effort as they approach completion. A 13-week quarterly goal creates the gradient effect sooner and more frequently than a 52-week annual goal. By week 8 of 13, you are psychologically &ldquo;close&rdquo; to the finish line. By week 8 of 52, you have 44 weeks left and motivation is flat.</p>
+
+<h3>2.4 Optimal Number of Goals</h3>
+
+<p>The 3&ndash;5 &ldquo;Rocks&rdquo; prescription aligns with Cowan&rsquo;s revised working memory capacity (~4 items). Three is probably better than five for a small team, given cognitive limits on attention allocation across goals.</p>
+
+<h3>2.5 Baumeister&rsquo;s Willpower Research &mdash; DISPUTED</h3>
+
+<div class="critique-box">
+    <strong>Replication crisis:</strong> The original ego depletion meta-analysis (2010) showed d = 0.62. A coordinated replication across <strong>23 laboratories and 2,100+ participants failed to replicate the effect.</strong> Ego depletion became one of the most prominent casualties of psychology&rsquo;s replication crisis. Newer research suggests what looks like depletion is actually a <strong>shift in motivation</strong>, not resource exhaustion.
+</div>
+
+<p>Any Scaling Up advice about &ldquo;willpower&rdquo; or &ldquo;decision fatigue&rdquo; as resource depletion should be treated with skepticism. The goal-prioritization advice (fewer goals = better) is supported by cognitive load theory, but not by willpower depletion.</p>
+
+<div class="page-break"></div>
+
+<!-- ====================================================================== -->
+<!--                    SECTION 3: KPI / SCORECARD                          -->
+<!-- ====================================================================== -->
+<h2 id="s3"><span class="section-number">3</span> KPI / Scorecard Science</h2>
+
+<h3>3.1 Kaplan &amp; Norton&rsquo;s Balanced Scorecard</h3>
+
+<p><strong>Researchers:</strong> Robert Kaplan &amp; David Norton (1992 in HBR, 1996 book)</p>
+
+<p>The four perspectives (Financial, Customer, Internal Process, Learning &amp; Growth) were developed from a one-year project with 12 companies. Widely adopted (~50% of Fortune 1000).</p>
+
+<div class="critique-box">
+    <strong>30-year retrospective (Hoque, 2022):</strong> Rigorous empirical evidence of BSC&rsquo;s causal impact on firm performance is <strong>limited</strong>. Most evidence is case studies, not controlled research. The framework is widely used despite a thin empirical base.
+</div>
+
+<h3>3.2 &ldquo;What Gets Measured Gets Managed&rdquo; &mdash; A Myth</h3>
+
+<div class="stat-row">
+    <div class="stat-card">
+        <div class="num red">MYTH</div>
+        <div class="desc">Drucker never said this. The Drucker Institute confirmed it.</div>
+    </div>
+    <div class="stat-card">
+        <div class="num gold">1956</div>
+        <div class="desc">V. F. Ridgway &mdash; who was WARNING against overreliance on measurement</div>
+    </div>
+</div>
+
+<p>The actual source, V. F. Ridgway (1956), was cautioning: &ldquo;What gets measured gets managed&mdash;<em>even when it&rsquo;s pointless to measure and manage it, and even if it harms the purpose of the organisation to do so.</em>&rdquo; BCG research confirmed that excessive measurement actually <strong>decreases</strong> business results.</p>
+
+<h3>3.3 Feedback Loops in Systems Theory</h3>
+
+<p><strong>Peter Senge (1990), <em>The Fifth Discipline</em>:</strong> A KPI without a feedback loop is just a number. The value of measurement lies in whether it connects to action. The delay between action and result is critical&mdash;if too long, the loop breaks down and people stop believing the metric matters.</p>
+
+<h3>3.4 The Hawthorne Effect &mdash; More Complicated Than Believed</h3>
+
+<p>Levitt &amp; List re-analyzed the original Hawthorne data and found effects were weaker than claimed. Original studies had severe methodological flaws: 5&ndash;6 subjects, no proper controls. Making metrics <em>visible</em> does affect behavior, but the mechanism is likely <strong>social accountability</strong>, not simple observation.</p>
+
+<h3>3.5 &ldquo;One Metric That Matters&rdquo;</h3>
+
+<p>Consistent with cognitive load research and choice overload literature (Iyengar &amp; Lepper, 2000), but this is practitioner wisdom, not peer-reviewed science. The concept of Goodhart&rsquo;s Law applies: &ldquo;When a measure becomes a target, it ceases to be a good measure.&rdquo;</p>
+
+<div class="application-box">
+    <strong>Bottom line:</strong> The &ldquo;what gets measured gets managed&rdquo; philosophy that pervades Scaling Up is built on a misattributed quote and research that <em>warns against exactly this approach</em>. Metrics work when they close feedback loops to action. Metrics without action create cynicism.
+</div>
+
+<div class="page-break"></div>
+
+<!-- ====================================================================== -->
+<!--                    SECTION 4: STRATEGY SIMPLIFICATION                  -->
+<!-- ====================================================================== -->
+<h2 id="s4"><span class="section-number">4</span> Strategy Simplification (One-Page Plan)</h2>
+
+<h3>4.1 The Strategy Execution Problem</h3>
+
+<div class="stat-row">
+    <div class="stat-card">
+        <div class="num red">90%</div>
+        <div class="desc">of organizations fail to execute strategic plans (Kaplan &amp; Norton)</div>
+    </div>
+    <div class="stat-card">
+        <div class="num red">50%</div>
+        <div class="desc">gap between how clearly execs think strategy is communicated vs. employee reception</div>
+    </div>
+    <div class="stat-card">
+        <div class="num red">2/3</div>
+        <div class="desc">of executive teams are less aligned than they believe</div>
+    </div>
+</div>
+
+<p>Strategy execution fails due to complexity and misalignment, not bad strategy.</p>
+
+<h3>4.2 Cognitive Load Applied to Strategy</h3>
+
+<p>Sweller (1988): Working memory handles limited elements. A 50-page plan overwhelms; a one-page plan stays within limits. This is a reasonable theoretical extrapolation, but there are no controlled studies directly comparing one-page vs. multi-page strategic plans on execution success.</p>
+
+<h3>4.3 Commander&rsquo;s Intent</h3>
+
+<p>Military doctrine, popularized by Heath &amp; Heath (2007). A clear statement of <em>why</em> and <em>what success looks like</em> enables autonomous decisions when conditions change. &ldquo;No plan survives first contact with the enemy&rdquo; (von Moltke). Well-documented in military and high-reliability organization contexts; business evidence is case-study based.</p>
+
+<div class="application-box">
+    <strong>For a 5-person team:</strong> A single sentence of intent may be more powerful than a one-page plan. At 5 people, shared mental models are built through daily interaction&mdash;the primary coordination mechanism. The OPSP becomes most valuable beyond 15&ndash;20 people where natural coordination breaks down.
+</div>
+
+<div class="page-break"></div>
+
+<!-- ====================================================================== -->
+<!--                    SECTION 5: TEAM FEEDBACK SCIENCE                    -->
+<!-- ====================================================================== -->
+<h2 id="s5"><span class="section-number">5</span> Team Feedback Science</h2>
+
+<h3>5.1 Kluger &amp; DeNisi (1996) &mdash; The Foundational Meta-Analysis</h3>
+
+<p><strong>Sample:</strong> 607 effect sizes from 23,663 observations</p>
+
+<div class="callout-box">
+    <div class="big-number red">38%</div>
+    <div class="label">of feedback interventions actually <strong>decreased</strong> performance</div>
+    <div class="source-line">Kluger &amp; DeNisi (1996), Psychological Bulletin, 119(2), 254&ndash;284</div>
+</div>
+
+<p>Feedback improved performance on average (d = 0.41), but the variance was enormous. Their <strong>Feedback Intervention Theory</strong> explains why:</p>
+
+<table>
+    <thead>
+        <tr><th>Attention Level</th><th>Focus</th><th>Effect on Performance</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>Task learning</strong></td><td>&ldquo;Here&rsquo;s how to do it better&rdquo;</td><td>Positive</td></tr>
+        <tr><td><strong>Task motivation</strong></td><td>&ldquo;You&rsquo;re behind / ahead&rdquo;</td><td>Mixed</td></tr>
+        <tr><td><strong>Self / meta-task</strong></td><td>&ldquo;You are a good/bad performer&rdquo;</td><td><strong>Negative</strong></td></tr>
+    </tbody>
+</table>
+
+<div class="finding-box">
+    <strong>The most dangerous insight in this entire brief:</strong> Task-focused feedback helps. Self-focused feedback harms. Most managers naturally deliver self-level feedback (&ldquo;You did great!&rdquo; or &ldquo;You need to improve&rdquo;). Implementing Scaling Up&rsquo;s feedback-heavy approach without understanding this distinction is like prescribing medication without understanding dosage.
+</div>
+
+<h3>5.2 Edmondson (1999) &mdash; Psychological Safety</h3>
+
+<p><strong>Sample:</strong> 51 work teams in a manufacturing company</p>
+
+<p>Psychological safety (shared belief the team is safe for interpersonal risk-taking) predicts learning behavior, which mediates the safety&ndash;performance relationship. Team efficacy alone was not significant when controlling for psychological safety. Won the Academy of Management Outstanding Publication Award (2000).</p>
+
+<p><strong>Implication:</strong> You cannot build an effective feedback system in a psychologically unsafe environment. Safety must come <em>before</em> feedback, not after.</p>
+
+<h3>5.3 Google&rsquo;s Project Aristotle</h3>
+
+<p><strong>Sample:</strong> 180+ Google teams</p>
+
+<p>Psychological safety was the #1 predictor, explaining <strong>43% of variance</strong> in team performance. Five dynamics ranked: (1) Psychological Safety, (2) Dependability, (3) Structure &amp; Clarity, (4) Meaning, (5) Impact.</p>
+
+<div class="critique-box">
+    <strong>Limitation:</strong> Not peer-reviewed. Google teams are highly atypical (knowledge workers, high autonomy, generous resources). Generalizability to retail is uncertain.
+</div>
+
+<h3>5.4 Losada &amp; Heaphy (2004) &mdash; Positivity Ratio &mdash; RETRACTED</h3>
+
+<div class="critique-box">
+    <strong>RETRACTED:</strong> Original claim of a precise 2.9013:1 positivity-to-negativity ratio for high-performing teams. Brown, Sokal &amp; Friedman (2013) demonstrated the mathematical modeling was &ldquo;entirely unfounded.&rdquo; The model was formally withdrawn. Losada did not defend it. The broad observation that high-performing teams have more positive interactions survives as a pattern; the precise ratio was pseudomathematics.
+</div>
+
+<h3>5.5 Hackman&rsquo;s Conditions for Team Effectiveness</h3>
+
+<p><strong>Five conditions:</strong> Real Team, Compelling Direction, Enabling Structure, Supportive Context, Expert Coaching.</p>
+
+<p>Core insight: Leaders have greatest leverage <em>before work begins</em>&mdash;designing the team and its context&mdash;not through continuous monitoring. The ongoing feedback that Scaling Up emphasizes is Hackman&rsquo;s <em>fifth</em> condition (coaching), but the first four conditions must be in place first.</p>
+
+<h3>5.6 Feedback Frequency Research</h3>
+
+<p><strong>Park, Johnson, Moon &amp; Lee (2019):</strong> Feedback frequency interacts with specificity&mdash;high frequency + high specificity = best outcomes. High frequency + low specificity = <strong>negative outcomes</strong>.</p>
+
+<p><strong>Lam et al. (2011):</strong> The relationship between feedback frequency and performance is likely <strong>curvilinear</strong>&mdash;optimal at moderate frequency. Too little is ineffective; too much is overwhelming.</p>
+
+<h3>5.7 Peer vs. Manager Feedback</h3>
+
+<p>Peer feedback boosts performance by up to <strong>14%</strong> (Gartner). Employees are <strong>3.6x more motivated</strong> with daily vs. annual manager feedback (Gallup). Social feedback systems provide 50+ touchpoints/year vs. 1&ndash;2 traditional reviews.</p>
+
+<div class="application-box">
+    <strong>Synthesis for a 5-person team:</strong> (a) Psychological safety first, before any feedback system. (b) Always task-focused (&ldquo;The display in aisle 3 increased sales by X&rdquo;), never self-focused (&ldquo;You&rsquo;re doing great&rdquo;). (c) Peer feedback is especially valuable since people work side by side. (d) Moderate frequency&mdash;daily huddles for coordination, weekly for reflection.
+</div>
+
+<div class="page-break"></div>
+
+<!-- ====================================================================== -->
+<!--                    SECTION 6: CUSTOMER FEEDBACK                        -->
+<!-- ====================================================================== -->
+<h2 id="s6"><span class="section-number">6</span> Customer Feedback Science</h2>
+
+<h3>6.1 NPS &mdash; Weak Original Science</h3>
+
+<p><strong>Reichheld (2003)</strong> claimed NPS was &ldquo;the one number you need to grow.&rdquo;</p>
+
+<div class="critique-box">
+    <strong>Failed independent replication:</strong> Keiningham, Aksoy &amp; Cooil replicated with a larger sample and found NPS &ldquo;performs no better than other measures&rdquo; (CSAT, CES) at predicting growth. The original study used cross-sectional data; the &ldquo;one number&rdquo; claim was never empirically validated in a peer-reviewed journal. NPS&rsquo;s popularity is driven by simplicity, not scientific superiority.
+</div>
+
+<h3>6.2 Closed-Loop Feedback (Systems Theory)</h3>
+
+<p>From Senge and Deming: the <em>type</em> of metric matters less than whether the loop is closed. <strong>A mediocre metric with a closed loop outperforms a perfect metric with an open loop.</strong> This is the single most important insight for customer feedback: any measurement system that triggers visible action will work. NPS, CSAT, CES, even a simple thumbs up/down&mdash;the loop matters more than the scale.</p>
+
+<h3>6.3 The Kano Model</h3>
+
+<p><strong>Researcher:</strong> Noriaki Kano (1984)</p>
+
+<div class="finding-box">
+    <strong>Core insight:</strong> Customer satisfaction is <strong>not linear</strong>. Three categories:<br><br>
+    <strong>Must-Be features:</strong> Cause dissatisfaction when absent, only neutral when present (clean store, correct prices).<br>
+    <strong>Performance features:</strong> Proportional&mdash;more is better (product variety, staff friendliness).<br>
+    <strong>Delighters:</strong> Create disproportionate satisfaction but no penalty for absence (unexpected gift wrapping, personalized recommendations).<br><br>
+    Asking &ldquo;what do you want?&rdquo; systematically misses Delighters because customers don&rsquo;t know to ask for what they haven&rsquo;t experienced.
+</div>
+
+<h3>6.4 Jobs-to-be-Done (Christensen)</h3>
+
+<p>People &ldquo;hire&rdquo; products to get a job done. 75&ndash;85% of new products fail because they target demographics, not jobs. The &ldquo;milkshake study&rdquo; is the canonical example. Primarily case-study evidence, not experimental, but influential in product development.</p>
+
+<h3>6.5 The Service-Profit Chain</h3>
+
+<p><strong>Researchers:</strong> Heskett, Sasser &amp; Schlesinger (1994, 1997, Harvard Business School)</p>
+
+<p>The chain: Employee satisfaction &rarr; Service quality &rarr; Customer satisfaction &rarr; Profit.</p>
+
+<div class="critique-box">
+    <strong>Critique:</strong> Silvestro &amp; Cross (2000) found that simultaneous empirical validation of all linkages in the chain was lacking. Causal direction is questionable&mdash;does employee satisfaction cause customer satisfaction, or does a profitable business make everyone happier?
+</div>
+
+<div class="application-box">
+    <strong>Bottom line for customer feedback:</strong> Skip the metric debate. Use whatever is simplest (even a 5-star rating). Close every loop: every piece of feedback should trigger visible action within 48 hours. The Kano Model is the most useful mental framework&mdash;think in terms of Must-Be, Performance, and Delighter categories.
+</div>
+
+<div class="page-break"></div>
+
+<!-- ====================================================================== -->
+<!--                    SECTION 7: EMPLOYEE ENGAGEMENT                      -->
+<!-- ====================================================================== -->
+<h2 id="s7"><span class="section-number">7</span> Employee Engagement Science</h2>
+
+<h3>7.1 Gallup Q12 Meta-Analysis</h3>
+
+<p><strong>2020 edition:</strong> 263 studies, 192 organizations, 49 industries, 34 countries, ~1.4 million employees</p>
+
+<div class="stat-row">
+    <div class="stat-card">
+        <div class="num green">23%</div>
+        <div class="desc">higher profitability in top-quartile engaged units</div>
+    </div>
+    <div class="stat-card">
+        <div class="num green">18%</div>
+        <div class="desc">higher productivity (sales)</div>
+    </div>
+    <div class="stat-card">
+        <div class="num green">70%</div>
+        <div class="desc">fewer safety incidents</div>
+    </div>
+    <div class="stat-card">
+        <div class="num green">28%</div>
+        <div class="desc">less shrinkage / theft</div>
+    </div>
+</div>
+
+<p>True-score correlation with composite performance: <strong>r = 0.43</strong>. Top-half units nearly double their odds of success vs. bottom-half. The 28% reduction in shrinkage is particularly relevant for retail.</p>
+
+<div class="critique-box">
+    <strong>Limitations:</strong> Gallup researches its own proprietary instrument (conflict of interest). Causality direction uncertain&mdash;do engaged employees create better outcomes, or do better workplaces create engagement? Q12 is proprietary, limiting independent replication.
+</div>
+
+<h3>7.2 Self-Determination Theory (Deci &amp; Ryan)</h3>
+
+<p>Three basic psychological needs:</p>
+
+<table>
+    <thead>
+        <tr><th>Need</th><th>Definition</th><th>Retail Application</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>Autonomy</strong></td><td>Sense of volition and choice</td><td>Let employees decide how to arrange their section, choose cross-sell pairings</td></tr>
+        <tr><td><strong>Competence</strong></td><td>Feeling effective, experiencing mastery</td><td>Skill-building, product knowledge, seeing KPI improvement</td></tr>
+        <tr><td><strong>Relatedness</strong></td><td>Connection, belonging</td><td>Daily huddle, team celebrations, shared purpose</td></tr>
+    </tbody>
+</table>
+
+<p>Meta-analyses confirm consistent associations with job satisfaction, engagement, and proactive behavior. Intrinsic motivation is most associated with active engagement and negatively with counterproductive behavior.</p>
+
+<h3>7.3 Herzberg&rsquo;s Two-Factor Theory</h3>
+
+<div class="finding-box">
+    <strong>Core insight:</strong> Satisfaction and dissatisfaction are <strong>separate continuums</strong>, not opposite ends of one scale.<br><br>
+    <strong>Hygiene factors</strong> (salary, conditions, policies, schedule): Prevent dissatisfaction but <em>don&rsquo;t create motivation</em>.<br>
+    <strong>Motivators</strong> (achievement, recognition, the work itself, responsibility): Create satisfaction and drive performance.<br><br>
+    Engagement programs focused on perks (free snacks, team outings) address the wrong continuum. They prevent dissatisfaction at best.
+</div>
+
+<div class="critique-box">
+    <strong>Limitation:</strong> Narrow original sample (200 accountants and engineers in Pittsburgh). Replication with other methods is inconsistent. But the core insight&mdash;fixing bad conditions doesn&rsquo;t create motivation&mdash;is broadly supported.
+</div>
+
+<h3>7.4 Flow Theory (Csik&shy;szent&shy;mih&aacute;lyi)</h3>
+
+<p>Optimal experience occurs when: clear goals exist, immediate feedback is available, and skills are matched to challenge level. Workplace paradox: people experience more flow at work than leisure, but wish they were elsewhere&mdash;suggesting flow without a sense of <em>choice</em> coexists with resentment.</p>
+
+<div class="application-box">
+    <strong>Connection to Scaling Up:</strong> Autonomy is the weakest link in the framework&mdash;Scaling Up is more prescriptive than autonomy-supportive. The focus on purpose and achievement (motivators) is correct per Herzberg. The daily huddle may support relatedness and competence (SDT) while potentially undermining autonomy if perceived as surveillance.
+</div>
+
+<div class="page-break"></div>
+
+<!-- ====================================================================== -->
+<!--                    SECTION 8: THE RHYTHM CONCEPT                       -->
+<!-- ====================================================================== -->
+<h2 id="s8"><span class="section-number">8</span> The &ldquo;Rhythm&rdquo; Concept</h2>
+
+<h3>8.1 Ultradian Rhythms in Work Performance</h3>
+
+<p><strong>Researchers:</strong> Nathaniel Kleitman (1950s&ndash;60s); Peretz Lavie, Technion; Anders Ericsson</p>
+
+<p>The 90-minute sleep cycle continues throughout the day as the <strong>Basic Rest-Activity Cycle (BRAC)</strong>. After 75&ndash;90 minutes of focused work, the body enters a 15&ndash;20 minute rest phase. Lavie&rsquo;s key finding: the ultradian trough is <strong>not optional</strong>. Ericsson independently found elite practitioners across domains work in 60&ndash;90 minute focused bursts, not marathon sessions.</p>
+
+<h3>8.2 Planning Frequency and Cognitive Function</h3>
+
+<table>
+    <thead>
+        <tr><th>Time Horizon</th><th>Cognitive Function</th><th>Scaling Up Element</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>Daily</td><td>Tactical coordination</td><td>Daily huddle</td></tr>
+        <tr><td>Weekly</td><td>Reflection and adjustment</td><td>Weekly meeting + SSK</td></tr>
+        <tr><td>Quarterly</td><td>Strategic recalibration</td><td>Rocks + 13-week race</td></tr>
+        <tr><td>Annual</td><td>Identity and direction</td><td>OPSP + BHAG</td></tr>
+    </tbody>
+</table>
+
+<p>This mirrors Kluger &amp; DeNisi&rsquo;s three feedback levels: daily aligns with task-learning feedback, weekly with task-motivation, quarterly with meta-task (strategy).</p>
+
+<h3>8.3 Battle Rhythm in High-Reliability Organizations</h3>
+
+<blockquote>
+    &ldquo;A deliberate daily cycle of command, staff, and unit activities intended to synchronize current and future operations.&rdquo;
+</blockquote>
+
+<p>Four properties: <strong>Cascading</strong> (tempo set from top), <strong>Aligning</strong> (units coordinate by knowing each other&rsquo;s rhythm), <strong>Disciplined</strong> (maintained especially when disrupted), <strong>Learning-integrated</strong> (after-action reviews built in).</p>
+
+<div class="finding-box">
+    <strong>Key insight:</strong> The rhythm itself <em>is</em> the coordination mechanism. If every team operates on the same cycle, the organization self-synchronizes without centralized control. Consistency of timing matters as much as content&mdash;same time every day, without exception.
+</div>
+
+<div class="application-box">
+    <strong>For a 5-person team:</strong> The rhythm concept may be the single most valuable Scaling Up element at this size. Daily 5-minute huddle at shift start, weekly 30-minute review, quarterly half-day for 3 priorities. The consistency creates the coordination&mdash;skipping a single daily huddle &ldquo;because we&rsquo;re busy&rdquo; is precisely when it matters most.
+</div>
+
+<div class="page-break"></div>
+
+<!-- ====================================================================== -->
+<!--                    EVIDENCE QUALITY VERDICT                            -->
+<!-- ====================================================================== -->
+<h2 id="verdict"><span class="section-number">9</span> Evidence Quality Verdict</h2>
+
+<table class="verdict-table">
+    <thead>
+        <tr><th>Scaling Up Element</th><th>Evidence Strength</th><th>Key Caveat</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Quarterly Rocks (3&ndash;5 goals)</td>
+            <td class="verdict-strong">Very Strong (d = 0.52&ndash;0.82)</td>
+            <td>Effect weakens for complex/creative tasks</td>
+        </tr>
+        <tr>
+            <td>Daily Huddle</td>
+            <td class="verdict-moderate">Moderate</td>
+            <td>Can backfire if perceived as surveillance</td>
+        </tr>
+        <tr>
+            <td>Meeting Rhythm (cascading)</td>
+            <td class="verdict-moderate">Moderate&ndash;Strong</td>
+            <td>Mostly case-study evidence from military/HROs</td>
+        </tr>
+        <tr>
+            <td>One-Page Strategic Plan</td>
+            <td class="verdict-moderate">Moderate (strong theory, weak direct evidence)</td>
+            <td>OPSP as solution not directly tested</td>
+        </tr>
+        <tr>
+            <td>KPIs / Scorecard</td>
+            <td class="verdict-moderate">Mixed</td>
+            <td>&ldquo;What gets measured gets managed&rdquo; is a myth; Goodhart&rsquo;s Law applies</td>
+        </tr>
+        <tr>
+            <td>NPS for Customer Feedback</td>
+            <td class="verdict-weak">Weak (failed replication)</td>
+            <td>No better than CSAT or CES; popularity &ne; validity</td>
+        </tr>
+        <tr>
+            <td>Team Feedback Systems</td>
+            <td class="verdict-strong">Strong (with critical nuances)</td>
+            <td>38% of feedback interventions <em>decrease</em> performance</td>
+        </tr>
+        <tr>
+            <td>Employee Engagement Focus</td>
+            <td class="verdict-strong">Strong (r = 0.43; 1.4M employees)</td>
+            <td>Gallup researches own tool; causality uncertain</td>
+        </tr>
+        <tr>
+            <td>Positivity Ratio (Losada)</td>
+            <td class="verdict-retracted">Retracted</td>
+            <td>Mathematical model formally withdrawn</td>
+        </tr>
+        <tr>
+            <td>Willpower / Ego Depletion</td>
+            <td class="verdict-weak">Disputed (failed large-scale replication)</td>
+            <td>May reflect motivation shifts, not resource depletion</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>Where to Dig Deeper</h3>
+
+<p>Based on the evidence quality analysis, the most productive areas for further research are:</p>
+
+<ol>
+    <li><strong>Feedback Intervention Theory (Kluger &amp; DeNisi)</strong> &mdash; The strongest and most actionable science in the entire framework. Understanding the task-vs-self distinction could transform how you run every meeting and conversation.</li>
+    <li><strong>Goal-Setting Theory (Locke &amp; Latham)</strong> &mdash; The most validated element. Worth understanding the moderators deeply, especially for complex/creative tasks where the effect weakens.</li>
+    <li><strong>Psychological Safety (Edmondson)</strong> &mdash; The prerequisite for everything else. Without this, Rocks and feedback systems will fail.</li>
+    <li><strong>Self-Determination Theory (Deci &amp; Ryan)</strong> &mdash; The engagement engine. Understanding autonomy/competence/relatedness could help design the daily rhythm in a way that motivates rather than surveils.</li>
+    <li><strong>The Kano Model</strong> &mdash; The most underused framework for customer understanding. More useful than NPS for actually improving the customer experience.</li>
+</ol>
+
+<div class="page-break"></div>
+
+<!-- ====================================================================== -->
+<!--                    REFERENCES                                          -->
+<!-- ====================================================================== -->
+<div class="ref-list" id="refs">
+    <h3>References</h3>
+    <ol>
+        <li>Locke, E. A., &amp; Latham, G. P. (2002). Building a practically useful theory of goal setting and task motivation. <em>American Psychologist</em>, 57(9), 705&ndash;717.</li>
+        <li>Locke, E. A., &amp; Latham, G. P. (1990). <em>A Theory of Goal Setting and Task Performance</em>. Prentice Hall.</li>
+        <li>Kluger, A. N., &amp; DeNisi, A. (1996). The effects of feedback interventions on performance. <em>Psychological Bulletin</em>, 119(2), 254&ndash;284.</li>
+        <li>Edmondson, A. C. (1999). Psychological safety and learning behavior in work teams. <em>Administrative Science Quarterly</em>, 44(2), 350&ndash;383.</li>
+        <li>Harter, J. K., Schmidt, F. L., &amp; Hayes, T. L. (2002). Business-unit-level relationship between employee satisfaction, employee engagement, and business outcomes: A meta-analysis. <em>Journal of Applied Psychology</em>, 87(2), 268&ndash;279.</li>
+        <li>Gallup (2020). Q12 Meta-Analysis, 11th Edition. 263 studies, ~1.4 million employees.</li>
+        <li>Deci, E. L., &amp; Ryan, R. M. (2000). The &ldquo;what&rdquo; and &ldquo;why&rdquo; of goal pursuits: Human needs and the self-determination of behavior. <em>Psychological Inquiry</em>, 11(4), 227&ndash;268.</li>
+        <li>Herzberg, F. (1968). One more time: How do you motivate employees? <em>Harvard Business Review</em>, 46(1), 53&ndash;62.</li>
+        <li>Csikszentmihalyi, M. (1990). <em>Flow: The Psychology of Optimal Experience</em>. Harper &amp; Row.</li>
+        <li>Sull, D., &amp; Sull, C. (2018). With goals, FAST beats SMART. <em>MIT Sloan Management Review</em>, 59(4), 1&ndash;11.</li>
+        <li>Kivetz, R., Urminsky, O., &amp; Zheng, Y. (2006). The goal-gradient hypothesis resurrected. <em>Journal of Marketing Research</em>, 43(1), 39&ndash;58.</li>
+        <li>Hull, C. L. (1932). The goal-gradient hypothesis and maze learning. <em>Psychological Review</em>, 39(1), 25&ndash;43.</li>
+        <li>Miller, G. A. (1956). The magical number seven, plus or minus two. <em>Psychological Review</em>, 63(2), 81&ndash;97.</li>
+        <li>Cowan, N. (2001). The magical number 4 in short-term memory. <em>Behavioral and Brain Sciences</em>, 24(1), 87&ndash;114.</li>
+        <li>Sweller, J. (1988). Cognitive load during problem solving. <em>Cognitive Science</em>, 12(2), 257&ndash;285.</li>
+        <li>Kaplan, R. S., &amp; Norton, D. P. (1992). The balanced scorecard: Measures that drive performance. <em>Harvard Business Review</em>, 70(1), 71&ndash;79.</li>
+        <li>Hoque, Z. (2022). Celebrating 30 years of the balanced scorecard. <em>The British Accounting Review</em>.</li>
+        <li>Ridgway, V. F. (1956). Dysfunctional consequences of performance measurements. <em>Administrative Science Quarterly</em>, 1(2), 240&ndash;247.</li>
+        <li>Senge, P. M. (1990). <em>The Fifth Discipline</em>. Doubleday.</li>
+        <li>Reichheld, F. F. (2003). The one number you need to grow. <em>Harvard Business Review</em>, 81(12), 46&ndash;55.</li>
+        <li>Keiningham, T. L., Aksoy, L., Cooil, B., Andreassen, T. W., &amp; Williams, L. (2008). A holistic examination of NPS. <em>Journal of Database Marketing</em>.</li>
+        <li>Kano, N. (1984). Attractive quality and must-be quality. <em>Journal of the Japanese Society for Quality Control</em>, 14(2), 39&ndash;48.</li>
+        <li>Heskett, J. L., Jones, T. O., Loveman, G. W., Sasser, W. E., &amp; Schlesinger, L. A. (1994). Putting the service-profit chain to work. <em>Harvard Business Review</em>, 72(2), 164&ndash;174.</li>
+        <li>Christensen, C. M., Hall, T., Dillon, K., &amp; Duncan, D. S. (2016). Know your customers&rsquo; &ldquo;jobs to be done.&rdquo; <em>Harvard Business Review</em>, 94(9), 54&ndash;62.</li>
+        <li>Park, G., Johnson, S. K., Moon, H., &amp; Lee, J. (2019). The interaction effects of frequency and specificity of feedback on work performance. <em>Journal of Organizational Behavior</em>.</li>
+        <li>Brown, N. J. L., Sokal, A. D., &amp; Friedman, H. L. (2013). The complex dynamics of wishful thinking: The critical positivity ratio. <em>American Psychologist</em>, 68(9), 801&ndash;813.</li>
+        <li>Hagger, M. S. et al. (2016). A multilab preregistered replication of the ego-depletion effect. <em>Perspectives on Psychological Science</em>, 11(4), 546&ndash;573.</li>
+        <li>Stray, V., Sj&oslash;berg, D. I. K., &amp; Dyb&aring;, T. (2016). The daily stand-up meeting: A grounded theory study. <em>Journal of Systems and Software</em>, 114, 101&ndash;124.</li>
+        <li>Hackman, J. R. (2002). <em>Leading Teams: Setting the Stage for Great Performances</em>. Harvard Business Press.</li>
+        <li>Iyengar, S. S., &amp; Lepper, M. R. (2000). When choice is demotivating. <em>Journal of Personality and Social Psychology</em>, 79(6), 995&ndash;1006.</li>
+        <li>Harnish, V. (2014). <em>Scaling Up: How a Few Companies Make It&hellip; and Why the Rest Don&rsquo;t</em>. Gazelles, Inc.</li>
+        <li>Heath, C., &amp; Heath, D. (2007). <em>Made to Stick</em>. Random House.</li>
+    </ol>
+</div>
+
+</body>
+</html>

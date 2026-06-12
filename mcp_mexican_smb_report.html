@@ -1,0 +1,2205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building MCP Tools for the Mexican Small Business Market — Technical Report</title>
+    <style>
+        @media print {
+            body { font-size: 11pt; }
+            .no-print { display: none !important; }
+            .page-break { page-break-before: always; }
+            @page { margin: 2cm; size: letter; }
+            .callout-box { break-inside: avoid; }
+            table { break-inside: avoid; }
+            .section { break-inside: avoid; }
+            pre { break-inside: avoid; }
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #fff;
+            color: #1a1a2e;
+            line-height: 1.7;
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 60px 40px 40px;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            color: #111827;
+        }
+
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 22px;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+            transition: background 0.2s;
+        }
+        .print-btn:hover { background: #1d4ed8; }
+
+        /* Title page */
+        .title-page {
+            text-align: center;
+            padding: 80px 0 40px;
+            border-bottom: 3px solid #2563eb;
+            margin-bottom: 40px;
+        }
+        .title-page .logo {
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #2563eb;
+            margin-bottom: 40px;
+        }
+        .title-page h1 {
+            font-size: 1.75rem;
+            line-height: 1.35;
+            margin-bottom: 16px;
+            font-weight: 700;
+            color: #111827;
+        }
+        .title-page .subtitle {
+            font-size: 1rem;
+            color: #6b7280;
+            font-style: italic;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        .title-page .meta {
+            font-size: 0.85rem;
+            color: #9ca3af;
+            margin-top: 30px;
+        }
+        .title-page .meta strong { color: #6b7280; }
+
+        /* Section headings */
+        .section-number {
+            display: inline-block;
+            background: #2563eb;
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
+            text-align: center;
+            border-radius: 50%;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-right: 10px;
+            vertical-align: middle;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            margin: 40px 0 18px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e5e7eb;
+            line-height: 1.4;
+        }
+
+        h3 {
+            font-size: 1.05rem;
+            margin: 28px 0 10px;
+            color: #374151;
+        }
+
+        h4 {
+            font-size: 0.95rem;
+            margin: 20px 0 8px;
+            color: #4b5563;
+        }
+
+        p {
+            margin-bottom: 14px;
+            font-size: 0.95rem;
+            text-align: justify;
+        }
+
+        .source {
+            font-size: 0.78rem;
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        /* Callout boxes */
+        .callout-box {
+            background: #f0f4ff;
+            border-left: 4px solid #2563eb;
+            padding: 22px;
+            margin: 24px 0;
+            text-align: center;
+            border-radius: 0 6px 6px 0;
+        }
+        .callout-box .big-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #2563eb;
+            line-height: 1.1;
+            font-family: 'Georgia', serif;
+        }
+        .callout-box .big-number.red { color: #dc2626; }
+        .callout-box .big-number.green { color: #16a34a; }
+        .callout-box .label {
+            font-size: 0.95rem;
+            color: #374151;
+            margin-top: 4px;
+        }
+        .callout-box .source-line {
+            font-size: 0.78rem;
+            color: #9ca3af;
+            margin-top: 6px;
+        }
+
+        .pain-box {
+            background: #fef2f2;
+            border-left: 4px solid #dc2626;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        .pain-box strong { color: #dc2626; }
+
+        .solution-box {
+            background: #f0fdf4;
+            border-left: 4px solid #16a34a;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        .solution-box strong { color: #16a34a; }
+
+        .opportunity-box {
+            background: #fffbeb;
+            border-left: 4px solid #d97706;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        .opportunity-box strong { color: #d97706; }
+
+        .stat-row {
+            display: flex;
+            gap: 16px;
+            margin: 24px 0;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            flex: 1;
+            min-width: 160px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 18px;
+            text-align: center;
+        }
+        .stat-card .num {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2563eb;
+            font-family: 'Georgia', serif;
+        }
+        .stat-card .stat-label {
+            font-size: 0.82rem;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.88rem;
+        }
+        th {
+            background: #1e3a5f;
+            color: #fff;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: top;
+        }
+        tr:nth-child(even) { background: #f9fafb; }
+        tr:hover { background: #f0f4ff; }
+
+        /* Code blocks */
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.82rem;
+            line-height: 1.6;
+            margin: 16px 0;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+        }
+        code {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.85em;
+        }
+        p code, li code, td code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #be185d;
+            font-size: 0.85em;
+        }
+
+        /* Syntax highlighting */
+        .kw { color: #c084fc; }
+        .fn { color: #67e8f9; }
+        .st { color: #86efac; }
+        .cm { color: #94a3b8; font-style: italic; }
+        .num { color: #fbbf24; }
+        .dec { color: #fb923c; }
+        .op { color: #94a3b8; }
+        .type { color: #67e8f9; }
+
+        /* Lists */
+        ul, ol {
+            margin: 12px 0 16px 24px;
+            font-size: 0.95rem;
+        }
+        li {
+            margin-bottom: 6px;
+        }
+
+        /* Architecture diagram */
+        .arch-diagram {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 24px 0;
+            text-align: center;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.78rem;
+            line-height: 1.4;
+            overflow-x: auto;
+        }
+        .arch-diagram pre {
+            background: transparent;
+            color: #1e293b;
+            text-align: left;
+            display: inline-block;
+            padding: 0;
+            font-size: 0.75rem;
+        }
+
+        /* TOC */
+        .toc {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 24px 28px;
+            margin: 30px 0;
+        }
+        .toc h3 {
+            font-size: 1rem;
+            margin: 0 0 14px 0;
+            color: #2563eb;
+        }
+        .toc ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .toc li {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        .toc a {
+            color: #374151;
+            text-decoration: none;
+        }
+        .toc a:hover {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            margin: 24px 0;
+            padding-left: 30px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #2563eb;
+            border-radius: 2px;
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 24px;
+            padding-left: 16px;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 6px;
+            width: 14px;
+            height: 14px;
+            background: #2563eb;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 0 0 2px #2563eb;
+        }
+        .timeline-item .phase {
+            font-weight: 700;
+            color: #2563eb;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+        .timeline-item .desc {
+            font-size: 0.88rem;
+            color: #374151;
+        }
+
+        /* Tool card */
+        .tool-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+        .tool-card h4 {
+            color: #2563eb;
+            margin: 0 0 8px 0;
+            font-size: 1rem;
+        }
+        .tool-card .tool-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 10px 0;
+        }
+        .tool-card .tool-tag {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.78rem;
+            font-family: 'SF Mono', monospace;
+        }
+
+        a { color: #2563eb; }
+    </style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">Print / PDF</button>
+
+<!-- ========== TITLE PAGE ========== -->
+<div class="title-page">
+    <div class="logo">Technical Report</div>
+    <h1>Building MCP Tools for the Mexican Small Business Market</h1>
+    <div class="subtitle">
+        A First-Mover Strategy for Latin America's Model Context Protocol Ecosystem:<br>
+        From HR Assessments to Facturacion, Nomina, and WhatsApp
+    </div>
+    <div class="meta">
+        <strong>Author:</strong> Horacio Mex &mdash; Personality1 Platform<br>
+        <strong>Date:</strong> June 12, 2026<br>
+        <strong>Version:</strong> 1.0<br>
+        <strong>Classification:</strong> Investor / Technical Co-Founder Ready
+    </div>
+</div>
+
+<!-- ========== TABLE OF CONTENTS ========== -->
+<div class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+        <li><a href="#s1">Executive Summary</a></li>
+        <li><a href="#s2">MCP Architecture Overview</a></li>
+        <li><a href="#s3">Mexican Market Gap Analysis</a></li>
+        <li><a href="#s4">Proposed MCP Tools &mdash; Tier 1 (Your Platform)</a></li>
+        <li><a href="#s5">Proposed MCP Tools &mdash; Tier 2 (Mexican Business Operations)</a></li>
+        <li><a href="#s6">Technical Implementation Guide</a></li>
+        <li><a href="#s7">Architecture Diagram</a></li>
+        <li><a href="#s8">Go-to-Market Strategy</a></li>
+        <li><a href="#s9">Regulatory Considerations</a></li>
+        <li><a href="#s10">Implementation Timeline</a></li>
+        <li><a href="#s11">Cost Estimates</a></li>
+    </ol>
+</div>
+
+<!-- ========== SECTION 1: EXECUTIVE SUMMARY ========== -->
+<h2 id="s1"><span class="section-number">1</span> Executive Summary</h2>
+
+<p>The Model Context Protocol (MCP) is an open standard created by Anthropic that allows AI applications like Claude, ChatGPT, and VS Code Copilot to connect to external data sources, tools, and APIs through a unified protocol. Think of it as a universal adapter that lets any AI talk to any business system, the same way USB-C lets any device connect to any charger.</p>
+
+<p>As of June 2026, the MCP ecosystem has hundreds of servers for US/European business tools (Slack, GitHub, Salesforce, Stripe) but <strong>zero connectors purpose-built for the Mexican business environment</strong>. No one has built MCP tools for CFDI facturacion, SAT compliance, IMSS registration, Mexican payroll calculations, CONTPAQi/Aspel integration, or WhatsApp Business (the dominant sales channel in Mexico with 93% market penetration).</p>
+
+<div class="callout-box">
+    <div class="big-number">4.9M</div>
+    <div class="label">Micro, small, and medium enterprises (MiPyMEs) in Mexico</div>
+    <div class="source-line">INEGI Census 2024 &mdash; 99.8% of all Mexican businesses</div>
+</div>
+
+<div class="stat-row">
+    <div class="stat-card">
+        <div class="num">0</div>
+        <div class="stat-label">Mexican-specific MCP servers available today</div>
+    </div>
+    <div class="stat-card">
+        <div class="num">93%</div>
+        <div class="stat-label">WhatsApp penetration in Mexico</div>
+    </div>
+    <div class="stat-card">
+        <div class="num">$1.2B</div>
+        <div class="stat-label">Mexican HR Tech + FinTech SaaS market (2026)</div>
+    </div>
+</div>
+
+<p><strong>The opportunity:</strong> By building the first suite of Mexican MCP tools, we become the default connector between AI assistants and the Mexican business stack. Every SMB owner who uses Claude, ChatGPT, or any MCP-compatible AI will need our tools to interact with their invoicing, payroll, banking, and HR systems. This is a platform play, not a feature.</p>
+
+<p><strong>What we already have:</strong> A production FastAPI + Supabase platform serving personality assessments (DISC, Big5, MBTI, Terman, Allport, Competencias) and team management tools for retail businesses in Puebla. This gives us live data, real users, and a natural starting point to build our first MCP server: People Analytics.</p>
+
+<div class="solution-box">
+    <strong>Thesis:</strong> Whoever builds the Mexican MCP connector suite first will own the AI infrastructure layer for 4.9 million businesses. The technical barriers are low (Python + FastAPI + existing APIs), but the domain expertise barriers are high (Mexican tax law, labor law, SAT compliance). We have both.
+</div>
+
+<!-- ========== SECTION 2: MCP ARCHITECTURE ========== -->
+<div class="page-break"></div>
+<h2 id="s2"><span class="section-number">2</span> MCP Architecture Overview</h2>
+
+<h3>2.1 How the Protocol Works</h3>
+
+<p>MCP is built on <strong>JSON-RPC 2.0</strong>, the same lightweight remote procedure call protocol used by Ethereum and the Language Server Protocol. Every message between client and server is a JSON object with a method name, parameters, and an ID for request-response correlation.</p>
+
+<p>The protocol defines three participant roles:</p>
+
+<table>
+    <tr>
+        <th>Role</th>
+        <th>Description</th>
+        <th>Example</th>
+    </tr>
+    <tr>
+        <td><strong>MCP Host</strong></td>
+        <td>The AI application that manages one or multiple MCP clients</td>
+        <td>Claude Desktop, Claude Code, VS Code, ChatGPT</td>
+    </tr>
+    <tr>
+        <td><strong>MCP Client</strong></td>
+        <td>A component within the host that maintains a connection to one MCP server</td>
+        <td>Internal client instance created per server connection</td>
+    </tr>
+    <tr>
+        <td><strong>MCP Server</strong></td>
+        <td>A program that exposes tools, resources, and prompts to MCP clients</td>
+        <td>Your People Analytics server, a Facturacion server</td>
+    </tr>
+</table>
+
+<h3>2.2 The Three Primitives</h3>
+
+<p>MCP servers expose functionality through three core primitives:</p>
+
+<table>
+    <tr>
+        <th>Primitive</th>
+        <th>Purpose</th>
+        <th>Discovery</th>
+        <th>Execution</th>
+    </tr>
+    <tr>
+        <td><strong>Tools</strong></td>
+        <td>Executable functions the AI can invoke (query DB, call API, compute)</td>
+        <td><code>tools/list</code></td>
+        <td><code>tools/call</code></td>
+    </tr>
+    <tr>
+        <td><strong>Resources</strong></td>
+        <td>Read-only data sources (file contents, DB records, API responses)</td>
+        <td><code>resources/list</code></td>
+        <td><code>resources/read</code></td>
+    </tr>
+    <tr>
+        <td><strong>Prompts</strong></td>
+        <td>Reusable interaction templates (system prompts, few-shot examples)</td>
+        <td><code>prompts/list</code></td>
+        <td><code>prompts/get</code></td>
+    </tr>
+</table>
+
+<h3>2.3 Protocol Lifecycle</h3>
+
+<p>Every MCP session follows a structured lifecycle:</p>
+
+<ol>
+    <li><strong>Initialize:</strong> Client sends <code>initialize</code> with its capabilities and protocol version. Server responds with its capabilities (which primitives it supports, whether it sends change notifications).</li>
+    <li><strong>Capability Negotiation:</strong> Both sides declare what they support. A server might declare <code>"tools": {"listChanged": true}</code> and <code>"resources": {}</code>.</li>
+    <li><strong>Ready:</strong> Client sends <code>notifications/initialized</code> to signal it is ready.</li>
+    <li><strong>Operation:</strong> Client discovers tools via <code>tools/list</code>, then invokes them via <code>tools/call</code> with JSON arguments. Server returns structured content (text, images, resources).</li>
+    <li><strong>Notifications:</strong> Server can push <code>notifications/tools/list_changed</code> when available tools change dynamically.</li>
+    <li><strong>Termination:</strong> Client closes connection or sends DELETE to session endpoint.</li>
+</ol>
+
+<h3>2.4 Transport Mechanisms</h3>
+
+<table>
+    <tr>
+        <th>Transport</th>
+        <th>How It Works</th>
+        <th>Use Case</th>
+    </tr>
+    <tr>
+        <td><strong>stdio</strong></td>
+        <td>Client launches server as subprocess; messages via stdin/stdout</td>
+        <td>Local servers (dev tools, filesystem access)</td>
+    </tr>
+    <tr>
+        <td><strong>Streamable HTTP</strong></td>
+        <td>HTTP POST for client-to-server; optional SSE for streaming responses</td>
+        <td>Remote servers (SaaS APIs, cloud deployments) &mdash; <em>this is what we will use</em></td>
+    </tr>
+</table>
+
+<p>The Streamable HTTP transport is the key for our use case. It allows a single MCP server deployed on Render to serve multiple Claude users simultaneously. The server exposes a single endpoint (e.g., <code>https://mcp.personality1.com/mcp</code>) that accepts POST requests with JSON-RPC messages and optionally returns SSE streams for long-running operations.</p>
+
+<h3>2.5 Authentication (OAuth 2.1)</h3>
+
+<p>MCP uses OAuth 2.1 for authentication on HTTP transports. The flow works as follows:</p>
+
+<ol>
+    <li>Client sends request without token to MCP server</li>
+    <li>Server returns <code>401 Unauthorized</code> with <code>WWW-Authenticate</code> header pointing to Protected Resource Metadata</li>
+    <li>Client fetches <code>/.well-known/oauth-protected-resource</code> from MCP server to discover authorization server URL</li>
+    <li>Client fetches <code>/.well-known/oauth-authorization-server</code> from auth server for endpoints</li>
+    <li>Client performs Dynamic Client Registration (RFC 7591) if needed</li>
+    <li>Client redirects user to authorization URL with PKCE challenge</li>
+    <li>After user consent, client exchanges authorization code for access token</li>
+    <li>Client includes <code>Authorization: Bearer &lt;token&gt;</code> on all subsequent requests</li>
+</ol>
+
+<p>For simpler deployments (our Tier 1 tools), we can use API key authentication as a pragmatic starting point, then migrate to full OAuth 2.1 when we publish to the MCP marketplace.</p>
+
+<h3>2.6 How Claude Code Connects to Custom MCP Servers</h3>
+
+<p>Adding a remote MCP server to Claude Code is a single command:</p>
+
+<pre><span class="cm"># Add a remote MCP server (Streamable HTTP)</span>
+claude mcp add --transport http people-analytics https://mcp.personality1.com/mcp
+
+<span class="cm"># Add a local MCP server (stdio)</span>
+claude mcp add --transport stdio people-analytics uv run people_analytics_mcp.py
+
+<span class="cm"># List configured servers</span>
+claude mcp list
+
+<span class="cm"># Test with the MCP Inspector</span>
+npx -y @modelcontextprotocol/inspector</pre>
+
+<p>For Claude Desktop, add to <code>~/Library/Application Support/Claude/claude_desktop_config.json</code>:</p>
+
+<pre>{
+  <span class="st">"mcpServers"</span>: {
+    <span class="st">"people-analytics"</span>: {
+      <span class="st">"url"</span>: <span class="st">"https://mcp.personality1.com/mcp"</span>,
+      <span class="st">"headers"</span>: {
+        <span class="st">"Authorization"</span>: <span class="st">"Bearer YOUR_API_KEY"</span>
+      }
+    }
+  }
+}</pre>
+
+<!-- ========== SECTION 3: MEXICAN MARKET GAP ANALYSIS ========== -->
+<div class="page-break"></div>
+<h2 id="s3"><span class="section-number">3</span> Mexican Market Gap Analysis</h2>
+
+<p>Claude for Small Business, ChatGPT for Work, and every other AI assistant in 2026 provides connectors for the US/European business stack. A Mexican business owner who tries to use Claude to manage their operations hits a wall immediately. Here is what is missing:</p>
+
+<table>
+    <tr>
+        <th>Category</th>
+        <th>What Mexican SMBs Need</th>
+        <th>Current MCP Status</th>
+        <th>Difficulty</th>
+    </tr>
+    <tr>
+        <td><strong>Invoicing</strong></td>
+        <td>CFDI 4.0 facturacion electronica (XML timbrado via PAC, SAT compliance)</td>
+        <td>Nothing exists</td>
+        <td>Medium</td>
+    </tr>
+    <tr>
+        <td><strong>Tax</strong></td>
+        <td>SAT portal (declaraciones, constancia situacion fiscal, e.firma)</td>
+        <td>Nothing exists</td>
+        <td>Hard</td>
+    </tr>
+    <tr>
+        <td><strong>Payroll</strong></td>
+        <td>Nomina: aguinaldo, vacaciones, prima vacacional, PTU, ISR, IMSS, INFONAVIT, FONACOT</td>
+        <td>Nothing exists</td>
+        <td>Medium</td>
+    </tr>
+    <tr>
+        <td><strong>Social Security</strong></td>
+        <td>IMSS/IDSE (employee registration, SUA, incapacidades)</td>
+        <td>Nothing exists</td>
+        <td>Hard</td>
+    </tr>
+    <tr>
+        <td><strong>Accounting</strong></td>
+        <td>CONTPAQi, Aspel, Microsip connectors</td>
+        <td>Nothing exists</td>
+        <td>Hard</td>
+    </tr>
+    <tr>
+        <td><strong>Messaging</strong></td>
+        <td>WhatsApp Business API (93% penetration, primary sales channel)</td>
+        <td>Nothing exists</td>
+        <td>Easy</td>
+    </tr>
+    <tr>
+        <td><strong>Payments</strong></td>
+        <td>Mercado Pago, Clip, OpenPay, Conekta</td>
+        <td>Nothing exists</td>
+        <td>Easy</td>
+    </tr>
+    <tr>
+        <td><strong>Identity</strong></td>
+        <td>CURP / RFC validation</td>
+        <td>Nothing exists</td>
+        <td>Easy</td>
+    </tr>
+    <tr>
+        <td><strong>Banking</strong></td>
+        <td>SPEI transfers, CoDi, Open Banking Mexico</td>
+        <td>Nothing exists</td>
+        <td>Hard</td>
+    </tr>
+    <tr>
+        <td><strong>HR</strong></td>
+        <td>DISC/Big5 assessments, hiring pipeline, team pulse, conflict alerts</td>
+        <td>Nothing exists</td>
+        <td><strong>Easy (we have this)</strong></td>
+    </tr>
+    <tr>
+        <td><strong>Compliance</strong></td>
+        <td>PROFECO, NOM compliance, labor inspections</td>
+        <td>Nothing exists</td>
+        <td>Medium</td>
+    </tr>
+</table>
+
+<div class="pain-box">
+    <strong>The core problem:</strong> A Mexican retail store owner who subscribes to Claude cannot ask "Generate my CFDI for today's sales" or "Calculate this month's nomina with aguinaldo proration" or "Send a WhatsApp to all candidates who scored above 70 on DISC." Every competing AI assistant has the same blind spot. The first to solve it wins the market.
+</div>
+
+<div class="callout-box">
+    <div class="big-number red">100%</div>
+    <div class="label">of Mexican-specific business workflows are unsupported by current MCP tools</div>
+    <div class="source-line">Audit of modelcontextprotocol.io server registry, June 2026</div>
+</div>
+
+<!-- ========== SECTION 4: TIER 1 TOOLS ========== -->
+<div class="page-break"></div>
+<h2 id="s4"><span class="section-number">4</span> Proposed MCP Tools &mdash; Tier 1 (Your Platform)</h2>
+
+<p>These tools expose your existing Personality1 platform data to any MCP-compatible AI client. They require no external API integrations &mdash; just read/write access to your Supabase database.</p>
+
+<div class="tool-card">
+    <h4>Tool 1: People Analytics MCP Server</h4>
+    <p>Exposes your Supabase assessment data (participants, answers, results) so Claude can answer questions like <em>"Who should I hire for the sales position?"</em> with data-grounded reasoning.</p>
+    <div class="tool-list">
+        <span class="tool-tag">get_candidates</span>
+        <span class="tool-tag">get_disc_profile</span>
+        <span class="tool-tag">get_big5_profile</span>
+        <span class="tool-tag">get_assessment_results</span>
+        <span class="tool-tag">compare_candidates</span>
+        <span class="tool-tag">get_team_composition</span>
+        <span class="tool-tag">get_flight_risk</span>
+        <span class="tool-tag">rank_candidates_for_position</span>
+        <span class="tool-tag">get_hiring_funnel</span>
+    </div>
+
+    <h4 style="margin-top: 16px;">Resources Exposed</h4>
+    <ul>
+        <li><code>candidate://{id}/profile</code> &mdash; Full candidate profile with all assessment scores</li>
+        <li><code>position://{slug}/requirements</code> &mdash; Position requirements and ideal DISC profile</li>
+        <li><code>team://current/composition</code> &mdash; Current team DISC distribution and balance analysis</li>
+    </ul>
+
+    <h4 style="margin-top: 16px;">Example Conversation</h4>
+    <div style="background: #f0f4ff; padding: 14px; border-radius: 6px; font-size: 0.88rem; margin-top: 8px;">
+        <strong>Business Owner:</strong> "I need to hire a counter sales person. Who are my best candidates?"<br><br>
+        <strong>Claude (using get_candidates + rank_candidates_for_position):</strong> "Based on your assessment data, I found 4 candidates who completed the ventas_mostrador evaluation. Ranking by DISC fit for sales (high I + moderate D): <em>Maria Lopez</em> scored highest with I-dominant profile (I:38, D:28, S:20, C:14) and Terman verbal reasoning at 85th percentile. She is your strongest match. <em>Carlos Ruiz</em> is second with balanced I-D profile but lower competencias score on 'orientacion al cliente'..."
+    </div>
+</div>
+
+<div class="tool-card">
+    <h4>Tool 2: Team Management MCP Server</h4>
+    <p>Connects to your daily/weekly feedback system so Claude can monitor team health, detect conflicts early, and recommend management actions.</p>
+    <div class="tool-list">
+        <span class="tool-tag">get_team_pulse</span>
+        <span class="tool-tag">get_daily_responses</span>
+        <span class="tool-tag">get_conflict_alerts</span>
+        <span class="tool-tag">get_recognition_network</span>
+        <span class="tool-tag">recommend_task_allocation</span>
+        <span class="tool-tag">generate_weekly_report</span>
+        <span class="tool-tag">get_suggestion_box</span>
+        <span class="tool-tag">get_pulse_trends</span>
+    </div>
+
+    <h4 style="margin-top: 16px;">Example Conversation</h4>
+    <div style="background: #f0f4ff; padding: 14px; border-radius: 6px; font-size: 0.88rem; margin-top: 8px;">
+        <strong>Business Owner:</strong> "How is my team doing this week?"<br><br>
+        <strong>Claude (using get_team_pulse + get_conflict_alerts):</strong> "Your team pulse average is 7.2/10, down from 8.1 last week. I detected a potential conflict signal: <em>Ana</em> and <em>Pedro</em> both submitted low collaboration scores and Ana's anonymous suggestion mentions 'unfair schedule distribution.' Based on their DISC profiles (Ana: S-dominant, Pedro: D-dominant), I recommend a structured 1-on-1 using the 'perspective exchange' template from your conflict resolution framework..."
+    </div>
+</div>
+
+<!-- ========== SECTION 5: TIER 2 TOOLS ========== -->
+<div class="page-break"></div>
+<h2 id="s5"><span class="section-number">5</span> Proposed MCP Tools &mdash; Tier 2 (Mexican Business Operations)</h2>
+
+<div class="tool-card">
+    <h4>Tool 3: Facturacion MCP (CFDI 4.0)</h4>
+    <p>Connects to a PAC (Proveedor Autorizado de Certificacion) API to create, cancel, and manage CFDI invoices. Mexican law requires every business transaction to produce a CFDI. This tool lets Claude handle invoicing conversationally.</p>
+    <div class="tool-list">
+        <span class="tool-tag">create_cfdi</span>
+        <span class="tool-tag">cancel_cfdi</span>
+        <span class="tool-tag">list_invoices</span>
+        <span class="tool-tag">get_invoice_pdf</span>
+        <span class="tool-tag">get_tax_summary</span>
+        <span class="tool-tag">validate_rfc</span>
+        <span class="tool-tag">search_sat_catalog</span>
+        <span class="tool-tag">get_monthly_tax_report</span>
+    </div>
+
+    <p><strong>PAC Integration Options:</strong></p>
+    <table>
+        <tr>
+            <th>Provider</th>
+            <th>API Quality</th>
+            <th>Pricing</th>
+            <th>Best For</th>
+        </tr>
+        <tr>
+            <td>FacturAPI</td>
+            <td>Excellent REST API, Node/Python SDKs</td>
+            <td>~$299 MXN/mo + per-stamp</td>
+            <td>Our primary choice (developer-friendly)</td>
+        </tr>
+        <tr>
+            <td>Facturama</td>
+            <td>Good REST API, extensive docs</td>
+            <td>~$399 MXN/mo</td>
+            <td>Backup option, more enterprise features</td>
+        </tr>
+        <tr>
+            <td>SW Sapien</td>
+            <td>SOAP + REST, older but reliable</td>
+            <td>Per-stamp only (~$0.50 MXN)</td>
+            <td>High-volume, low-cost timbrado</td>
+        </tr>
+    </table>
+
+    <p><strong>CFDI 4.0 Requirements:</strong> Issuer RFC + name, Receiver RFC + name + domicilio fiscal + regimen fiscal, uso de CFDI, clave producto/servicio (SAT catalog), forma de pago, metodo de pago, timbrado via PAC. All XML must conform to SAT Anexo 20.</p>
+</div>
+
+<div class="tool-card">
+    <h4>Tool 4: Nomina MCP (Mexican Payroll)</h4>
+    <p>Calculates Mexican payroll with full compliance to the Ley Federal del Trabajo. This is the most legally complex tool but also the most valuable &mdash; payroll errors in Mexico trigger IMSS/SAT audits.</p>
+    <div class="tool-list">
+        <span class="tool-tag">calculate_payroll</span>
+        <span class="tool-tag">calculate_sdi</span>
+        <span class="tool-tag">calculate_aguinaldo</span>
+        <span class="tool-tag">calculate_vacaciones</span>
+        <span class="tool-tag">calculate_prima_vacacional</span>
+        <span class="tool-tag">calculate_ptu</span>
+        <span class="tool-tag">calculate_finiquito</span>
+        <span class="tool-tag">calculate_isr</span>
+        <span class="tool-tag">calculate_imss_cuotas</span>
+        <span class="tool-tag">generate_nomina_cfdi</span>
+        <span class="tool-tag">get_employee_cost</span>
+        <span class="tool-tag">simulate_raise</span>
+    </div>
+
+    <p><strong>Key Calculations:</strong></p>
+    <ul>
+        <li><strong>SDI (Salario Diario Integrado):</strong> Daily wage + proportional aguinaldo + proportional prima vacacional + other prestaciones. Formula: <code>SDI = SD * (1 + aguinaldo_days/365 + (vacation_days * 0.25)/365)</code></li>
+        <li><strong>ISR:</strong> Monthly income tax per SAT Art. 96 tables (updated annually)</li>
+        <li><strong>IMSS Cuotas:</strong> Employee + employer contributions across 5 branches (Enfermedades y Maternidad, Invalidez y Vida, Retiro, Cesantia, Guarderias)</li>
+        <li><strong>Aguinaldo:</strong> Minimum 15 days salary, prorated by days worked in year</li>
+        <li><strong>Prima Vacacional:</strong> 25% of vacation days salary</li>
+        <li><strong>PTU:</strong> 10% of company profits distributed to workers (capped at 3 months salary or average of last 3 years)</li>
+    </ul>
+</div>
+
+<div class="tool-card">
+    <h4>Tool 5: WhatsApp Business MCP</h4>
+    <p>Connects to the WhatsApp Business API (via Meta Cloud API or Twilio) to enable Claude to send messages, templates, and collect responses. For Mexican retail, WhatsApp IS the CRM.</p>
+    <div class="tool-list">
+        <span class="tool-tag">send_message</span>
+        <span class="tool-tag">send_template</span>
+        <span class="tool-tag">get_conversations</span>
+        <span class="tool-tag">get_message_history</span>
+        <span class="tool-tag">send_pulse_question</span>
+        <span class="tool-tag">send_assessment_invite</span>
+        <span class="tool-tag">get_unread_messages</span>
+        <span class="tool-tag">search_contacts</span>
+    </div>
+
+    <p><strong>Integration Options:</strong></p>
+    <table>
+        <tr>
+            <th>Provider</th>
+            <th>Cost</th>
+            <th>Notes</th>
+        </tr>
+        <tr>
+            <td>Meta Cloud API (direct)</td>
+            <td>Free API + ~$0.50 MXN/conversation</td>
+            <td>Best long-term option; requires Meta Business verification</td>
+        </tr>
+        <tr>
+            <td>Twilio WhatsApp</td>
+            <td>$0.005 USD/msg + conversation fees</td>
+            <td>Faster setup; good for prototyping</td>
+        </tr>
+        <tr>
+            <td>360dialog</td>
+            <td>~$5 USD/mo + per-conversation</td>
+            <td>BSP with good LatAm support</td>
+        </tr>
+    </table>
+
+    <p><strong>Use Cases for Your Platform:</strong></p>
+    <ul>
+        <li>Send daily pulse questions to team members via WhatsApp (instead of email that nobody reads)</li>
+        <li>Send assessment invitations to candidates with direct link to your test pages</li>
+        <li>Follow up with candidates who haven't completed assessments</li>
+        <li>Send weekly team reports to the business owner</li>
+    </ul>
+</div>
+
+<div class="tool-card">
+    <h4>Tool 6: Mexican Banking MCP (SPEI/CoDi)</h4>
+    <p>Connects to Mexican banking infrastructure for balance checks, transaction history, and SPEI transfers.</p>
+    <div class="tool-list">
+        <span class="tool-tag">get_balance</span>
+        <span class="tool-tag">list_transactions</span>
+        <span class="tool-tag">initiate_spei_transfer</span>
+        <span class="tool-tag">generate_codi_qr</span>
+        <span class="tool-tag">reconcile_with_invoices</span>
+        <span class="tool-tag">get_cashflow_summary</span>
+    </div>
+
+    <p><strong>Integration Path:</strong> Open Banking Mexico (via Belvo, Finerio Connect, or direct bank APIs from BBVA Mexico, Banorte, Santander). Belvo provides a unified API across 30+ Mexican financial institutions. SPEI transfers require CNBV-regulated intermediary (IFPE license) or partnership with a licensed institution.</p>
+</div>
+
+<div class="tool-card">
+    <h4>Tool 7: SAT Portal MCP</h4>
+    <p>Read-only access to SAT (Servicio de Administracion Tributaria) data for tax compliance verification.</p>
+    <div class="tool-list">
+        <span class="tool-tag">validate_rfc</span>
+        <span class="tool-tag">get_constancia_situacion_fiscal</span>
+        <span class="tool-tag">check_efirma_status</span>
+        <span class="tool-tag">get_declaraciones</span>
+        <span class="tool-tag">get_opinion_cumplimiento</span>
+        <span class="tool-tag">download_cfdi_received</span>
+    </div>
+
+    <p><strong>Note:</strong> SAT web services require e.firma (FIEL) or CIEC credentials. This tool would authenticate on behalf of the business owner using their stored credentials (encrypted at rest). This is the hardest tool to build due to SAT's authentication complexity and frequent portal changes, but also the most defensible moat.</p>
+</div>
+
+<!-- ========== SECTION 6: IMPLEMENTATION GUIDE ========== -->
+<div class="page-break"></div>
+<h2 id="s6"><span class="section-number">6</span> Technical Implementation Guide</h2>
+
+<h3>6.1 MCP Server Skeleton in Python (FastMCP)</h3>
+
+<p>The Python MCP SDK provides <code>FastMCP</code>, a high-level framework that auto-generates tool definitions from Python type hints and docstrings. Here is the complete skeleton for the People Analytics MCP server:</p>
+
+<pre><span class="cm"># people_analytics_mcp.py</span>
+<span class="cm"># MCP Server for Personality1 People Analytics</span>
+
+<span class="kw">from</span> contextlib <span class="kw">import</span> asynccontextmanager
+<span class="kw">from</span> typing <span class="kw">import</span> Any, Optional
+<span class="kw">import</span> httpx
+<span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel
+<span class="kw">from</span> mcp.server.fastmcp <span class="kw">import</span> FastMCP, Context
+
+<span class="cm"># ========== CONFIGURATION ==========</span>
+SUPABASE_URL = <span class="st">"https://gbkhkbfbarsnpbdkxzii.supabase.co"</span>
+SUPABASE_KEY = <span class="st">"your-supabase-anon-key"</span>  <span class="cm"># Use env var in production</span>
+HEADERS = {
+    <span class="st">"apikey"</span>: SUPABASE_KEY,
+    <span class="st">"Authorization"</span>: f<span class="st">"Bearer {SUPABASE_KEY}"</span>,
+    <span class="st">"Content-Type"</span>: <span class="st">"application/json"</span>,
+}
+
+<span class="cm"># ========== LIFESPAN (DB CONNECTION POOL) ==========</span>
+<span class="dec">@asynccontextmanager</span>
+<span class="kw">async def</span> <span class="fn">lifespan</span>(server: FastMCP):
+    <span class="st">"""Manage httpx client lifecycle."""</span>
+    <span class="kw">async with</span> httpx.AsyncClient(
+        base_url=SUPABASE_URL,
+        headers=HEADERS,
+        timeout=<span class="num">30.0</span>
+    ) <span class="kw">as</span> client:
+        <span class="kw">yield</span> {<span class="st">"db"</span>: client}
+
+<span class="cm"># ========== SERVER INSTANCE ==========</span>
+mcp = FastMCP(
+    <span class="st">"People Analytics"</span>,
+    lifespan=lifespan,
+    dependencies=[<span class="st">"httpx"</span>, <span class="st">"pydantic"</span>],
+)
+
+<span class="cm"># ========== TOOLS ==========</span>
+
+<span class="dec">@mcp.tool()</span>
+<span class="kw">async def</span> <span class="fn">get_candidates</span>(
+    position: Optional[str] = <span class="kw">None</span>,
+    ctx: Context = <span class="kw">None</span>,
+) -> str:
+    <span class="st">"""Get all candidates, optionally filtered by position.
+
+    Args:
+        position: Filter by position slug (almacen, ventas_mostrador,
+                  pueblaventas). Leave empty for all candidates.
+    """</span>
+    db: httpx.AsyncClient = ctx.request_context[<span class="st">"db"</span>]
+    url = <span class="st">"/rest/v1/participants?select=*"</span>
+    <span class="kw">if</span> position:
+        url += f<span class="st">"&position=eq.{position}"</span>
+
+    resp = <span class="kw">await</span> db.get(url)
+    resp.raise_for_status()
+    candidates = resp.json()
+
+    <span class="kw">if not</span> candidates:
+        <span class="kw">return</span> <span class="st">"No candidates found."</span>
+
+    lines = []
+    <span class="kw">for</span> c <span class="kw">in</span> candidates:
+        lines.append(
+            f<span class="st">"- {c['name']} ({c['email']}) | Position: {c['position']}"</span>
+            f<span class="st">" | Date: {c['created_at'][:10]}"</span>
+        )
+    <span class="kw">return</span> f<span class="st">"Found {len(candidates)} candidates:\n"</span> + <span class="st">"\n"</span>.join(lines)
+
+
+<span class="dec">@mcp.tool()</span>
+<span class="kw">async def</span> <span class="fn">get_disc_profile</span>(
+    candidate_email: str,
+    ctx: Context = <span class="kw">None</span>,
+) -> str:
+    <span class="st">"""Get DISC personality profile for a specific candidate.
+
+    Args:
+        candidate_email: The email address of the candidate.
+    """</span>
+    db: httpx.AsyncClient = ctx.request_context[<span class="st">"db"</span>]
+
+    <span class="cm"># Get participant ID</span>
+    resp = <span class="kw">await</span> db.get(
+        f<span class="st">"/rest/v1/participants?email=eq.{candidate_email}&select=id,name"</span>
+    )
+    participants = resp.json()
+    <span class="kw">if not</span> participants:
+        <span class="kw">return</span> f<span class="st">"No candidate found with email {candidate_email}"</span>
+
+    pid = participants[<span class="num">0</span>][<span class="st">"id"</span>]
+    name = participants[<span class="num">0</span>][<span class="st">"name"</span>]
+
+    <span class="cm"># Get DISC results</span>
+    resp = <span class="kw">await</span> db.get(
+        f<span class="st">"/rest/v1/results?participant_id=eq.{pid}"</span>
+        f<span class="st">"&test_type=eq.disc&select=*"</span>
+    )
+    results = resp.json()
+    <span class="kw">if not</span> results:
+        <span class="kw">return</span> f<span class="st">"No DISC results found for {name}"</span>
+
+    scores = results[<span class="num">0</span>][<span class="st">"scores"</span>]
+    dominant = max(scores, key=scores.get)
+
+    profile_desc = {
+        <span class="st">"D"</span>: <span class="st">"Dominance - Direct, decisive, competitive"</span>,
+        <span class="st">"I"</span>: <span class="st">"Influence - Enthusiastic, persuasive, optimistic"</span>,
+        <span class="st">"S"</span>: <span class="st">"Steadiness - Patient, reliable, team-oriented"</span>,
+        <span class="st">"C"</span>: <span class="st">"Conscientiousness - Analytical, precise, quality-focused"</span>,
+    }
+
+    <span class="kw">return</span> (
+        f<span class="st">"DISC Profile for {name}:\n"</span>
+        f<span class="st">"  D (Dominance):      {scores.get('D', 0)}\n"</span>
+        f<span class="st">"  I (Influence):       {scores.get('I', 0)}\n"</span>
+        f<span class="st">"  S (Steadiness):      {scores.get('S', 0)}\n"</span>
+        f<span class="st">"  C (Conscientiousness): {scores.get('C', 0)}\n\n"</span>
+        f<span class="st">"Dominant Type: {dominant} - {profile_desc[dominant]}"</span>
+    )
+
+
+<span class="dec">@mcp.tool()</span>
+<span class="kw">async def</span> <span class="fn">compare_candidates</span>(
+    email_1: str,
+    email_2: str,
+    ctx: Context = <span class="kw">None</span>,
+) -> str:
+    <span class="st">"""Compare two candidates across all assessment dimensions.
+
+    Args:
+        email_1: Email of the first candidate.
+        email_2: Email of the second candidate.
+    """</span>
+    db: httpx.AsyncClient = ctx.request_context[<span class="st">"db"</span>]
+
+    <span class="kw">async def</span> <span class="fn">get_all_results</span>(email):
+        resp = <span class="kw">await</span> db.get(
+            f<span class="st">"/rest/v1/participants?email=eq.{email}&select=id,name"</span>
+        )
+        parts = resp.json()
+        <span class="kw">if not</span> parts:
+            <span class="kw">return</span> <span class="kw">None</span>, <span class="kw">None</span>
+        pid = parts[<span class="num">0</span>][<span class="st">"id"</span>]
+        name = parts[<span class="num">0</span>][<span class="st">"name"</span>]
+        resp = <span class="kw">await</span> db.get(
+            f<span class="st">"/rest/v1/results?participant_id=eq.{pid}&select=*"</span>
+        )
+        <span class="kw">return</span> name, resp.json()
+
+    name1, results1 = <span class="kw">await</span> get_all_results(email_1)
+    name2, results2 = <span class="kw">await</span> get_all_results(email_2)
+
+    <span class="kw">if not</span> name1:
+        <span class="kw">return</span> f<span class="st">"Candidate {email_1} not found."</span>
+    <span class="kw">if not</span> name2:
+        <span class="kw">return</span> f<span class="st">"Candidate {email_2} not found."</span>
+
+    comparison = f<span class="st">"=== Candidate Comparison ===\n\n"</span>
+    comparison += f<span class="st">"Candidate A: {name1}\nCandidate B: {name2}\n\n"</span>
+
+    tests_1 = {r[<span class="st">"test_type"</span>]: r[<span class="st">"scores"</span>] <span class="kw">for</span> r <span class="kw">in</span> results1}
+    tests_2 = {r[<span class="st">"test_type"</span>]: r[<span class="st">"scores"</span>] <span class="kw">for</span> r <span class="kw">in</span> results2}
+
+    all_tests = <span class="kw">set</span>(tests_1.keys()) | <span class="kw">set</span>(tests_2.keys())
+    <span class="kw">for</span> test <span class="kw">in</span> sorted(all_tests):
+        comparison += f<span class="st">"--- {test.upper()} ---\n"</span>
+        s1 = tests_1.get(test, {})
+        s2 = tests_2.get(test, {})
+        <span class="kw">for</span> key <span class="kw">in</span> sorted(<span class="kw">set</span>(s1.keys()) | <span class="kw">set</span>(s2.keys())):
+            comparison += f<span class="st">"  {key}: A={s1.get(key, 'N/A')} vs B={s2.get(key, 'N/A')}\n"</span>
+        comparison += <span class="st">"\n"</span>
+
+    <span class="kw">return</span> comparison
+
+
+<span class="dec">@mcp.tool()</span>
+<span class="kw">async def</span> <span class="fn">get_team_composition</span>(ctx: Context = <span class="kw">None</span>) -> str:
+    <span class="st">"""Get the current team DISC composition and balance analysis.
+    Shows the distribution of personality types across all hired team members.
+    """</span>
+    db: httpx.AsyncClient = ctx.request_context[<span class="st">"db"</span>]
+
+    <span class="cm"># Fetch all DISC results</span>
+    resp = <span class="kw">await</span> db.get(
+        <span class="st">"/rest/v1/results?test_type=eq.disc&select=*,participants(*)"</span>
+    )
+    results = resp.json()
+    <span class="kw">if not</span> results:
+        <span class="kw">return</span> <span class="st">"No DISC results found in the system."</span>
+
+    totals = {<span class="st">"D"</span>: <span class="num">0</span>, <span class="st">"I"</span>: <span class="num">0</span>, <span class="st">"S"</span>: <span class="num">0</span>, <span class="st">"C"</span>: <span class="num">0</span>}
+    dominant_counts = {<span class="st">"D"</span>: <span class="num">0</span>, <span class="st">"I"</span>: <span class="num">0</span>, <span class="st">"S"</span>: <span class="num">0</span>, <span class="st">"C"</span>: <span class="num">0</span>}
+
+    <span class="kw">for</span> r <span class="kw">in</span> results:
+        scores = r[<span class="st">"scores"</span>]
+        <span class="kw">for</span> dim <span class="kw">in</span> totals:
+            totals[dim] += scores.get(dim, <span class="num">0</span>)
+        dominant = max(scores, key=scores.get)
+        dominant_counts[dominant] += <span class="num">1</span>
+
+    n = len(results)
+    output = f<span class="st">"Team DISC Composition ({n} members):\n\n"</span>
+    <span class="kw">for</span> dim <span class="kw">in</span> [<span class="st">"D"</span>, <span class="st">"I"</span>, <span class="st">"S"</span>, <span class="st">"C"</span>]:
+        avg = totals[dim] / n
+        output += f<span class="st">"  {dim}: avg={avg:.1f} | {dominant_counts[dim]} dominant\n"</span>
+
+    <span class="kw">return</span> output
+
+
+<span class="cm"># ========== RESOURCES ==========</span>
+
+<span class="dec">@mcp.resource(<span class="st">"team://current/composition"</span>)</span>
+<span class="kw">async def</span> <span class="fn">team_composition_resource</span>() -> str:
+    <span class="st">"""Current team DISC distribution and balance analysis."""</span>
+    <span class="cm"># Similar to get_team_composition but returned as static resource</span>
+    <span class="kw">return</span> <span class="st">"Team composition data (updated on access)"</span>
+
+
+<span class="cm"># ========== PROMPTS ==========</span>
+
+<span class="dec">@mcp.prompt()</span>
+<span class="kw">def</span> <span class="fn">hiring_recommendation</span>(position: str) -> str:
+    <span class="st">"""Generate a structured hiring recommendation for a position.
+
+    Args:
+        position: The position slug (almacen, ventas_mostrador, pueblaventas).
+    """</span>
+    <span class="kw">return</span> (
+        f<span class="st">"You are an industrial-organizational psychologist analyzing "</span>
+        f<span class="st">"candidates for the {position} position. Use the available "</span>
+        f<span class="st">"tools to: 1) List all candidates for this position, "</span>
+        f<span class="st">"2) Get each candidate's DISC profile, Big5 scores, and "</span>
+        f<span class="st">"competency ratings, 3) Compare the top candidates, "</span>
+        f<span class="st">"4) Recommend the best hire with specific reasoning tied "</span>
+        f<span class="st">"to the position requirements. Always justify recommendations "</span>
+        f<span class="st">"with data from the assessments."</span>
+    )
+
+
+<span class="cm"># ========== RUN ==========</span>
+
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    <span class="cm"># For local dev: stdio transport</span>
+    <span class="cm"># For production: streamable-http transport</span>
+    mcp.run(transport=<span class="st">"streamable-http"</span>)
+</pre>
+
+<h3>6.2 Facturacion MCP Server Skeleton</h3>
+
+<pre><span class="cm"># facturacion_mcp.py</span>
+<span class="cm"># MCP Server for Mexican CFDI Electronic Invoicing</span>
+
+<span class="kw">import</span> os
+<span class="kw">from</span> contextlib <span class="kw">import</span> asynccontextmanager
+<span class="kw">from</span> typing <span class="kw">import</span> Optional
+<span class="kw">import</span> httpx
+<span class="kw">from</span> mcp.server.fastmcp <span class="kw">import</span> FastMCP, Context
+
+<span class="cm"># ========== FACTURAPI CONFIGURATION ==========</span>
+FACTURAPI_KEY = os.environ.get(<span class="st">"FACTURAPI_KEY"</span>, <span class="st">""</span>)
+FACTURAPI_BASE = <span class="st">"https://www.facturapi.io/v2"</span>
+
+<span class="dec">@asynccontextmanager</span>
+<span class="kw">async def</span> <span class="fn">lifespan</span>(server: FastMCP):
+    <span class="kw">async with</span> httpx.AsyncClient(
+        base_url=FACTURAPI_BASE,
+        headers={
+            <span class="st">"Authorization"</span>: f<span class="st">"Bearer {FACTURAPI_KEY}"</span>,
+            <span class="st">"Content-Type"</span>: <span class="st">"application/json"</span>,
+        },
+        timeout=<span class="num">30.0</span>,
+    ) <span class="kw">as</span> client:
+        <span class="kw">yield</span> {<span class="st">"api"</span>: client}
+
+mcp = FastMCP(<span class="st">"Facturacion Mexico"</span>, lifespan=lifespan)
+
+
+<span class="dec">@mcp.tool()</span>
+<span class="kw">async def</span> <span class="fn">create_cfdi</span>(
+    customer_rfc: str,
+    customer_name: str,
+    customer_zip: str,
+    customer_tax_regime: str,
+    cfdi_use: str,
+    items: list[dict],
+    payment_form: str = <span class="st">"01"</span>,
+    payment_method: str = <span class="st">"PUE"</span>,
+    ctx: Context = <span class="kw">None</span>,
+) -> str:
+    <span class="st">"""Create a CFDI 4.0 electronic invoice (factura).
+
+    Args:
+        customer_rfc: Customer's RFC (tax ID), e.g. 'XAXX010101000'.
+        customer_name: Customer's legal name as registered with SAT.
+        customer_zip: Customer's fiscal zip code (domicilio fiscal).
+        customer_tax_regime: SAT tax regime code, e.g. '601' for General.
+        cfdi_use: CFDI use code, e.g. 'G03' for Gastos en general.
+        items: List of line items. Each item needs: description, product_key
+               (SAT catalog), quantity, unit_price, tax_included (bool).
+               Example: [{"description": "Servicio de consultoria",
+               "product_key": "80101500", "quantity": 1,
+               "unit_price": 5000.00, "tax_included": true}]
+        payment_form: SAT payment form code. '01'=Efectivo, '03'=Transferencia,
+                      '04'=Tarjeta credito, '28'=Tarjeta debito.
+        payment_method: 'PUE' for single payment, 'PPD' for installments.
+    """</span>
+    api: httpx.AsyncClient = ctx.request_context[<span class="st">"api"</span>]
+
+    invoice_data = {
+        <span class="st">"customer"</span>: {
+            <span class="st">"legal_name"</span>: customer_name,
+            <span class="st">"tax_id"</span>: customer_rfc,
+            <span class="st">"tax_system"</span>: customer_tax_regime,
+            <span class="st">"address"</span>: {<span class="st">"zip"</span>: customer_zip},
+        },
+        <span class="st">"items"</span>: [
+            {
+                <span class="st">"description"</span>: item[<span class="st">"description"</span>],
+                <span class="st">"product_key"</span>: item[<span class="st">"product_key"</span>],
+                <span class="st">"quantity"</span>: item[<span class="st">"quantity"</span>],
+                <span class="st">"price"</span>: item[<span class="st">"unit_price"</span>],
+                <span class="st">"tax_included"</span>: item.get(<span class="st">"tax_included"</span>, <span class="kw">True</span>),
+            }
+            <span class="kw">for</span> item <span class="kw">in</span> items
+        ],
+        <span class="st">"use"</span>: cfdi_use,
+        <span class="st">"payment_form"</span>: payment_form,
+        <span class="st">"payment_method"</span>: payment_method,
+    }
+
+    resp = <span class="kw">await</span> api.post(<span class="st">"/invoices"</span>, json=invoice_data)
+    <span class="kw">if</span> resp.status_code != <span class="num">200</span>:
+        <span class="kw">return</span> f<span class="st">"Error creating CFDI: {resp.status_code} - {resp.text}"</span>
+
+    invoice = resp.json()
+    <span class="kw">return</span> (
+        f<span class="st">"CFDI created successfully!\n"</span>
+        f<span class="st">"  UUID: {invoice['uuid']}\n"</span>
+        f<span class="st">"  Folio: {invoice['folio_number']}\n"</span>
+        f<span class="st">"  Total: ${invoice['total']:,.2f} MXN\n"</span>
+        f<span class="st">"  Status: {invoice['status']}\n"</span>
+        f<span class="st">"  PDF: {invoice.get('pdf_url', 'N/A')}"</span>
+    )
+
+
+<span class="dec">@mcp.tool()</span>
+<span class="kw">async def</span> <span class="fn">cancel_cfdi</span>(
+    invoice_id: str,
+    cancellation_reason: str = <span class="st">"02"</span>,
+    ctx: Context = <span class="kw">None</span>,
+) -> str:
+    <span class="st">"""Cancel a previously issued CFDI.
+
+    Args:
+        invoice_id: The FacturAPI invoice ID or UUID.
+        cancellation_reason: SAT cancellation code. '01'=CFDI with errors
+            with relation, '02'=CFDI with errors without relation,
+            '03'=Operation not performed, '04'=Nominative operation.
+    """</span>
+    api: httpx.AsyncClient = ctx.request_context[<span class="st">"api"</span>]
+    resp = <span class="kw">await</span> api.delete(
+        f<span class="st">"/invoices/{invoice_id}"</span>,
+        params={<span class="st">"motive"</span>: cancellation_reason},
+    )
+    <span class="kw">if</span> resp.status_code != <span class="num">200</span>:
+        <span class="kw">return</span> f<span class="st">"Error cancelling CFDI: {resp.text}"</span>
+    <span class="kw">return</span> f<span class="st">"CFDI {invoice_id} cancelled successfully."</span>
+
+
+<span class="dec">@mcp.tool()</span>
+<span class="kw">async def</span> <span class="fn">get_tax_summary</span>(
+    month: int,
+    year: int,
+    ctx: Context = <span class="kw">None</span>,
+) -> str:
+    <span class="st">"""Get tax summary for a given month (IVA, ISR retention totals).
+
+    Args:
+        month: Month number (1-12).
+        year: Year (e.g. 2026).
+    """</span>
+    api: httpx.AsyncClient = ctx.request_context[<span class="st">"api"</span>]
+    resp = <span class="kw">await</span> api.get(
+        <span class="st">"/invoices"</span>,
+        params={
+            <span class="st">"date[gte]"</span>: f<span class="st">"{year}-{month:02d}-01"</span>,
+            <span class="st">"date[lte]"</span>: f<span class="st">"{year}-{month:02d}-31"</span>,
+            <span class="st">"status"</span>: <span class="st">"valid"</span>,
+        },
+    )
+    invoices = resp.json().get(<span class="st">"data"</span>, [])
+
+    total_subtotal = <span class="kw">sum</span>(i.get(<span class="st">"subtotal"</span>, <span class="num">0</span>) <span class="kw">for</span> i <span class="kw">in</span> invoices)
+    total_iva = <span class="kw">sum</span>(i.get(<span class="st">"total"</span>, <span class="num">0</span>) - i.get(<span class="st">"subtotal"</span>, <span class="num">0</span>) <span class="kw">for</span> i <span class="kw">in</span> invoices)
+    total = <span class="kw">sum</span>(i.get(<span class="st">"total"</span>, <span class="num">0</span>) <span class="kw">for</span> i <span class="kw">in</span> invoices)
+
+    <span class="kw">return</span> (
+        f<span class="st">"Tax Summary for {month:02d}/{year}:\n"</span>
+        f<span class="st">"  Invoices issued: {len(invoices)}\n"</span>
+        f<span class="st">"  Subtotal: ${total_subtotal:,.2f} MXN\n"</span>
+        f<span class="st">"  IVA collected: ${total_iva:,.2f} MXN\n"</span>
+        f<span class="st">"  Total invoiced: ${total:,.2f} MXN"</span>
+    )
+
+
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    mcp.run(transport=<span class="st">"streamable-http"</span>)
+</pre>
+
+<h3>6.3 Nomina MCP Server &mdash; Core Calculation Engine</h3>
+
+<pre><span class="cm"># nomina_mcp.py</span>
+<span class="cm"># MCP Server for Mexican Payroll Calculations</span>
+
+<span class="kw">from</span> mcp.server.fastmcp <span class="kw">import</span> FastMCP
+
+mcp = FastMCP(<span class="st">"Nomina Mexico"</span>)
+
+<span class="cm"># ISR Monthly Table 2026 (Art. 96 LISR) - Approximate</span>
+ISR_TABLE = [
+    (<span class="num">0.01</span>,     <span class="num">746.04</span>,    <span class="num">0.00</span>,    <span class="num">0.0192</span>),
+    (<span class="num">746.05</span>,   <span class="num">6332.05</span>,   <span class="num">14.32</span>,  <span class="num">0.0640</span>),
+    (<span class="num">6332.06</span>,  <span class="num">11128.01</span>,  <span class="num">371.83</span>, <span class="num">0.1088</span>),
+    (<span class="num">11128.02</span>, <span class="num">12935.82</span>,  <span class="num">893.63</span>, <span class="num">0.1600</span>),
+    (<span class="num">12935.83</span>, <span class="num">15487.71</span>,  <span class="num">1182.88</span>, <span class="num">0.1792</span>),
+    (<span class="num">15487.72</span>, <span class="num">31236.49</span>,  <span class="num">1640.18</span>, <span class="num">0.2136</span>),
+    (<span class="num">31236.50</span>, <span class="num">49233.00</span>,  <span class="num">5004.12</span>, <span class="num">0.2352</span>),
+    (<span class="num">49233.01</span>, <span class="num">93993.90</span>,  <span class="num">9236.89</span>, <span class="num">0.3000</span>),
+    (<span class="num">93993.91</span>, <span class="num">125325.20</span>, <span class="num">22665.17</span>, <span class="num">0.3200</span>),
+    (<span class="num">125325.21</span>, <span class="num">375975.61</span>, <span class="num">32691.18</span>, <span class="num">0.3400</span>),
+    (<span class="num">375975.62</span>, float(<span class="st">"inf"</span>), <span class="num">117912.32</span>, <span class="num">0.3500</span>),
+]
+
+
+<span class="kw">def</span> <span class="fn">calc_isr_mensual</span>(ingreso_gravable: float) -> float:
+    <span class="st">"""Calculate monthly ISR using Art. 96 tables."""</span>
+    <span class="kw">for</span> lim_inf, lim_sup, cuota_fija, tasa <span class="kw">in</span> ISR_TABLE:
+        <span class="kw">if</span> lim_inf <= ingreso_gravable <= lim_sup:
+            excedente = ingreso_gravable - lim_inf
+            <span class="kw">return</span> cuota_fija + (excedente * tasa)
+    <span class="kw">return</span> <span class="num">0.0</span>
+
+
+<span class="dec">@mcp.tool()</span>
+<span class="kw">def</span> <span class="fn">calculate_sdi</span>(
+    salario_diario: float,
+    aguinaldo_days: int = <span class="num">15</span>,
+    vacation_days: int = <span class="num">12</span>,
+    prima_vacacional_pct: float = <span class="num">0.25</span>,
+) -> str:
+    <span class="st">"""Calculate Salario Diario Integrado (SDI) for IMSS registration.
+
+    Args:
+        salario_diario: Daily wage in MXN.
+        aguinaldo_days: Days of aguinaldo (minimum 15 by law).
+        vacation_days: Days of vacation per year (depends on seniority).
+        prima_vacacional_pct: Prima vacacional percentage (minimum 25%).
+    """</span>
+    factor = <span class="num">1</span> + (aguinaldo_days / <span class="num">365</span>) + ((vacation_days * prima_vacacional_pct) / <span class="num">365</span>)
+    sdi = salario_diario * factor
+
+    <span class="kw">return</span> (
+        f<span class="st">"SDI Calculation:\n"</span>
+        f<span class="st">"  Salario Diario: ${salario_diario:,.2f}\n"</span>
+        f<span class="st">"  Factor de integracion: {factor:.6f}\n"</span>
+        f<span class="st">"  Aguinaldo component: {aguinaldo_days}/365 = {aguinaldo_days/365:.6f}\n"</span>
+        f<span class="st">"  Prima vac component: {vacation_days}*{prima_vacacional_pct}/365 = "</span>
+        f<span class="st">"{(vacation_days*prima_vacacional_pct)/365:.6f}\n"</span>
+        f<span class="st">"  SDI: ${sdi:,.2f}\n\n"</span>
+        f<span class="st">"  Monthly IMSS base: ${sdi * 30:,.2f}"</span>
+    )
+
+
+<span class="dec">@mcp.tool()</span>
+<span class="kw">def</span> <span class="fn">calculate_payroll</span>(
+    salario_mensual: float,
+    aguinaldo_days: int = <span class="num">15</span>,
+    vacation_days: int = <span class="num">12</span>,
+) -> str:
+    <span class="st">"""Calculate complete monthly payroll for one employee.
+
+    Shows gross pay, ISR, IMSS employee contribution, and net pay.
+    Compliant with Mexican Ley Federal del Trabajo.
+
+    Args:
+        salario_mensual: Monthly gross salary in MXN.
+        aguinaldo_days: Annual aguinaldo days (min 15).
+        vacation_days: Annual vacation days (by seniority).
+    """</span>
+    sd = salario_mensual / <span class="num">30</span>
+    factor = <span class="num">1</span> + (aguinaldo_days / <span class="num">365</span>) + ((vacation_days * <span class="num">0.25</span>) / <span class="num">365</span>)
+    sdi = sd * factor
+
+    <span class="cm"># ISR</span>
+    isr = calc_isr_mensual(salario_mensual)
+
+    <span class="cm"># IMSS Employee contributions (approximate rates)</span>
+    uma_mensual = <span class="num">3424.20</span>  <span class="cm"># UMA 2026 approximate</span>
+    imss_employee = sdi * <span class="num">30</span> * <span class="num">0.02375</span>  <span class="cm"># ~2.375% employee total</span>
+
+    <span class="cm"># IMSS Employer contributions (approximate rates)</span>
+    imss_employer = sdi * <span class="num">30</span> * <span class="num">0.13915</span>  <span class="cm"># ~13.915% employer total</span>
+
+    <span class="cm"># Infonavit (employer only)</span>
+    infonavit = sdi * <span class="num">30</span> * <span class="num">0.05</span>
+
+    <span class="cm"># SAR (employer only)</span>
+    sar = sdi * <span class="num">30</span> * <span class="num">0.02</span>
+
+    neto = salario_mensual - isr - imss_employee
+    costo_total = salario_mensual + imss_employer + infonavit + sar
+
+    <span class="kw">return</span> (
+        f<span class="st">"=== NOMINA MENSUAL ===\n\n"</span>
+        f<span class="st">"Salario Bruto:      ${salario_mensual:>12,.2f}\n"</span>
+        f<span class="st">"(-) ISR:            ${isr:>12,.2f}\n"</span>
+        f<span class="st">"(-) IMSS empleado:  ${imss_employee:>12,.2f}\n"</span>
+        f<span class="st">"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"</span>
+        f<span class="st">"NETO A PAGAR:       ${neto:>12,.2f}\n\n"</span>
+        f<span class="st">"=== COSTO PATRONAL ===\n"</span>
+        f<span class="st">"Salario:            ${salario_mensual:>12,.2f}\n"</span>
+        f<span class="st">"(+) IMSS patron:    ${imss_employer:>12,.2f}\n"</span>
+        f<span class="st">"(+) INFONAVIT:      ${infonavit:>12,.2f}\n"</span>
+        f<span class="st">"(+) SAR:            ${sar:>12,.2f}\n"</span>
+        f<span class="st">"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"</span>
+        f<span class="st">"COSTO TOTAL:        ${costo_total:>12,.2f}\n\n"</span>
+        f<span class="st">"SDI: ${sdi:,.2f} | Factor: {factor:.4f}"</span>
+    )
+
+
+<span class="dec">@mcp.tool()</span>
+<span class="kw">def</span> <span class="fn">calculate_aguinaldo</span>(
+    salario_diario: float,
+    dias_trabajados: int = <span class="num">365</span>,
+    aguinaldo_days: int = <span class="num">15</span>,
+) -> str:
+    <span class="st">"""Calculate aguinaldo (Christmas bonus) with ISR exemption.
+
+    Args:
+        salario_diario: Daily wage in MXN.
+        dias_trabajados: Days worked in the year (for proration).
+        aguinaldo_days: Company's aguinaldo days (minimum 15).
+    """</span>
+    proporcional = (dias_trabajados / <span class="num">365</span>) * aguinaldo_days
+    bruto = salario_diario * proporcional
+
+    <span class="cm"># ISR exemption: 30 UMA dias</span>
+    uma_diaria = <span class="num">114.14</span>  <span class="cm"># UMA 2026 approximate</span>
+    exento = uma_diaria * <span class="num">30</span>
+    gravable = max(<span class="num">0</span>, bruto - exento)
+
+    <span class="kw">return</span> (
+        f<span class="st">"=== CALCULO DE AGUINALDO ===\n"</span>
+        f<span class="st">"  Salario diario: ${salario_diario:,.2f}\n"</span>
+        f<span class="st">"  Dias trabajados: {dias_trabajados}\n"</span>
+        f<span class="st">"  Dias proporcionales: {proporcional:.2f}\n"</span>
+        f<span class="st">"  Aguinaldo bruto: ${bruto:,.2f}\n"</span>
+        f<span class="st">"  Exento (30 UMAs): ${exento:,.2f}\n"</span>
+        f<span class="st">"  Gravable para ISR: ${gravable:,.2f}"</span>
+    )
+
+
+<span class="dec">@mcp.tool()</span>
+<span class="kw">def</span> <span class="fn">simulate_raise</span>(
+    current_salary: float,
+    raise_percentage: float,
+) -> str:
+    <span class="st">"""Simulate the total cost impact of giving an employee a raise.
+
+    Shows the before/after comparison including all employer obligations.
+
+    Args:
+        current_salary: Current monthly gross salary in MXN.
+        raise_percentage: Proposed raise as percentage (e.g., 10 for 10%).
+    """</span>
+    new_salary = current_salary * (<span class="num">1</span> + raise_percentage / <span class="num">100</span>)
+
+    <span class="kw">def</span> <span class="fn">total_cost</span>(sal):
+        sd = sal / <span class="num">30</span>
+        sdi = sd * <span class="num">1.0493</span>  <span class="cm"># Approx factor for 15 days + 12 vac</span>
+        employer = sdi * <span class="num">30</span> * (<span class="num">0.13915</span> + <span class="num">0.05</span> + <span class="num">0.02</span>)
+        <span class="kw">return</span> sal + employer
+
+    cost_before = total_cost(current_salary)
+    cost_after = total_cost(new_salary)
+    delta = cost_after - cost_before
+
+    <span class="kw">return</span> (
+        f<span class="st">"=== SIMULACION DE AUMENTO ===\n"</span>
+        f<span class="st">"  Salario actual:    ${current_salary:>10,.2f}\n"</span>
+        f<span class="st">"  Aumento ({raise_percentage}%):    ${new_salary - current_salary:>10,.2f}\n"</span>
+        f<span class="st">"  Salario nuevo:     ${new_salary:>10,.2f}\n\n"</span>
+        f<span class="st">"  Costo total antes: ${cost_before:>10,.2f}\n"</span>
+        f<span class="st">"  Costo total nuevo: ${cost_after:>10,.2f}\n"</span>
+        f<span class="st">"  Incremento real:   ${delta:>10,.2f} (+{delta/cost_before*100:.1f}%)"</span>
+    )
+
+
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    mcp.run(transport=<span class="st">"streamable-http"</span>)
+</pre>
+
+<h3>6.4 Deployment on Render (Matching Your Current Setup)</h3>
+
+<p>Each MCP server deploys as an independent web service on Render. Since your existing platform already runs on Render, the deployment pattern is familiar:</p>
+
+<pre><span class="cm"># Procfile for each MCP server</span>
+web: uvicorn people_analytics_mcp:mcp.streamable_http_app --host 0.0.0.0 --port $PORT
+
+<span class="cm"># Or using the built-in runner:</span>
+web: python people_analytics_mcp.py</pre>
+
+<pre><span class="cm"># requirements.txt for MCP servers</span>
+mcp[cli]>=1.27,&lt;2
+httpx>=0.27
+pydantic>=2.0
+uvicorn>=0.30</pre>
+
+<p><strong>Render Configuration:</strong></p>
+<ul>
+    <li><strong>Build Command:</strong> <code>pip install -r requirements.txt</code></li>
+    <li><strong>Start Command:</strong> <code>python people_analytics_mcp.py</code> (FastMCP handles HTTP server internally)</li>
+    <li><strong>Environment Variables:</strong> <code>SUPABASE_URL</code>, <code>SUPABASE_KEY</code>, <code>FACTURAPI_KEY</code>, etc.</li>
+    <li><strong>Instance Type:</strong> Starter ($7/mo) for each MCP server &mdash; they are lightweight</li>
+    <li><strong>Health Check:</strong> GET to the MCP endpoint returns 405 (expected) or implement a <code>/health</code> route</li>
+</ul>
+
+<h3>6.5 Security Considerations</h3>
+
+<table>
+    <tr>
+        <th>Concern</th>
+        <th>Solution</th>
+    </tr>
+    <tr>
+        <td>API keys in code</td>
+        <td>All credentials via environment variables on Render. Never hardcode (note: migrate your current Supabase key out of <code>main.py</code>)</td>
+    </tr>
+    <tr>
+        <td>Data in transit</td>
+        <td>HTTPS enforced by Render. MCP spec requires HTTPS for all remote servers</td>
+    </tr>
+    <tr>
+        <td>Multi-tenant isolation</td>
+        <td>API key per organization. Supabase Row-Level Security (RLS) policies bound to org_id</td>
+    </tr>
+    <tr>
+        <td>LFPDPPP compliance</td>
+        <td>Privacy notice (aviso de privacidad) served at <code>/privacy</code>. Consent collected during assessment intake. Data deletion endpoint required.</td>
+    </tr>
+    <tr>
+        <td>SAT credentials</td>
+        <td>CIEC/e.firma stored encrypted (AES-256) in Supabase vault. User must re-authorize every 30 days.</td>
+    </tr>
+    <tr>
+        <td>Rate limiting</td>
+        <td>MCP spec requires servers to rate-limit tool invocations. Implement via FastAPI middleware or Render's built-in rate limits.</td>
+    </tr>
+    <tr>
+        <td>OAuth 2.1 (future)</td>
+        <td>When publishing to MCP marketplace, implement full OAuth flow with PKCE. The Python MCP SDK has built-in OAuth support.</td>
+    </tr>
+</table>
+
+<!-- ========== SECTION 7: ARCHITECTURE DIAGRAM ========== -->
+<div class="page-break"></div>
+<h2 id="s7"><span class="section-number">7</span> Architecture Diagram</h2>
+
+<div class="arch-diagram">
+<pre>
+                     +--------------------------------------------------+
+                     |          CLAUDE (MCP Host)                        |
+                     |  Claude Desktop / Claude Code / Claude.ai        |
+                     +------+-------+-------+-------+-------+-----------+
+                            |       |       |       |       |
+                      MCP Client  MCP Client  ...  MCP Client  MCP Client
+                            |       |       |       |       |
+               Streamable HTTP   Streamable HTTP        Streamable HTTP
+                            |       |       |       |       |
+         +------------------+       |       |       |       +------------------+
+         |                          |       |       |                          |
+         v                          v       |       v                          v
++------------------+  +-------------------+ | +-------------------+ +-------------------+
+| People Analytics |  | Team Management   | | |  Facturacion MCP  | |   Nomina MCP      |
+|    MCP Server    |  |    MCP Server     | | |    (CFDI 4.0)     | | (Mexican Payroll) |
+|   (FastMCP)      |  |   (FastMCP)       | | |   (FastMCP)       | |   (FastMCP)       |
++--------+---------+  +--------+----------+ | +--------+----------+ +--------+----------+
+         |                      |            |          |                      |
+         v                      v            |          v                      v
++------------------+  +------------------+   |  +----------------+   +------------------+
+|    Supabase      |  |    Supabase      |   |  |   FacturAPI    |   |  ISR/IMSS Tables |
+|  (participants,  |  |  (pulse, weekly  |   |  |   (PAC for     |   |  (Ley Federal    |
+|   answers,       |  |   feedback,      |   |  |   CFDI 4.0     |   |   del Trabajo)   |
+|   results)       |  |   suggestions)   |   |  |   timbrado)    |   |                  |
++------------------+  +------------------+   |  +-------+--------+   +------------------+
+                                             |          |
+                                             |          v
+                                             |  +----------------+
+                                             |  |     SAT        |
+                                             |  | (XML timbrado, |
+                                             |  |  validation)   |
+                                             |  +----------------+
+                                             |
+         +-----------------------------------+----------------------------------+
+         |                                                                      |
+         v                                                                      v
++-------------------+                                                +-------------------+
+| WhatsApp Business |                                                | Mexican Banking   |
+|    MCP Server     |                                                |    MCP Server     |
+|   (FastMCP)       |                                                |   (FastMCP)       |
++--------+----------+                                                +--------+----------+
+         |                                                                     |
+         v                                                                     v
++-------------------+                                                +-------------------+
+| Meta Cloud API /  |                                                |  Belvo / SPEI /   |
+| Twilio WhatsApp   |                                                |  Open Banking MX  |
++-------------------+                                                +-------------------+
+
+
+DEPLOYMENT: Each MCP server = independent Render web service ($7/mo)
+TRANSPORT: Streamable HTTP (POST + optional SSE for streaming)
+AUTH: API Key (Phase 1) -> OAuth 2.1 (Phase 2, for marketplace)
+DATABASE: Shared Supabase instance with RLS per organization
+</pre>
+</div>
+
+<h3>Data Flow Example: "Create an invoice for today's sales"</h3>
+<ol>
+    <li>Business owner types in Claude: "Hazme la factura del pedido de hoy para Electronica Lopez, RFC ELO201015AB3, $15,000 por servicio de consultoria"</li>
+    <li>Claude parses the request and calls <code>create_cfdi</code> on the Facturacion MCP Server via Streamable HTTP POST</li>
+    <li>MCP Server validates inputs, maps "servicio de consultoria" to SAT product key 80101500</li>
+    <li>MCP Server calls FacturAPI with the CFDI data</li>
+    <li>FacturAPI generates XML, sends to PAC for timbrado, returns UUID</li>
+    <li>MCP Server returns structured result with UUID, folio, total, and PDF link</li>
+    <li>Claude presents the result: "Done! CFDI created with UUID abc123, total $17,400 (including IVA). Here is the PDF link."</li>
+</ol>
+
+<!-- ========== SECTION 8: GO-TO-MARKET ========== -->
+<div class="page-break"></div>
+<h2 id="s8"><span class="section-number">8</span> Go-to-Market Strategy</h2>
+
+<h3>8.1 Build Priority (Demand x Feasibility Matrix)</h3>
+
+<table>
+    <tr>
+        <th>#</th>
+        <th>MCP Tool</th>
+        <th>Demand</th>
+        <th>Feasibility</th>
+        <th>Score</th>
+        <th>Rationale</th>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td><strong>People Analytics</strong></td>
+        <td>High</td>
+        <td>Very Easy</td>
+        <td>10</td>
+        <td>Your data, your API. Build in 1-2 weeks. Proves the model.</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td><strong>WhatsApp Business</strong></td>
+        <td>Very High</td>
+        <td>Easy</td>
+        <td>9</td>
+        <td>93% penetration. Twilio takes 1 day to set up. Immediate value.</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td><strong>Team Management</strong></td>
+        <td>High</td>
+        <td>Very Easy</td>
+        <td>9</td>
+        <td>Your data again. Pairs with People Analytics.</td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td><strong>Facturacion (CFDI)</strong></td>
+        <td>Very High</td>
+        <td>Medium</td>
+        <td>8</td>
+        <td>Legal requirement. FacturAPI has good REST API. Revenue driver.</td>
+    </tr>
+    <tr>
+        <td>5</td>
+        <td><strong>Nomina</strong></td>
+        <td>Very High</td>
+        <td>Medium</td>
+        <td>8</td>
+        <td>Complex calculations but no external API needed. High lock-in.</td>
+    </tr>
+    <tr>
+        <td>6</td>
+        <td><strong>SAT Portal</strong></td>
+        <td>High</td>
+        <td>Hard</td>
+        <td>6</td>
+        <td>SAT changes frequently. Strongest moat if done right.</td>
+    </tr>
+    <tr>
+        <td>7</td>
+        <td><strong>Mexican Banking</strong></td>
+        <td>High</td>
+        <td>Hard</td>
+        <td>5</td>
+        <td>CNBV regulation. Belvo simplifies but still complex.</td>
+    </tr>
+</table>
+
+<h3>8.2 Revenue Model</h3>
+
+<table>
+    <tr>
+        <th>Tier</th>
+        <th>Tools Included</th>
+        <th>Price (MXN/mo)</th>
+        <th>Target</th>
+    </tr>
+    <tr>
+        <td><strong>Free</strong></td>
+        <td>People Analytics (read-only, 5 candidates), Team Pulse (basic)</td>
+        <td>$0</td>
+        <td>Lead generation. Get businesses using your MCP tools via Claude.</td>
+    </tr>
+    <tr>
+        <td><strong>Starter</strong></td>
+        <td>Full People Analytics + Team Management + WhatsApp (100 msgs/mo)</td>
+        <td>$499</td>
+        <td>Micro-businesses (1-10 employees). Entry point.</td>
+    </tr>
+    <tr>
+        <td><strong>Professional</strong></td>
+        <td>Starter + Facturacion (100 CFDIs/mo) + Nomina (up to 15 employees)</td>
+        <td>$1,499</td>
+        <td>Small businesses (10-50 employees). Core revenue.</td>
+    </tr>
+    <tr>
+        <td><strong>Enterprise</strong></td>
+        <td>All tools + Banking + SAT Portal + unlimited + priority support</td>
+        <td>$4,999</td>
+        <td>Medium businesses (50-250 employees).</td>
+    </tr>
+</table>
+
+<p><strong>Unit Economics (Starter Tier):</strong></p>
+<ul>
+    <li>Hosting: $7 USD/mo (Render) = ~$125 MXN</li>
+    <li>Supabase: Free tier for up to 500MB</li>
+    <li>Twilio: ~$50 MXN for 100 WhatsApp messages</li>
+    <li><strong>Margin: ~65% at $499 MXN/mo</strong></li>
+</ul>
+
+<h3>8.3 Distribution Channels</h3>
+
+<ol>
+    <li><strong>Anthropic MCP Directory:</strong> Submit your servers to the official MCP server registry. When a Claude user searches for "Mexican invoicing" or "facturacion," they find you.</li>
+    <li><strong>Direct to SMBs:</strong> Your existing recruitment pipeline (Indeed, Facebook, Google Ads) brings businesses to your assessment platform. Upsell them on the MCP suite: "Ya que usas nuestras evaluaciones, conecta tu facturacion y nomina para que Claude maneje todo."</li>
+    <li><strong>Contadores (Accountants):</strong> Mexican accountants manage 10-50 small business clients each. One accountant adopting your tools brings 10-50 businesses. Target despachos contables in Puebla first.</li>
+    <li><strong>WhatsApp Groups:</strong> Distribute via WhatsApp (the channel itself). Create a "Herramientas de IA para Negocios" group for Puebla SMBs.</li>
+    <li><strong>OpenAI/ChatGPT:</strong> MCP is supported by ChatGPT too. Your servers work across both ecosystems, doubling your addressable market.</li>
+</ol>
+
+<h3>8.4 Competitive Moat</h3>
+
+<div class="solution-box">
+    <strong>Why this is defensible:</strong>
+    <ul style="margin-top: 8px;">
+        <li><strong>Domain expertise:</strong> Mexican tax law (ISR tables, IMSS cuotas, SDI calculation) is hard to get right. Your team lives this daily.</li>
+        <li><strong>Regulatory barrier:</strong> SAT compliance requires understanding of CFDI 4.0, Anexo 20, PAC integration. US-based competitors won't bother.</li>
+        <li><strong>Network effects:</strong> Each accountant who adopts brings their entire client portfolio. Each business adds data that improves your People Analytics recommendations.</li>
+        <li><strong>First-mover:</strong> As of June 2026, there are zero Mexican MCP tools. The first to build and register them owns the namespace.</li>
+        <li><strong>Multi-host:</strong> MCP works with Claude, ChatGPT, VS Code, Cursor, and any future AI. You are not locked into one ecosystem.</li>
+    </ul>
+</div>
+
+<!-- ========== SECTION 9: REGULATORY ========== -->
+<div class="page-break"></div>
+<h2 id="s9"><span class="section-number">9</span> Regulatory Considerations</h2>
+
+<table>
+    <tr>
+        <th>Regulation</th>
+        <th>Applies To</th>
+        <th>Requirements</th>
+        <th>Our Compliance Strategy</th>
+    </tr>
+    <tr>
+        <td><strong>LFPDPPP</strong><br>(Ley Federal de Proteccion de Datos Personales en Posesion de los Particulares)</td>
+        <td>All tools (any personal data)</td>
+        <td>Privacy notice (aviso de privacidad), consent, data access/rectification/cancellation rights (derechos ARCO), data officer designation</td>
+        <td>Aviso de privacidad at <code>/privacidad</code>. Consent checkbox on assessment intake. ARCO request handler. Supabase data deletion endpoint. Data processing agreement with Supabase (US processors require cross-border transfer consent).</td>
+    </tr>
+    <tr>
+        <td><strong>SAT / CFDI 4.0</strong><br>(Anexo 20, Resolucion Miscelanea Fiscal)</td>
+        <td>Facturacion MCP</td>
+        <td>CFDI must include: issuer RFC/name/regimen, receiver RFC/name/domicilio fiscal/regimen/uso CFDI, clave producto SAT, timbrado via authorized PAC</td>
+        <td>Delegate timbrado to FacturAPI (already a certified PAC). Validate all fields against SAT catalogs before submission. Store XML and PDF per SAT retention requirements (5 years).</td>
+    </tr>
+    <tr>
+        <td><strong>Ley Federal del Trabajo</strong></td>
+        <td>Nomina MCP</td>
+        <td>Minimum wage compliance, aguinaldo (15 days min), vacaciones (12+ days), prima vacacional (25% min), PTU (10%), overtime rules, finiquito/liquidacion formulas</td>
+        <td>Hard-code minimums as floor values. Update ISR tables and UMA annually (January). Flag calculations below legal minimums. Include LFT article references in output.</td>
+    </tr>
+    <tr>
+        <td><strong>IMSS / Ley del Seguro Social</strong></td>
+        <td>Nomina MCP</td>
+        <td>Correct SDI calculation, 5 branch contributions, SUA file generation, timely alta/baja/modificacion reporting</td>
+        <td>SDI calculator validated against IMSS tables. Employer/employee contribution rates updated annually. Future: SUA file generation for batch uploads.</td>
+    </tr>
+    <tr>
+        <td><strong>CNBV</strong><br>(Comision Nacional Bancaria y de Valores)</td>
+        <td>Banking MCP</td>
+        <td>IFPE license for payment initiation. AML/KYC requirements. Transaction monitoring.</td>
+        <td>Use licensed intermediary (Belvo operates under CNBV sandbox). Read-only mode initially (balance, transactions). SPEI transfers only through licensed partner.</td>
+    </tr>
+    <tr>
+        <td><strong>WhatsApp Business API Terms</strong></td>
+        <td>WhatsApp MCP</td>
+        <td>24-hour messaging window. Pre-approved templates for outbound. Opt-in consent required. No spam.</td>
+        <td>Only send templates outside 24-hour window. Store opt-in consent. Rate limit to Meta's tier limits. Use message templates approved by Meta.</td>
+    </tr>
+    <tr>
+        <td><strong>NOM-035-STPS-2018</strong></td>
+        <td>Team Management MCP</td>
+        <td>Identification of psychosocial risk factors in the workplace. Applies to all businesses with 16+ employees.</td>
+        <td>Your daily pulse and weekly feedback system already captures NOM-035-adjacent data. Add an explicit NOM-035 questionnaire tool for compliance.</td>
+    </tr>
+</table>
+
+<!-- ========== SECTION 10: TIMELINE ========== -->
+<div class="page-break"></div>
+<h2 id="s10"><span class="section-number">10</span> Implementation Timeline</h2>
+
+<div class="timeline">
+    <div class="timeline-item">
+        <div class="phase">Phase 1 &mdash; Weeks 1-2: People Analytics MCP</div>
+        <div class="desc">
+            <strong>Goal:</strong> Prove the MCP model works with your existing data.<br>
+            <strong>Tasks:</strong> Install Python MCP SDK. Build 5 tools (get_candidates, get_disc_profile, compare_candidates, get_team_composition, rank_candidates_for_position). Deploy to Render. Connect to Claude Code. Test end-to-end.<br>
+            <strong>Deliverable:</strong> A business owner can ask Claude "Who should I hire?" and get a data-grounded answer.
+        </div>
+    </div>
+
+    <div class="timeline-item">
+        <div class="phase">Phase 2 &mdash; Weeks 3-4: WhatsApp MCP + Team Management MCP</div>
+        <div class="desc">
+            <strong>Goal:</strong> Add the two highest-impact integrations.<br>
+            <strong>Tasks:</strong> Set up Twilio WhatsApp sandbox. Build WhatsApp tools (send_message, send_template, send_pulse_question). Build Team Management tools (get_team_pulse, get_conflict_alerts, generate_weekly_report). Deploy both servers.<br>
+            <strong>Deliverable:</strong> Claude can send daily pulse questions via WhatsApp and summarize team health.
+        </div>
+    </div>
+
+    <div class="timeline-item">
+        <div class="phase">Phase 3 &mdash; Month 2: Facturacion MCP (CFDI)</div>
+        <div class="desc">
+            <strong>Goal:</strong> First revenue-generating tool.<br>
+            <strong>Tasks:</strong> Integrate with FacturAPI. Build tools (create_cfdi, cancel_cfdi, list_invoices, get_tax_summary). Test with SAT sandbox. Validate CFDI 4.0 compliance. Deploy.<br>
+            <strong>Deliverable:</strong> "Create an invoice for..." generates a valid, timbrado CFDI via Claude.
+        </div>
+    </div>
+
+    <div class="timeline-item">
+        <div class="phase">Phase 4 &mdash; Month 3: Nomina MCP</div>
+        <div class="desc">
+            <strong>Goal:</strong> Complete the core business operations suite.<br>
+            <strong>Tasks:</strong> Implement ISR tables, IMSS calculation engine, SDI calculator, aguinaldo/vacaciones/PTU calculators. Validate against manual calculations. Build Nomina CFDI tool (via FacturAPI's nomina endpoint). Deploy.<br>
+            <strong>Deliverable:</strong> "Calculate payroll for my 5 employees" returns accurate, compliant results.
+        </div>
+    </div>
+
+    <div class="timeline-item">
+        <div class="phase">Phase 5 &mdash; Month 4+: Banking MCP + SAT Portal + OAuth</div>
+        <div class="desc">
+            <strong>Goal:</strong> Complete suite. Marketplace ready.<br>
+            <strong>Tasks:</strong> Integrate Belvo for banking (read-only first). Build SAT tools (validate_rfc, get_constancia). Implement full OAuth 2.1 flow. Submit all servers to Anthropic MCP directory. Begin accountant outreach in Puebla.<br>
+            <strong>Deliverable:</strong> Full Mexican business operations suite, discoverable by any Claude user.
+        </div>
+    </div>
+</div>
+
+<!-- ========== SECTION 11: COSTS ========== -->
+<h2 id="s11"><span class="section-number">11</span> Cost Estimates</h2>
+
+<h3>11.1 Development Costs</h3>
+
+<table>
+    <tr>
+        <th>MCP Server</th>
+        <th>Dev Time</th>
+        <th>Complexity</th>
+        <th>External Dependencies</th>
+    </tr>
+    <tr>
+        <td>People Analytics</td>
+        <td>40-60 hours</td>
+        <td>Low</td>
+        <td>None (Supabase only)</td>
+    </tr>
+    <tr>
+        <td>Team Management</td>
+        <td>30-50 hours</td>
+        <td>Low</td>
+        <td>None (Supabase only)</td>
+    </tr>
+    <tr>
+        <td>WhatsApp Business</td>
+        <td>40-60 hours</td>
+        <td>Low-Medium</td>
+        <td>Twilio or Meta API account</td>
+    </tr>
+    <tr>
+        <td>Facturacion (CFDI)</td>
+        <td>80-120 hours</td>
+        <td>Medium</td>
+        <td>FacturAPI subscription ($299+ MXN/mo)</td>
+    </tr>
+    <tr>
+        <td>Nomina</td>
+        <td>100-150 hours</td>
+        <td>Medium-High</td>
+        <td>ISR/IMSS tables (public), accountant review</td>
+    </tr>
+    <tr>
+        <td>SAT Portal</td>
+        <td>120-200 hours</td>
+        <td>High</td>
+        <td>SAT web services (unstable), e.firma handling</td>
+    </tr>
+    <tr>
+        <td>Banking</td>
+        <td>100-160 hours</td>
+        <td>High</td>
+        <td>Belvo subscription ($200+ USD/mo)</td>
+    </tr>
+    <tr style="background: #f0f4ff; font-weight: 600;">
+        <td>TOTAL (All 7 servers)</td>
+        <td>510-800 hours</td>
+        <td></td>
+        <td></td>
+    </tr>
+</table>
+
+<h3>11.2 Monthly Operating Costs (Post-Launch)</h3>
+
+<table>
+    <tr>
+        <th>Item</th>
+        <th>Cost (USD/mo)</th>
+        <th>Notes</th>
+    </tr>
+    <tr>
+        <td>Render (7 web services)</td>
+        <td>$49</td>
+        <td>$7 x 7 Starter instances</td>
+    </tr>
+    <tr>
+        <td>Supabase Pro</td>
+        <td>$25</td>
+        <td>When free tier is exceeded</td>
+    </tr>
+    <tr>
+        <td>FacturAPI</td>
+        <td>~$17</td>
+        <td>$299 MXN/mo base + per-stamp costs</td>
+    </tr>
+    <tr>
+        <td>Twilio WhatsApp</td>
+        <td>~$20</td>
+        <td>Variable by usage (est. 500 msgs/mo)</td>
+    </tr>
+    <tr>
+        <td>Belvo (when Banking launches)</td>
+        <td>~$200</td>
+        <td>Starting tier for Open Banking</td>
+    </tr>
+    <tr>
+        <td>Domain + SSL</td>
+        <td>$2</td>
+        <td>mcp.personality1.com subdomain</td>
+    </tr>
+    <tr style="background: #f0f4ff; font-weight: 600;">
+        <td>TOTAL (without Banking)</td>
+        <td>~$113/mo</td>
+        <td>~$2,000 MXN/mo</td>
+    </tr>
+    <tr style="background: #f0f4ff; font-weight: 600;">
+        <td>TOTAL (with Banking)</td>
+        <td>~$313/mo</td>
+        <td>~$5,600 MXN/mo</td>
+    </tr>
+</table>
+
+<h3>11.3 Break-Even Analysis</h3>
+
+<div class="stat-row">
+    <div class="stat-card">
+        <div class="num">4</div>
+        <div class="stat-label">Starter customers ($499/mo each) to cover costs without Banking</div>
+    </div>
+    <div class="stat-card">
+        <div class="num">4</div>
+        <div class="stat-label">Professional customers ($1,499/mo each) to cover costs with Banking</div>
+    </div>
+    <div class="stat-card">
+        <div class="num">$27K</div>
+        <div class="stat-label">MXN ARR with just 10 Starter customers</div>
+    </div>
+</div>
+
+<div class="opportunity-box">
+    <strong>Investor Summary:</strong> The total cost to build the first 4 MCP servers (People Analytics, Team Management, WhatsApp, Facturacion) is approximately 250 hours of development and $113 USD/month in infrastructure. Break-even occurs at 4 paying customers. The Mexican addressable market is 4.9 million SMBs, zero of which currently have MCP-compatible business tools. First-mover advantage is real, measurable, and time-sensitive: every month we delay is a month someone else could start building this.
+</div>
+
+<!-- ========== APPENDIX ========== -->
+<div class="page-break"></div>
+<h2 style="border-bottom: 2px solid #2563eb;">Appendix A: MCP Tool JSON Schema Reference</h2>
+
+<p>This is the exact JSON-RPC message format that Claude sends when it discovers and calls your tools. Understanding this helps debug integration issues.</p>
+
+<h4>Tool Discovery (tools/list response)</h4>
+<pre>{
+  <span class="st">"jsonrpc"</span>: <span class="st">"2.0"</span>,
+  <span class="st">"id"</span>: <span class="num">1</span>,
+  <span class="st">"result"</span>: {
+    <span class="st">"tools"</span>: [
+      {
+        <span class="st">"name"</span>: <span class="st">"get_disc_profile"</span>,
+        <span class="st">"title"</span>: <span class="st">"DISC Personality Profile"</span>,
+        <span class="st">"description"</span>: <span class="st">"Get DISC personality profile for a specific candidate."</span>,
+        <span class="st">"inputSchema"</span>: {
+          <span class="st">"type"</span>: <span class="st">"object"</span>,
+          <span class="st">"properties"</span>: {
+            <span class="st">"candidate_email"</span>: {
+              <span class="st">"type"</span>: <span class="st">"string"</span>,
+              <span class="st">"description"</span>: <span class="st">"The email address of the candidate."</span>
+            }
+          },
+          <span class="st">"required"</span>: [<span class="st">"candidate_email"</span>]
+        }
+      },
+      {
+        <span class="st">"name"</span>: <span class="st">"calculate_payroll"</span>,
+        <span class="st">"title"</span>: <span class="st">"Mexican Payroll Calculator"</span>,
+        <span class="st">"description"</span>: <span class="st">"Calculate complete monthly payroll for one employee. Compliant with Mexican Ley Federal del Trabajo."</span>,
+        <span class="st">"inputSchema"</span>: {
+          <span class="st">"type"</span>: <span class="st">"object"</span>,
+          <span class="st">"properties"</span>: {
+            <span class="st">"salario_mensual"</span>: {
+              <span class="st">"type"</span>: <span class="st">"number"</span>,
+              <span class="st">"description"</span>: <span class="st">"Monthly gross salary in MXN."</span>
+            },
+            <span class="st">"aguinaldo_days"</span>: {
+              <span class="st">"type"</span>: <span class="st">"integer"</span>,
+              <span class="st">"description"</span>: <span class="st">"Annual aguinaldo days (min 15)."</span>,
+              <span class="st">"default"</span>: <span class="num">15</span>
+            },
+            <span class="st">"vacation_days"</span>: {
+              <span class="st">"type"</span>: <span class="st">"integer"</span>,
+              <span class="st">"description"</span>: <span class="st">"Annual vacation days (by seniority)."</span>,
+              <span class="st">"default"</span>: <span class="num">12</span>
+            }
+          },
+          <span class="st">"required"</span>: [<span class="st">"salario_mensual"</span>]
+        }
+      }
+    ]
+  }
+}</pre>
+
+<h4>Tool Call (tools/call request and response)</h4>
+<pre><span class="cm">// Request from Claude</span>
+{
+  <span class="st">"jsonrpc"</span>: <span class="st">"2.0"</span>,
+  <span class="st">"id"</span>: <span class="num">3</span>,
+  <span class="st">"method"</span>: <span class="st">"tools/call"</span>,
+  <span class="st">"params"</span>: {
+    <span class="st">"name"</span>: <span class="st">"calculate_payroll"</span>,
+    <span class="st">"arguments"</span>: {
+      <span class="st">"salario_mensual"</span>: <span class="num">15000</span>,
+      <span class="st">"aguinaldo_days"</span>: <span class="num">15</span>,
+      <span class="st">"vacation_days"</span>: <span class="num">12</span>
+    }
+  }
+}
+
+<span class="cm">// Response from your MCP server</span>
+{
+  <span class="st">"jsonrpc"</span>: <span class="st">"2.0"</span>,
+  <span class="st">"id"</span>: <span class="num">3</span>,
+  <span class="st">"result"</span>: {
+    <span class="st">"content"</span>: [
+      {
+        <span class="st">"type"</span>: <span class="st">"text"</span>,
+        <span class="st">"text"</span>: <span class="st">"=== NOMINA MENSUAL ===\n\nSalario Bruto: $15,000.00\n(-) ISR: $1,640.18\n(-) IMSS empleado: $356.25\n...\nNETO A PAGAR: $13,003.57"</span>
+      }
+    ],
+    <span class="st">"isError"</span>: <span class="kw">false</span>
+  }
+}</pre>
+
+<h2 style="border-bottom: 2px solid #2563eb;">Appendix B: Key Technical References</h2>
+
+<table>
+    <tr>
+        <th>Resource</th>
+        <th>URL</th>
+    </tr>
+    <tr>
+        <td>MCP Specification</td>
+        <td><code>https://modelcontextprotocol.io/specification/2025-06-18</code></td>
+    </tr>
+    <tr>
+        <td>Python MCP SDK</td>
+        <td><code>https://github.com/modelcontextprotocol/python-sdk</code></td>
+    </tr>
+    <tr>
+        <td>MCP Server Registry</td>
+        <td><code>https://github.com/modelcontextprotocol/servers</code></td>
+    </tr>
+    <tr>
+        <td>FastMCP Documentation</td>
+        <td><code>pip install "mcp[cli]"</code> &mdash; Use <code>@mcp.tool()</code>, <code>@mcp.resource()</code>, <code>@mcp.prompt()</code></td>
+    </tr>
+    <tr>
+        <td>FacturAPI Docs</td>
+        <td><code>https://www.facturapi.io/docs</code></td>
+    </tr>
+    <tr>
+        <td>SAT CFDI 4.0</td>
+        <td><code>https://www.sat.gob.mx/consultas/35025/formato-de-factura-electronica</code></td>
+    </tr>
+    <tr>
+        <td>Twilio WhatsApp API</td>
+        <td><code>https://www.twilio.com/docs/whatsapp</code></td>
+    </tr>
+    <tr>
+        <td>Belvo (Open Banking)</td>
+        <td><code>https://developers.belvo.com</code></td>
+    </tr>
+    <tr>
+        <td>ISR Tables 2026</td>
+        <td><code>https://www.sat.gob.mx/declaracion/97399/tabla-de-isr</code></td>
+    </tr>
+    <tr>
+        <td>MCP Inspector</td>
+        <td><code>npx -y @modelcontextprotocol/inspector</code></td>
+    </tr>
+</table>
+
+<div style="margin-top: 60px; padding-top: 20px; border-top: 2px solid #e5e7eb; text-align: center; color: #9ca3af; font-size: 0.82rem;">
+    <p>Personality1 Platform &mdash; Puebla, Mexico &mdash; June 2026</p>
+    <p>This report contains proprietary strategy and technical specifications.</p>
+    <p>For inquiries: hcbmex@gmail.com</p>
+</div>
+
+</body>
+</html>

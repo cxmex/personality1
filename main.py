@@ -1727,6 +1727,96 @@ async def game_big5():
     with open("game_big5.html", "r", encoding="utf-8") as f:
         return f.read()
 
+# ========== CEO GAZELLES STRATEGIC DASHBOARD ==========
+
+@app.get("/ceo-gazelles", response_class=HTMLResponse)
+async def ceo_gazelles():
+    """CEO Strategic Dashboard — Scaling Up / Rockefeller Habits"""
+    try:
+        with open("ceo_gazelles.html", "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Pagina no encontrada")
+
+@app.post("/api/ceo-gazelles")
+async def save_ceo_gazelles(data: dict):
+    """Save CEO Gazelles questionnaire section responses"""
+    try:
+        await save_to_supabase("ceo_gazelles", data)
+    except Exception as e:
+        print(f"Error saving CEO Gazelles data: {e}")
+    return {"status": "ok"}
+
+@app.get("/api/ceo-gazelles")
+async def get_ceo_gazelles():
+    """Get all CEO Gazelles responses"""
+    async with httpx.AsyncClient() as client:
+        url = f"{SUPABASE_URL}/rest/v1/ceo_gazelles?select=*&order=submitted_at.desc"
+        response = await client.get(url, headers=HEADERS)
+        if response.status_code == 200:
+            return response.json()
+        return []
+
+# ========== DAILY PULSE ==========
+
+@app.get("/pulso-diario", response_class=HTMLResponse)
+async def pulso_diario():
+    """Daily pulse question for team engagement"""
+    try:
+        with open("pulso_diario.html", "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Pagina no encontrada")
+
+@app.post("/api/pulso-diario")
+async def save_pulso_diario(data: dict):
+    """Save daily pulse response"""
+    try:
+        await save_to_supabase("pulso_diario", data)
+    except Exception as e:
+        print(f"Error saving daily pulse: {e}")
+    return {"status": "ok"}
+
+@app.get("/api/pulso-diario")
+async def get_pulso_diario():
+    """Get daily pulse responses"""
+    async with httpx.AsyncClient() as client:
+        url = f"{SUPABASE_URL}/rest/v1/pulso_diario?select=*&order=submitted_at.desc&limit=100"
+        response = await client.get(url, headers=HEADERS)
+        if response.status_code == 200:
+            return response.json()
+        return []
+
+# ========== CUSTOMER FEEDBACK (NPS) ==========
+
+@app.get("/feedback-cliente", response_class=HTMLResponse)
+async def feedback_cliente():
+    """Customer NPS feedback via QR code at POS"""
+    try:
+        with open("feedback_cliente.html", "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Pagina no encontrada")
+
+@app.post("/api/feedback-cliente")
+async def save_feedback_cliente(data: dict):
+    """Save customer NPS feedback"""
+    try:
+        await save_to_supabase("feedback_cliente", data)
+    except Exception as e:
+        print(f"Error saving customer feedback: {e}")
+    return {"status": "ok"}
+
+@app.get("/api/feedback-cliente")
+async def get_feedback_cliente():
+    """Get customer feedback responses"""
+    async with httpx.AsyncClient() as client:
+        url = f"{SUPABASE_URL}/rest/v1/feedback_cliente?select=*&order=submitted_at.desc&limit=200"
+        response = await client.get(url, headers=HEADERS)
+        if response.status_code == 200:
+            return response.json()
+        return []
+
 @app.get("/api/correlations/{email}")
 async def get_correlations(email: str):
     """Compare game vs questionnaire vs interview scores for a given email"""

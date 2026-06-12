@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Research: Crehana - Competitive Intelligence Report</title>
+<style>
+  :root { --primary: #1a1a2e; --accent: #e94560; --bg: #f8f9fa; --card: #ffffff; --text: #2d3436; --muted: #636e72; --border: #dfe6e9; --green: #00b894; --orange: #fdcb6e; --red: #d63031; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+  header { background: linear-gradient(135deg, var(--primary), #16213e); color: white; padding: 3rem 2rem; text-align: center; }
+  header h1 { font-size: 2.4rem; margin-bottom: 0.5rem; }
+  header .subtitle { color: #b2bec3; font-size: 1.1rem; }
+  header .date { color: #636e72; margin-top: 0.5rem; font-size: 0.9rem; }
+  .toc { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem 2rem; margin: 2rem 0; }
+  .toc h2 { font-size: 1.2rem; margin-bottom: 1rem; color: var(--primary); }
+  .toc ol { padding-left: 1.5rem; }
+  .toc li { margin: 0.4rem 0; }
+  .toc a { color: var(--accent); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin: 1.5rem 0; }
+  section h2 { color: var(--primary); font-size: 1.6rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 3px solid var(--accent); }
+  section h3 { color: var(--primary); font-size: 1.2rem; margin: 1.2rem 0 0.6rem 0; }
+  section h4 { color: var(--muted); font-size: 1rem; margin: 1rem 0 0.4rem 0; text-transform: uppercase; letter-spacing: 0.05em; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+  th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: var(--bg); font-weight: 600; color: var(--primary); }
+  tr:hover { background: #f1f3f5; }
+  ul, ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+  li { margin: 0.3rem 0; }
+  .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+  .badge-green { background: #d4edda; color: #155724; }
+  .badge-red { background: #f8d7da; color: #721c24; }
+  .badge-orange { background: #fff3cd; color: #856404; }
+  .badge-blue { background: #cce5ff; color: #004085; }
+  .badge-purple { background: #e8d5f5; color: #4a1a6b; }
+  .highlight { background: #fff9c4; padding: 1rem 1.5rem; border-left: 4px solid var(--orange); border-radius: 0 8px 8px 0; margin: 1rem 0; }
+  .critical { background: #ffebee; padding: 1rem 1.5rem; border-left: 4px solid var(--red); border-radius: 0 8px 8px 0; margin: 1rem 0; }
+  .opportunity { background: #e8f5e9; padding: 1rem 1.5rem; border-left: 4px solid var(--green); border-radius: 0 8px 8px 0; margin: 1rem 0; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+  .grid-card { background: var(--bg); border-radius: 8px; padding: 1rem 1.2rem; border: 1px solid var(--border); }
+  .grid-card h4 { margin-top: 0; }
+  .metric { font-size: 2rem; font-weight: 700; color: var(--accent); }
+  .metric-label { font-size: 0.85rem; color: var(--muted); }
+  .metrics-row { display: flex; gap: 1.5rem; flex-wrap: wrap; margin: 1rem 0; }
+  .metric-box { background: var(--bg); border-radius: 8px; padding: 1rem 1.5rem; text-align: center; flex: 1; min-width: 140px; border: 1px solid var(--border); }
+  blockquote { border-left: 3px solid var(--accent); padding-left: 1rem; margin: 1rem 0; color: var(--muted); font-style: italic; }
+  .source { font-size: 0.8rem; color: var(--muted); }
+  .vs-table td:first-child { font-weight: 600; width: 30%; }
+  @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } .metrics-row { flex-direction: column; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Crehana: Deep Competitive Intelligence Report</h1>
+  <div class="subtitle">Latin America's HR/Learning Platform -- What It Is, How It Works, and What It Means for Us</div>
+  <div class="date">Research Date: June 12, 2026</div>
+</header>
+
+<div class="container">
+
+<nav class="toc">
+  <h2>Table of Contents</h2>
+  <ol>
+    <li><a href="#overview">Company Overview</a></li>
+    <li><a href="#funding">Funding & Financials</a></li>
+    <li><a href="#products">Product Suite</a></li>
+    <li><a href="#learning">Learning Platform Deep Dive</a></li>
+    <li><a href="#hr">People Management / HR Modules</a></li>
+    <li><a href="#ai">AI Features</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#strengths">Strengths</a></li>
+    <li><a href="#weaknesses">Weaknesses</a></li>
+    <li><a href="#technology">Technology</a></li>
+    <li><a href="#relevance">Relevance to Our Project</a></li>
+  </ol>
+</nav>
+
+<!-- ============================================================ -->
+<section id="overview">
+  <h2>1. Company Overview</h2>
+
+  <div class="metrics-row">
+    <div class="metric-box">
+      <div class="metric">2015</div>
+      <div class="metric-label">Founded</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric">367</div>
+      <div class="metric-label">Employees (LinkedIn)</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric">1,200+</div>
+      <div class="metric-label">Enterprise Clients</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric">~$92M</div>
+      <div class="metric-label">Total Funding</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric">#64,806</div>
+      <div class="metric-label">Similarweb Global Rank</div>
+    </div>
+  </div>
+
+  <table>
+    <tr><th>Attribute</th><th>Detail</th></tr>
+    <tr><td>Founded</td><td>2015, Lima, Peru</td></tr>
+    <tr><td>Founders</td><td><strong>Diego Olcese</strong> (CEO) and <strong>Rodolfo Danino</strong></td></tr>
+    <tr><td>Current HQ</td><td>Paseo de la Reforma 26, Mexico City, Mexico (moved from Peru)</td></tr>
+    <tr><td>Original Focus</td><td>Online education platform for creative professionals (design, illustration, video)</td></tr>
+    <tr><td>Current Focus</td><td>All-in-one HR/People Management platform for Latin American enterprises</td></tr>
+    <tr><td>Employees</td><td>~367 (LinkedIn, 2026)</td></tr>
+    <tr><td>Markets Served</td><td>Mexico, Colombia, Peru, Argentina, Chile, and broader LatAm</td></tr>
+    <tr><td>Target Customer</td><td><strong>Mid-market to enterprise</strong> (50-2,500+ employees); contact form shows segments: 1-29, 30-250, 251-1000, 1001-2500, 2501+</td></tr>
+    <tr><td>Notable Clients</td><td>Banorte, Santander, Bancolombia, Arcor, Western Union, Allianz, Nutresa, Falabella, Honda, Axion</td></tr>
+    <tr><td>Key Pivot</td><td>Pivoted from B2C edtech (Platzi competitor) to B2B HR platform (~2021-2022)</td></tr>
+    <tr><td>Key Acquisition</td><td>Acquired <strong>Acsendo</strong> (talent management startup) in April 2022 to bolster HR capabilities</td></tr>
+  </table>
+
+  <div class="highlight">
+    <strong>Key Insight:</strong> Crehana started as a Platzi/Coursera-style online learning platform for individuals. After raising $70M in Series B (2021), they pivoted aggressively to become an enterprise HR platform. The Acsendo acquisition (2022) brought performance management and talent tools. Today, they position themselves as "the #1 Platform in Human Capital Management for LatAm" -- a very different company than 3 years ago.
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="funding">
+  <h2>2. Funding & Financials</h2>
+
+  <table>
+    <tr><th>Round</th><th>Date</th><th>Amount</th><th>Lead Investor</th><th>Other Investors</th></tr>
+    <tr><td>Seed</td><td>March 2019</td><td>$4.5M</td><td>Acumen Capital</td><td>--</td></tr>
+    <tr><td>Bridge/Growth</td><td>May 2020</td><td>Undisclosed</td><td>ALCP</td><td>Pandemic-driven round</td></tr>
+    <tr><td>Series A</td><td>December 2020</td><td>$17.5M</td><td>Mountain Nazca</td><td>Endeavor Catalyst</td></tr>
+    <tr><td>Series B</td><td>August 2021</td><td>$70M</td><td>General Atlantic</td><td>Mountain Nazca</td></tr>
+    <tr><td colspan="2"><strong>Total Known Funding</strong></td><td colspan="3"><strong>~$92M+</strong></td></tr>
+  </table>
+
+  <h3>Key Financial Notes</h3>
+  <ul>
+    <li>The $70M Series B was described as <strong>"the largest Series B for edtech in Latin America"</strong> at the time</li>
+    <li><strong>General Atlantic</strong> (Series B lead) is a major global growth equity firm -- signals serious validation</li>
+    <li><strong>Endeavor Catalyst</strong> participation indicates Crehana went through the Endeavor network (strong LatAm startup ecosystem credibility)</li>
+    <li>Also recognized by <strong>Wayra</strong> (Telefonica's accelerator)</li>
+    <li>Revenue is not publicly disclosed; estimated in the $15-30M ARR range based on 1,200 enterprise clients</li>
+    <li>No known IPO plans; no additional funding rounds announced since 2021 (possible profitability focus or difficulty raising in the 2022-2024 funding winter)</li>
+  </ul>
+
+  <div class="highlight">
+    <strong>Reading Between the Lines:</strong> No new funding since August 2021 (nearly 5 years). With 367 employees and $92M raised, they have likely been in cost-cutting/sustainability mode. The LatAm tech downturn of 2022-2023 hit hard. The pivot from B2C edtech to B2B HR SaaS was likely driven by the need for sustainable revenue (enterprise contracts > individual subscriptions).
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="products">
+  <h2>3. Product Suite</h2>
+
+  <p>Crehana has evolved into a modular HR platform with 6+ distinct product areas. They brand their approach as covering "the entire talent journey."</p>
+
+  <div class="grid-2">
+    <div class="grid-card">
+      <h4>Crehana Core</h4>
+      <p><span class="badge badge-blue">HR Admin</span></p>
+      <ul>
+        <li>Onboarding/offboarding automation</li>
+        <li>Leave & absence management</li>
+        <li>Digital document administration</li>
+        <li>Task workflow automation</li>
+        <li>Digital signatures</li>
+        <li>Org charts & directories</li>
+        <li>Internal communications</li>
+        <li>Benefits administration</li>
+      </ul>
+    </div>
+    <div class="grid-card">
+      <h4>Crehana Attract</h4>
+      <p><span class="badge badge-purple">Recruitment</span></p>
+      <ul>
+        <li>Applicant Tracking System (ATS)</li>
+        <li>Job posting management</li>
+        <li>Candidate pipeline visualization</li>
+        <li>Automated candidate communications</li>
+        <li>Standardized evaluation scorecards</li>
+        <li>Intelligent matching algorithms</li>
+      </ul>
+    </div>
+    <div class="grid-card">
+      <h4>Crehana Learn</h4>
+      <p><span class="badge badge-green">Learning</span></p>
+      <ul>
+        <li>LMS + LXP combined</li>
+        <li>6,300+ courses (enterprise catalog)</li>
+        <li>Gamified learning experiences</li>
+        <li>Skill diagnostics</li>
+        <li>Automated assessments</li>
+        <li>Custom learning paths</li>
+        <li>Certification/diplomas</li>
+      </ul>
+    </div>
+    <div class="grid-card">
+      <h4>Crehana Perform</h4>
+      <p><span class="badge badge-orange">Performance</span></p>
+      <ul>
+        <li>OKR and goal tracking</li>
+        <li>360-degree feedback</li>
+        <li>Competency frameworks</li>
+        <li>Individual Development Plans (PIDs)</li>
+        <li>Performance monitoring dashboards</li>
+      </ul>
+    </div>
+    <div class="grid-card">
+      <h4>Crehana Engage</h4>
+      <p><span class="badge badge-red">Climate & Culture</span></p>
+      <ul>
+        <li>eNPS and climate surveys</li>
+        <li>Pulse surveys</li>
+        <li>Employee recognition programs</li>
+        <li>Real-time sentiment analysis</li>
+        <li>Engagement reporting</li>
+      </ul>
+    </div>
+    <div class="grid-card">
+      <h4>Additional Modules</h4>
+      <p><span class="badge badge-blue">Operations</span></p>
+      <ul>
+        <li><strong>Attendance:</strong> Digital check-in, biometric, shifts, overtime</li>
+        <li><strong>Payroll:</strong> Automated processing, bank dispersal, tax compliance</li>
+        <li><strong>People Analytics:</strong> Real-time dashboards, custom reports</li>
+        <li><strong>Crehana AI (Hana):</strong> AI assistant across all modules</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="highlight">
+    <strong>Core Value Proposition:</strong> "One platform for the entire talent journey" -- replace 5-8 disconnected HR tools with a single integrated system. This resonates strongly with mid-market LatAm companies that currently use spreadsheets or fragmented solutions.
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="learning">
+  <h2>4. Learning Platform Deep Dive</h2>
+
+  <div class="metrics-row">
+    <div class="metric-box">
+      <div class="metric">6,300+</div>
+      <div class="metric-label">Enterprise Courses</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric">900+</div>
+      <div class="metric-label">Individual Catalog</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric">LMS + LXP</div>
+      <div class="metric-label">Platform Type</div>
+    </div>
+  </div>
+
+  <h3>Content & Format</h3>
+  <ul>
+    <li><strong>Course count:</strong> 6,300+ courses in the enterprise catalog; 900+ in the individual/premium catalog</li>
+    <li><strong>Original focus areas:</strong> Design, illustration, photography, video production, marketing, data science</li>
+    <li><strong>Expanded to:</strong> Leadership, soft skills, compliance, technical skills, digital transformation</li>
+    <li><strong>Format:</strong> Primarily video-based with projects and exercises; some interactive elements</li>
+    <li><strong>Gamification:</strong> Points, badges, progress tracking, leaderboards</li>
+    <li><strong>Certifications:</strong> Participation certificates (diplomas) for completed courses -- not industry-recognized certifications</li>
+    <li><strong>Skill paths:</strong> Curated learning tracks called "academies" grouping related courses</li>
+    <li><strong>Languages:</strong> Primarily Spanish (major advantage for LatAm); some English content</li>
+  </ul>
+
+  <h3>Comparison with Competitors</h3>
+  <table class="vs-table">
+    <tr><th>Platform</th><th>Courses</th><th>Language</th><th>Strengths</th><th>Weakness vs Crehana</th></tr>
+    <tr><td>Crehana</td><td>6,300+ (B2B)</td><td>Spanish-first</td><td>Integrated with HR platform; LatAm focus</td><td>Less prestigious instructors; no university partnerships</td></tr>
+    <tr><td>Platzi</td><td>1,000+</td><td>Spanish</td><td>Strong tech community; live classes</td><td>No HR/performance tools; B2C only</td></tr>
+    <tr><td>Coursera</td><td>7,000+</td><td>English + subtitles</td><td>University partnerships; recognized credentials</td><td>English-first; no HR integration; expensive enterprise</td></tr>
+    <tr><td>LinkedIn Learning</td><td>16,000+</td><td>English + some Spanish</td><td>LinkedIn integration; huge library</td><td>English-first; no HR tools; generic for LatAm</td></tr>
+    <tr><td>Udemy Business</td><td>24,000+</td><td>Multi-language</td><td>Massive library; affordable</td><td>No HR integration; inconsistent quality</td></tr>
+  </table>
+
+  <div class="highlight">
+    <strong>Crehana's Learning Advantage:</strong> Being Spanish-first and integrated with HR modules (performance reviews can trigger learning recommendations) is a genuine differentiator in LatAm. However, the learning platform is no longer their primary selling point -- it's become a feature of the broader HR platform.
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="hr">
+  <h2>5. People Management / HR Modules</h2>
+
+  <h3>Performance Management (Crehana Perform)</h3>
+  <ul>
+    <li><strong>OKRs & Goals:</strong> Set company, team, and individual objectives; track progress with visual dashboards; cascade goals top-down</li>
+    <li><strong>360 Feedback:</strong> Multi-rater feedback from managers, peers, direct reports, and self-assessment</li>
+    <li><strong>Competency Frameworks:</strong> Define role-specific competencies; measure against them during reviews</li>
+    <li><strong>Performance Reviews:</strong> Configurable review cycles; automated reminders; calibration tools</li>
+    <li><strong>Individual Development Plans (PIDs):</strong> Link performance gaps to learning paths automatically</li>
+  </ul>
+
+  <h3>Engagement / Climate (Crehana Engage)</h3>
+  <ul>
+    <li><strong>eNPS Surveys:</strong> Net Promoter Score for employees -- "Would you recommend this company?"</li>
+    <li><strong>Climate Surveys:</strong> Comprehensive organizational climate measurement</li>
+    <li><strong>Pulse Surveys:</strong> Short, frequent check-ins (weekly/biweekly)</li>
+    <li><strong>Recognition:</strong> Peer-to-peer recognition programs; kudos/badges</li>
+    <li><strong>Sentiment Analysis:</strong> AI-powered analysis of open-ended survey responses</li>
+    <li><strong>Real-time Dashboards:</strong> Engagement trends by team, department, location</li>
+  </ul>
+
+  <h3>Core HR (Crehana Core)</h3>
+  <ul>
+    <li><strong>Onboarding:</strong> Automated welcome workflows; document collection; task checklists</li>
+    <li><strong>Document Management:</strong> Digital storage; e-signatures; version control</li>
+    <li><strong>Org Charts:</strong> Visual organizational structure; searchable employee directory</li>
+    <li><strong>Leave Management:</strong> PTO requests; approval workflows; balance tracking</li>
+    <li><strong>Internal Comms:</strong> Announcements; company-wide messaging</li>
+  </ul>
+
+  <h3>Recruitment (Crehana Attract)</h3>
+  <ul>
+    <li><strong>ATS:</strong> Full applicant tracking from job posting to offer</li>
+    <li><strong>Pipeline View:</strong> Kanban-style candidate progression</li>
+    <li><strong>Scorecards:</strong> Standardized evaluation rubrics for interviewers</li>
+    <li><strong>Intelligent Matching:</strong> Algorithm-based candidate-role fit scoring</li>
+  </ul>
+
+  <h3>Payroll & Attendance</h3>
+  <ul>
+    <li><strong>Payroll:</strong> Automated payroll processing with tax compliance (Mexico, Colombia, Peru focused)</li>
+    <li><strong>Attendance:</strong> Digital clock-in, biometric integration, shift management, overtime tracking</li>
+  </ul>
+
+  <h3>People Analytics</h3>
+  <ul>
+    <li>Cross-module dashboards aggregating data from performance, engagement, learning, and core HR</li>
+    <li>Custom report builder</li>
+    <li>Team/department/company-level views</li>
+    <li>Exportable data</li>
+  </ul>
+
+  <div class="highlight">
+    <strong>Breadth vs Depth:</strong> Crehana covers an impressive breadth of HR functions. However, each module competes with specialized best-of-breed tools (Lattice for performance, Culture Amp for engagement, BambooHR for core HR, Greenhouse for ATS). The value proposition is integration, not necessarily depth in any single area.
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="ai">
+  <h2>6. AI Features</h2>
+
+  <h3>Hana -- Crehana's AI Assistant</h3>
+  <p>Crehana has introduced an AI layer branded as <strong>"Hana"</strong> (likely a play on "humana") that operates across the platform:</p>
+
+  <ul>
+    <li><strong>Intelligent Search:</strong> Natural language queries across the entire HR platform -- "Who has a review due this week?" or "Show me engagement trends for the sales team"</li>
+    <li><strong>24/7 Employee Assistance:</strong> AI chatbot for employees to ask HR questions (policies, leave balances, benefits)</li>
+    <li><strong>Task Automation:</strong> Automate repetitive HR workflows triggered by conditions</li>
+    <li><strong>Knowledge Management:</strong> AI-powered company knowledge base with instant retrieval</li>
+    <li><strong>Personalized Learning Recommendations:</strong> Based on role, skill gaps, performance review outcomes, and career goals</li>
+    <li><strong>Sentiment Analysis:</strong> AI analysis of open-ended survey responses to detect themes, moods, and risk signals</li>
+    <li><strong>Insights Generation:</strong> Automated insights and recommendations for HR leaders from aggregated data</li>
+  </ul>
+
+  <h3>AI Maturity Assessment</h3>
+  <table>
+    <tr><th>AI Capability</th><th>Crehana Status</th><th>Maturity</th></tr>
+    <tr><td>Learning Recommendations</td><td>Active -- skill-gap-based course suggestions</td><td><span class="badge badge-green">Moderate</span></td></tr>
+    <tr><td>Sentiment Analysis</td><td>Active -- on survey open text</td><td><span class="badge badge-green">Moderate</span></td></tr>
+    <tr><td>Chatbot / Q&A</td><td>Active -- Hana assistant</td><td><span class="badge badge-green">Moderate</span></td></tr>
+    <tr><td>Predictive Analytics</td><td>Limited -- not prominently featured</td><td><span class="badge badge-orange">Early</span></td></tr>
+    <tr><td>AI Coaching</td><td>Not evident</td><td><span class="badge badge-red">Absent</span></td></tr>
+    <tr><td>Behavioral Assessment AI</td><td>Not evident</td><td><span class="badge badge-red">Absent</span></td></tr>
+    <tr><td>Flight Risk Prediction</td><td>Not evident</td><td><span class="badge badge-red">Absent</span></td></tr>
+    <tr><td>AI-Generated Reviews</td><td>Not confirmed</td><td><span class="badge badge-orange">Unknown</span></td></tr>
+  </table>
+
+  <div class="critical">
+    <strong>Our Opportunity:</strong> Crehana's AI is primarily operational (search, automation, chatbot) rather than analytical or coaching-oriented. They do NOT appear to offer AI-powered behavioral assessments, personality profiling, conflict prediction, or personalized team coaching -- which is exactly what we are building.
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="pricing">
+  <h2>7. Pricing</h2>
+
+  <h3>Enterprise / B2B Pricing (Crehana for Business)</h3>
+  <div class="critical">
+    <strong>No public pricing.</strong> Crehana uses a "contact sales" / "request a demo" model for all enterprise products. This is typical for mid-market/enterprise HR SaaS.
+  </div>
+
+  <h4>What We Can Infer</h4>
+  <ul>
+    <li><strong>Minimum company size:</strong> Contact form segments start at "1-29 employees" but the platform clearly targets 50+ employee companies. Client list (Banorte, Santander, Honda) suggests 500+ employee sweet spot.</li>
+    <li><strong>Modular pricing:</strong> Likely sold as modules (Core + Learn + Perform, etc.) with per-employee-per-month pricing</li>
+    <li><strong>Estimated pricing:</strong> Based on comparable LatAm HR SaaS and the enterprise client profile, likely $5-15 USD per employee per month for bundled modules</li>
+    <li><strong>Annual contracts:</strong> Almost certainly requires annual commitment for enterprise</li>
+    <li><strong>Implementation fees:</strong> They emphasize "guided implementation" and "continuous strategic reviews" -- likely includes setup/onboarding fees</li>
+  </ul>
+
+  <h3>Individual / B2C Pricing (Crehana Premium)</h3>
+  <table>
+    <tr><th>Plan</th><th>Users</th><th>Billing</th><th>Key Features</th></tr>
+    <tr><td>Lite</td><td>1</td><td>6-month cycle</td><td>900+ courses, max 3 academies, certificates</td></tr>
+    <tr><td>Individual</td><td>1</td><td>Annual</td><td>900+ courses, unlimited academies, live sessions, mentoring</td></tr>
+    <tr><td>Duo</td><td>2</td><td>Annual</td><td>Same as Individual for 2 users</td></tr>
+  </table>
+  <p class="source">Prices shown in local currency; exact USD amounts not publicly listed. Historical reports suggest ~$10-20 USD/month for individual plans.</p>
+
+  <div class="opportunity">
+    <strong>Accessibility Gap:</strong> Crehana is NOT accessible for a 5-person retail team. No self-serve pricing, no free tier for business tools, no micro-business plan. A 5-person store would need to "request a demo" and would likely be told they are too small or quoted a minimum that does not make sense for their budget. <strong>This is a massive gap we can fill.</strong>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="strengths">
+  <h2>8. Strengths</h2>
+
+  <h3>Review Sentiment Summary</h3>
+  <div class="metrics-row">
+    <div class="metric-box">
+      <div class="metric">4.1/5</div>
+      <div class="metric-label">GetApp Rating (22 reviews)</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric">4.1/5</div>
+      <div class="metric-label">Ease of Use</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric">4.1/5</div>
+      <div class="metric-label">Value for Money</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric">3.6/5</div>
+      <div class="metric-label">Customer Support</div>
+    </div>
+  </div>
+
+  <h3>What They Do Well</h3>
+  <ol>
+    <li><strong>Spanish-first platform:</strong> All content, UI, support in Spanish. Massive advantage in LatAm where English-first tools create friction.</li>
+    <li><strong>All-in-one integration:</strong> Learning + Performance + Engagement + Core HR in one platform eliminates tool fragmentation for mid-market companies.</li>
+    <li><strong>LatAm-specific compliance:</strong> Payroll, tax, and labor law compliance for Mexico, Colombia, Peru -- something global HR tools (BambooHR, Lattice) don't offer.</li>
+    <li><strong>Enterprise credibility:</strong> Client logos (Banorte, Santander, Honda, Western Union) provide strong social proof.</li>
+    <li><strong>Learning heritage:</strong> 6,300+ courses in Spanish is a genuinely large catalog; the learning DNA gives them a unique angle vs pure HR tools.</li>
+    <li><strong>AI layer (Hana):</strong> Early mover in LatAm HR AI; even if features are basic, the positioning matters.</li>
+    <li><strong>Modular approach:</strong> Companies can start with one module and expand, reducing initial commitment.</li>
+    <li><strong>White-glove service:</strong> Guided implementation, strategic reviews, dedicated support -- valued by LatAm enterprises that expect high-touch relationships.</li>
+  </ol>
+
+  <blockquote>"I love the variety it has, how easy it can make it feel to learn, the structure of the interface that allows it to be easy to use." -- GetApp Review</blockquote>
+</section>
+
+<!-- ============================================================ -->
+<section id="weaknesses">
+  <h2>9. Weaknesses</h2>
+
+  <h3>What Users Complain About</h3>
+  <ol>
+    <li><strong>Customer support is poor (3.6/5):</strong> Slow response times, billing disputes, difficulty getting help -- the most consistent negative theme across reviews.</li>
+    <li><strong>Outdated course content:</strong> Some courses have not been updated in years; quality is inconsistent across the catalog.</li>
+    <li><strong>Feature depth vs breadth:</strong> They try to do everything (ATS, payroll, LMS, performance, engagement) but individual modules may lack the depth of specialized tools.</li>
+    <li><strong>No public pricing:</strong> "Contact sales" model creates friction and signals enterprise pricing that excludes SMBs.</li>
+    <li><strong>Billing/cancellation issues:</strong> Multiple reviewers report difficulty canceling subscriptions or unexpected charges.</li>
+    <li><strong>Premium paywall:</strong> Individual users report needing premium upgrades to access many courses.</li>
+    <li><strong>No funding since 2021:</strong> Suggests potential financial pressure; may be cutting corners on R&D or support.</li>
+    <li><strong>Identity crisis:</strong> Pivoting from B2C edtech to B2B HR platform creates confusion -- is it a learning platform or an HR suite?</li>
+  </ol>
+
+  <h3>Critical Gaps for Small Businesses</h3>
+  <div class="critical">
+    <ul>
+      <li><strong>No SMB/micro-business tier:</strong> A 5-person retail store cannot use Crehana's business tools. Period.</li>
+      <li><strong>No behavioral assessments:</strong> No DISC, Big Five, MBTI, or any personality/behavioral testing.</li>
+      <li><strong>No AI coaching:</strong> Hana is an operational chatbot, not a coach. No personalized management advice.</li>
+      <li><strong>No daily/weekly team pulse via simple endpoints:</strong> Their surveys are traditional forms, not quick daily questions via web links.</li>
+      <li><strong>No conflict detection:</strong> No writing style analysis, behavioral pattern recognition, or proactive conflict flagging.</li>
+      <li><strong>No game-based assessments:</strong> Traditional questionnaire-only approach.</li>
+      <li><strong>Overkill for micro-businesses:</strong> Payroll, ATS, org charts are irrelevant for a 5-person team. Too much complexity.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="technology">
+  <h2>10. Technology</h2>
+
+  <h3>What We Know</h3>
+  <table>
+    <tr><th>Category</th><th>Details</th></tr>
+    <tr><td>Frontend</td><td>JavaScript-heavy SPA; likely React or similar framework (inferred from modern SPA behavior)</td></tr>
+    <tr><td>Security</td><td>Custom proof-of-work CAPTCHA system; WAF (Web Application Firewall); cookie-based sessions</td></tr>
+    <tr><td>Localization</td><td>Multi-language support (10+ languages) in UI components</td></tr>
+    <tr><td>Mobile</td><td>iOS and Android apps available (referenced on homepage)</td></tr>
+    <tr><td>API</td><td>No public developer API found (developers.crehana.com does not exist)</td></tr>
+    <tr><td>Integrations</td><td>Referenced as "coming soon" on the platform; limited current integrations</td></tr>
+    <tr><td>Infrastructure</td><td>Cloud-hosted (specific provider not confirmed; likely AWS given LatAm tech norms)</td></tr>
+    <tr><td>AI/ML</td><td>NLP for sentiment analysis; recommendation engine for learning; chatbot (Hana)</td></tr>
+  </table>
+
+  <h3>Integration Ecosystem</h3>
+  <div class="highlight">
+    <strong>Notable Weakness:</strong> Crehana's integration page returned 404, and their homepage mentions integrations as "coming soon." This suggests a relatively closed ecosystem. No confirmed integrations with Slack, WhatsApp, Zapier, or common HRIS systems. This is a significant weakness for a platform trying to be the central HR hub.
+  </div>
+
+  <h3>Mobile App</h3>
+  <ul>
+    <li>Both iOS and Android apps exist</li>
+    <li>Primarily for the learning platform (course consumption on mobile)</li>
+    <li>HR admin features on mobile are likely limited</li>
+    <li>App store pages were not accessible for detailed rating/review extraction</li>
+  </ul>
+</section>
+
+<!-- ============================================================ -->
+<section id="relevance">
+  <h2>11. Relevance to Our Project</h2>
+
+  <h3>Quick Comparison</h3>
+  <table class="vs-table">
+    <tr><th>Dimension</th><th>Crehana</th><th>Our Platform</th></tr>
+    <tr><td>Target Market</td><td>50-2,500+ employee enterprises</td><td>5-50 person small retail teams</td></tr>
+    <tr><td>Pricing Model</td><td>Enterprise sales; $5-15/user/month</td><td>Self-serve; accessible for 5-person teams</td></tr>
+    <tr><td>Core Differentiator</td><td>All-in-one HR suite with learning</td><td>AI-powered behavioral insights + coaching</td></tr>
+    <tr><td>Assessments</td><td>None (no DISC, Big Five, etc.)</td><td>6 assessment types with game-based options</td></tr>
+    <tr><td>AI Coaching</td><td>Chatbot (operational)</td><td>Personalized management coaching</td></tr>
+    <tr><td>Daily Pulse</td><td>Traditional surveys</td><td>Quick web-endpoint questions</td></tr>
+    <tr><td>Conflict Detection</td><td>None</td><td>Writing analysis + behavioral patterns</td></tr>
+    <tr><td>Onboarding</td><td>White-glove implementation</td><td>Zero-setup, instant web endpoints</td></tr>
+    <tr><td>Language</td><td>Spanish-first</td><td>Spanish-first</td></tr>
+    <tr><td>Geography</td><td>Pan-LatAm</td><td>Mexico-first</td></tr>
+  </table>
+
+  <h3>Competitive Relationship</h3>
+  <div class="opportunity">
+    <strong>Verdict: Crehana is NOT a direct competitor.</strong> They serve a fundamentally different market segment (mid-market/enterprise vs micro-businesses). A 5-person retail store owner would never buy Crehana. However, Crehana is relevant as:
+    <ul style="margin-top: 0.5rem;">
+      <li><strong>Aspirational reference:</strong> Their product breadth shows where the HR tech market is heading in LatAm</li>
+      <li><strong>Potential future partner:</strong> If we scale, our assessment/coaching tools could integrate with their platform</li>
+      <li><strong>Validation:</strong> Their $92M in funding proves investor appetite for LatAm HR tech</li>
+    </ul>
+  </div>
+
+  <h3>What We Can Learn from Crehana</h3>
+  <ol>
+    <li><strong>Spanish-first is non-negotiable:</strong> Crehana's biggest advantage is cultural/language fit. We already do this well.</li>
+    <li><strong>Integration story matters:</strong> Even Crehana struggles here ("coming soon"). If we nail WhatsApp/Slack/simple web integrations early, it's a differentiator.</li>
+    <li><strong>Learning + HR is powerful:</strong> Connecting assessments to development recommendations (e.g., "Your team member scores low on conflict resolution -> here's a micro-lesson") is something Crehana does and we should consider.</li>
+    <li><strong>Modular approach works:</strong> Companies buy one module, then expand. Our assessment tool could be the entry point, with coaching/pulse/analytics as expansion.</li>
+    <li><strong>Enterprise logos = credibility:</strong> Even if we target SMBs, having recognizable local business testimonials early is critical.</li>
+    <li><strong>Pivot cautionary tale:</strong> Crehana's B2C-to-B2B pivot created identity confusion. We should be clear about our market from day one.</li>
+  </ol>
+
+  <h3>Gaps We Fill That Crehana Does Not</h3>
+  <div class="opportunity">
+    <ol>
+      <li><strong>Micro-business accessibility:</strong> No setup, no demos, no minimum seats. A 5-person team can start in minutes.</li>
+      <li><strong>Behavioral assessments:</strong> DISC, Big Five, MBTI, Allport, Terman, Competencias -- game-based and questionnaire-based. Crehana offers zero.</li>
+      <li><strong>AI coaching for managers:</strong> "Your team dynamic shows X pattern, here's what to do" -- Crehana's Hana does not do this.</li>
+      <li><strong>Conflict prediction:</strong> Writing style analysis (Pennebaker/LIWC), behavioral trend detection, flight risk signals from daily pulse data.</li>
+      <li><strong>Game-based assessment:</strong> Our DISC game v2 (choice-based, no right answers) is something no LatAm platform offers.</li>
+      <li><strong>Daily micro-feedback:</strong> Quick web-link-based questions vs. formal survey tools. Better response rates, real-time data.</li>
+      <li><strong>Radically simple UX:</strong> Static HTML endpoints with zero login required vs. enterprise SaaS with onboarding.</li>
+    </ol>
+  </div>
+
+  <h3>Features from Crehana Worth Considering</h3>
+  <table>
+    <tr><th>Feature</th><th>Priority</th><th>Why</th></tr>
+    <tr><td>eNPS measurement</td><td><span class="badge badge-green">High</span></td><td>Single-question survey ("Would you recommend working here?") is easy to add to our daily questions and gives benchmarkable data</td></tr>
+    <tr><td>Peer recognition</td><td><span class="badge badge-green">High</span></td><td>Simple kudos/recognition between team members. Fits our daily question flow perfectly.</td></tr>
+    <tr><td>Learning recommendations</td><td><span class="badge badge-orange">Medium</span></td><td>Link assessment results to free learning resources (YouTube, articles). Don't need our own course library.</td></tr>
+    <tr><td>Basic onboarding checklists</td><td><span class="badge badge-orange">Medium</span></td><td>Simple new-hire checklist for small businesses. Very lightweight version.</td></tr>
+    <tr><td>Mobile-first approach</td><td><span class="badge badge-green">High</span></td><td>Our static HTML is already mobile-friendly. Ensure all flows work perfectly on phone.</td></tr>
+    <tr><td>Competency frameworks</td><td><span class="badge badge-orange">Medium</span></td><td>We already assess competencies. Adding role-specific frameworks for retail would be valuable.</td></tr>
+    <tr><td>Sentiment analysis on open text</td><td><span class="badge badge-green">High</span></td><td>We already do writing style analysis. Productize it as a feature of the suggestion box.</td></tr>
+  </table>
+
+  <h3>Strategic Positioning</h3>
+  <div class="highlight">
+    <strong>Our Positioning vs Crehana:</strong><br><br>
+    <em>"Crehana is SAP for LatAm HR. We are the AI-powered people coach that fits in your pocket."</em><br><br>
+    Crehana tries to be everything for big companies. We do one thing brilliantly for small teams: help managers understand their people and make better decisions -- using behavioral science, AI, and radical simplicity. A store owner does not need an ATS, payroll system, or LMS. They need to know who to hire, who is about to quit, and how to handle the conflict between their two best employees.
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section>
+  <h2>Sources</h2>
+  <ul>
+    <li>Crehana Homepage: <a href="https://www.crehana.com/">crehana.com</a></li>
+    <li>Crehana About: <a href="https://www.crehana.com/sobre-nosotros/">crehana.com/sobre-nosotros</a></li>
+    <li>Crehana Premium: <a href="https://www.crehana.com/premium/">crehana.com/premium</a></li>
+    <li>Crehana LinkedIn: <a href="https://www.linkedin.com/company/crehana/">linkedin.com/company/crehana</a></li>
+    <li>GetApp Reviews: <a href="https://www.getapp.com/hr-employee-management-software/a/crehana/reviews/">getapp.com/crehana/reviews</a></li>
+    <li>LatamList (funding articles): <a href="https://latamlist.com/?s=crehana">latamlist.com</a></li>
+    <li>Contxto (company news): <a href="https://contxto.com/?s=crehana">contxto.com</a></li>
+    <li>Similarweb: <a href="https://www.similarweb.com/website/crehana.com/">similarweb.com/crehana.com</a></li>
+    <li>Crehana Courses: <a href="https://www.crehana.com/cursos-online/">crehana.com/cursos-online</a> (800+ individual courses)</li>
+    <li>Crehana Enterprise Contact: <a href="https://empresas.crehana.com/contactanos">empresas.crehana.com/contactanos</a></li>
+  </ul>
+</section>
+
+</div>
+</body>
+</html>

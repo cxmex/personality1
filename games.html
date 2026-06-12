@@ -122,6 +122,28 @@
             </div>
         </div>
 
+        <div class="game-card" onclick="playGame('disc_v2')">
+            <span class="badge badge-new" id="badge-disc_v2">Nuevo</span>
+            <div class="emoji">🎭</div>
+            <h2>DISC V2 (Decisiones)</h2>
+            <div class="desc">Escenarios de decision sin respuestas correctas. Descubre tu estilo conductual real.</div>
+            <div class="meta">
+                <span>⏱ ~6 min</span>
+                <span>📊 Perfil DISC</span>
+            </div>
+        </div>
+
+        <div class="game-card" onclick="window.location.href='/ventas-fortalezas'">
+            <span class="badge badge-new">Nuevo</span>
+            <div class="emoji">💪</div>
+            <h2>Fortalezas en Ventas</h2>
+            <div class="desc">Descubre tu tipo de vendedor: Grit, Optimismo, Autoconfianza y Orientacion al Cliente.</div>
+            <div class="meta">
+                <span>⏱ ~10 min</span>
+                <span>📊 4 escalas</span>
+            </div>
+        </div>
+
         <div class="game-card equipo-card" onclick="window.location.href='/equipo'">
             <div class="emoji">📋</div>
             <h2>Cuestionario Semanal del Equipo</h2>
@@ -129,6 +151,16 @@
             <div class="meta">
                 <span>⏱ ~4 min</span>
                 <span>📊 Feedback anonimo</span>
+            </div>
+        </div>
+
+        <div class="game-card" onclick="window.location.href='/sugerencias'" style="background: linear-gradient(135deg, #1e293b 0%, #1a2e1a 100%); border: 2px solid #22c55e;">
+            <div class="emoji">💡</div>
+            <h2>Buzon de Sugerencias</h2>
+            <div class="desc">Envia sugerencias anonimas para mejorar el equipo y el ambiente de trabajo.</div>
+            <div class="meta">
+                <span>⏱ ~2 min</span>
+                <span>🔒 100% anonimo</span>
             </div>
         </div>
     </div>
@@ -147,6 +179,7 @@ const HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KE
 const gameNames = {
     game_terman: '🧠 Cognitivo (Terman)',
     game_disc: '🎯 Conductual (DISC)',
+    game_disc_v2: '🎭 DISC V2 (Decisiones)',
     game_big5: '🌟 Personalidad (Big Five)',
     game_competencias: '🏪 Competencias'
 };
