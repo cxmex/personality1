@@ -1702,6 +1702,11 @@ async def game_competencias():
     with open("game_competencias.html", "r", encoding="utf-8") as f:
         return f.read()
 
+@app.get("/game/disc-v2", response_class=HTMLResponse)
+async def game_disc_v2():
+    with open("game_disc_v2.html", "r", encoding="utf-8") as f:
+        return f.read()
+
 @app.get("/game/big5", response_class=HTMLResponse)
 async def game_big5():
     with open("game_big5.html", "r", encoding="utf-8") as f:

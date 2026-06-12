@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego DISC V2 — Evaluacion de Comportamiento</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+        /* Version badge */
+        .version-badge { position: fixed; top: 12px; left: 12px; background: #7c3aed; color: white; font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 6px; z-index: 1000; letter-spacing: 1px; }
+
+        /* Registration */
+        .register-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .register-card { background: #1e293b; border-radius: 16px; padding: 40px; max-width: 440px; width: 100%; }
+        .register-card h1 { font-size: 1.5rem; margin-bottom: 8px; color: #60a5fa; }
+        .register-card p { font-size: 0.9rem; color: #94a3b8; margin-bottom: 24px; line-height: 1.5; }
+        .register-card input { width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; font-size: 1rem; margin-bottom: 12px; outline: none; }
+        .register-card input:focus { border-color: #60a5fa; }
+        .register-card select { width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; font-size: 1rem; margin-bottom: 16px; outline: none; }
+        .btn-primary { width: 100%; padding: 14px; border-radius: 8px; border: none; background: #3b82f6; color: white; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-primary:disabled { background: #475569; cursor: not-allowed; }
+
+        /* Game container */
+        .game-screen { display: none; min-height: 100vh; }
+        .game-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; background: #1e293b; border-bottom: 1px solid #334155; }
+        .game-header .mini-game-label { font-size: 0.85rem; color: #60a5fa; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .game-header .progress { font-size: 0.85rem; color: #94a3b8; }
+        .game-header .timer { font-size: 1.1rem; font-weight: 700; color: #fbbf24; font-variant-numeric: tabular-nums; }
+
+        .game-area { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(100vh - 60px); padding: 24px; }
+
+        /* Challenge card */
+        .challenge-card { background: #1e293b; border-radius: 16px; padding: 32px; max-width: 600px; width: 100%; text-align: center; }
+        .challenge-card h2 { font-size: 1.3rem; margin-bottom: 8px; color: #f1f5f9; }
+        .challenge-card .instruction { font-size: 0.9rem; color: #94a3b8; margin-bottom: 24px; line-height: 1.5; }
+
+        /* Territory grid */
+        .territory-grid { display: grid; gap: 4px; margin: 16px auto; }
+        .territory-cell { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 700;
+            border-radius: 8px; border: 2px solid #334155; background: #0f172a; cursor: pointer; transition: all 0.15s; user-select: none; position: relative; }
+        .territory-cell:hover:not(.claimed-player):not(.claimed-ai):not(.disabled) { border-color: #60a5fa; background: #1e293b; }
+        .territory-cell.claimed-player { background: #1e3a5f; border-color: #3b82f6; color: #93c5fd; cursor: default; }
+        .territory-cell.claimed-ai { background: #3b1111; border-color: #ef4444; color: #fca5a5; cursor: default; }
+        .territory-cell.contested { border-color: #f59e0b; box-shadow: 0 0 8px rgba(245,158,11,0.4); }
+        .territory-cell.disabled { cursor: default; opacity: 0.7; }
+        .territory-cell .stars { font-size: 0.7rem; position: absolute; top: 2px; right: 4px; }
+
+        .territory-score { display: flex; gap: 32px; justify-content: center; margin: 12px 0; }
+        .territory-score .score-item { text-align: center; }
+        .territory-score .score-num { font-size: 1.4rem; font-weight: 700; }
+        .territory-score .score-lbl { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; }
+
+        /* Options grid for influence */
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .option-btn { padding: 16px; border-radius: 12px; border: 2px solid #334155; background: #0f172a; color: #e2e8f0; font-size: 0.95rem; cursor: pointer; transition: all 0.15s; font-weight: 500; text-align: left; line-height: 1.4; }
+        .option-btn:hover { border-color: #60a5fa; background: #1e293b; transform: scale(1.02); }
+        .option-btn.selected { border-color: #3b82f6; background: #1e3a5f; color: #93c5fd; }
+        .option-btn:disabled { cursor: default; opacity: 0.7; }
+
+        /* Sorting game */
+        .sorting-area { display: flex; gap: 24px; justify-content: center; align-items: start; flex-wrap: wrap; margin: 16px 0; }
+        .sort-item { width: 80px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 2rem;
+            border-radius: 12px; border: 3px solid #60a5fa; background: #0f172a; margin: 0 auto 12px; }
+        .sort-item .sort-label { font-size: 0.6rem; color: #94a3b8; margin-top: 2px; }
+        .sort-bins { display: flex; gap: 16px; justify-content: center; margin-top: 16px; }
+        .sort-bin { width: 120px; height: 100px; border-radius: 12px; border: 3px dashed #475569; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.15s; font-size: 0.85rem; color: #94a3b8; font-weight: 600; }
+        .sort-bin:hover { border-color: #60a5fa; background: #1e293b; }
+        .sort-bin.correct-flash { border-color: #22c55e; background: #052e16; }
+        .sort-bin.wrong-flash { border-color: #ef4444; background: #2a0a0a; }
+        .sort-bin .bin-label { font-size: 0.75rem; margin-top: 4px; }
+
+        .rule-display { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px 16px; margin-bottom: 16px; font-size: 0.9rem; color: #fbbf24; font-weight: 600; }
+        .rule-change-alert { animation: ruleFlash 0.5s ease 3; }
+        @keyframes ruleFlash { 0%,100% { background: #0f172a; } 50% { background: #422006; } }
+
+        /* Verification game */
+        .order-card { background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 20px; margin: 12px 0; text-align: left; }
+        .order-card .order-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .order-card .order-item { font-size: 1.1rem; font-weight: 600; color: #e2e8f0; }
+        .order-card .order-detail { font-size: 0.85rem; color: #94a3b8; margin: 4px 0; }
+        .order-actions { display: flex; gap: 8px; margin-top: 12px; }
+        .order-btn { flex: 1; padding: 10px; border-radius: 8px; border: none; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+        .order-btn.approve { background: #22c55e; color: white; }
+        .order-btn.approve:hover { background: #16a34a; }
+        .order-btn.check { background: #3b82f6; color: white; }
+        .order-btn.check:hover { background: #2563eb; }
+        .order-btn.request { background: #f59e0b; color: #1e293b; }
+        .order-btn.request:hover { background: #d97706; }
+        .order-btn:disabled { opacity: 0.5; cursor: default; }
+        .order-result { margin-top: 8px; padding: 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; }
+
+        /* Timer bar */
+        .timer-bar { width: 100%; height: 6px; background: #334155; border-radius: 3px; margin: 12px 0; overflow: hidden; }
+        .timer-bar-fill { height: 100%; background: #fbbf24; border-radius: 3px; transition: width 0.1s linear; }
+        .timer-bar-fill.urgent { background: #ef4444; }
+
+        /* Transition */
+        .transition-screen { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; text-align: center; }
+        .transition-screen h2 { font-size: 1.8rem; margin-bottom: 12px; color: #60a5fa; }
+        .transition-screen p { font-size: 1rem; color: #94a3b8; margin-bottom: 24px; max-width: 400px; line-height: 1.6; }
+        .transition-screen .emoji-big { font-size: 4rem; margin-bottom: 16px; }
+        .countdown { font-size: 4rem; font-weight: 700; color: #fbbf24; margin: 24px 0; }
+
+        /* Results */
+        .results-screen { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
+        .results-card { background: #1e293b; border-radius: 16px; padding: 40px; max-width: 500px; width: 100%; text-align: center; }
+        .results-card h2 { font-size: 1.5rem; margin-bottom: 24px; color: #60a5fa; }
+        .result-bar { margin: 12px 0; text-align: left; }
+        .result-bar .label { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 4px; }
+        .result-bar .bar { height: 14px; background: #0f172a; border-radius: 7px; overflow: hidden; }
+        .result-bar .bar-fill { height: 100%; border-radius: 7px; transition: width 1s ease; }
+        .bar-fill.d-bar { background: #ef4444; }
+        .bar-fill.i-bar { background: #fbbf24; }
+        .bar-fill.s-bar { background: #22c55e; }
+        .bar-fill.c-bar { background: #3b82f6; }
+
+        .dominant-badge { display: inline-block; padding: 12px 32px; border-radius: 12px; font-size: 1.4rem; font-weight: 700; margin: 20px 0; }
+        .dominant-badge.D { background: #2a0a0a; border: 2px solid #ef4444; color: #ef4444; }
+        .dominant-badge.I { background: #2a1f00; border: 2px solid #fbbf24; color: #fbbf24; }
+        .dominant-badge.S { background: #052e16; border: 2px solid #22c55e; color: #22c55e; }
+        .dominant-badge.C { background: #0a1a2e; border: 2px solid #3b82f6; color: #3b82f6; }
+
+        .trait-desc { color: #94a3b8; font-size: 0.95rem; line-height: 1.6; margin: 12px 0 20px; padding: 0 8px; }
+
+        .behavioral-stats { margin-top: 24px; padding-top: 20px; border-top: 1px solid #334155; text-align: left; }
+        .behavioral-stats h3 { font-size: 0.9rem; color: #94a3b8; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.85rem; }
+        .stat-row .stat-label { color: #94a3b8; }
+        .stat-row .stat-value { color: #e2e8f0; font-weight: 600; }
+
+        .version-note { margin-top: 20px; padding: 12px; background: #0f172a; border-radius: 8px; border: 1px solid #334155; font-size: 0.8rem; color: #64748b; line-height: 1.5; }
+
+        @media (max-width: 480px) {
+            .challenge-card { padding: 20px; }
+            .territory-cell { width: 44px; height: 44px; font-size: 0.85rem; }
+            .option-btn { font-size: 0.85rem; padding: 12px; }
+            .sort-item { width: 64px; height: 64px; font-size: 1.6rem; }
+            .sort-bin { width: 100px; height: 80px; }
+            .options-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="version-badge">VERSION B</div>
+
+<!-- ===== REGISTRATION ===== -->
+<div class="register-screen" id="registerScreen">
+    <div class="register-card">
+        <h1>Juego DISC de Comportamiento</h1>
+        <p>4 mini-juegos interactivos que miden tu perfil de comportamiento DISC a traves de tus preferencias y decisiones. Toma ~8 minutos. No hay respuestas correctas o incorrectas — solo juega de forma natural.</p>
+        <input type="text" id="regName" placeholder="Nombre completo" required>
+        <input type="email" id="regEmail" placeholder="Email" required>
+        <input type="tel" id="regPhone" placeholder="Telefono">
+        <select id="regPosition">
+            <option value="">Selecciona posicion...</option>
+            <option value="almacen">Almacen</option>
+            <option value="ventas_mostrador">Ventas a Mostrador</option>
+            <option value="pueblaventas">Puebla Ventas</option>
+            <option value="internal_team">Equipo Interno (correlacion)</option>
+        </select>
+        <button class="btn-primary" id="startBtn" onclick="startGame()">Comenzar Juego</button>
+    </div>
+</div>
+
+<!-- ===== GAME AREA ===== -->
+<div class="game-screen" id="gameScreen">
+    <div class="game-header">
+        <span class="mini-game-label" id="miniGameLabel">Territorio</span>
+        <span class="progress" id="progressLabel">1/3</span>
+        <span class="timer" id="timerLabel">0:00</span>
+    </div>
+    <div class="game-area" id="gameArea"></div>
+</div>
+
+<!-- ===== TRANSITION ===== -->
+<div class="transition-screen" id="transitionScreen">
+    <div class="emoji-big" id="transEmoji">⚔️</div>
+    <h2 id="transTitle">Siguiente Juego</h2>
+    <p id="transDesc">Descripcion del juego.</p>
+    <div class="countdown" id="transCountdown">3</div>
+</div>
+
+<!-- ===== RESULTS ===== -->
+<div class="results-screen" id="resultsScreen">
+    <div class="results-card" id="resultsCard"></div>
+</div>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const SUPABASE_URL = 'https://gbkhkbfbarsnpbdkxzii.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdia2hrYmZiYXJzbnBiZGt4emlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQzODAzNzMsImV4cCI6MjA0OTk1NjM3M30.mcOcC2GVEu_wD3xNBzSCC3MwDck3CIdmz4D8adU-bpI';
+const HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+
+// Auto-fill from URL params
+const urlParams = new URLSearchParams(window.location.search);
+const prefillEmail = urlParams.get('email');
+window.addEventListener('DOMContentLoaded', () => {
+    if (prefillEmail) {
+        document.getElementById('regEmail').value = prefillEmail;
+        document.getElementById('regEmail').readOnly = true;
+        document.getElementById('regEmail').style.opacity = '0.7';
+    }
+});
+
+// ============================================================
+// STATE
+// ============================================================
+let player = {};
+let sessionId = null;
+let gameStartTime = 0;
+let events = [];
+let currentMiniGame = 0;
+let miniGameTimer = null;
+let miniGameStartTime = 0;
+
+const miniGames = ['territory', 'influence', 'change', 'verification'];
+const miniGameLabels = {
+    territory:    { name: 'Territorio', dim: 'D', icon: '⚔️', desc: 'Compite contra la IA por territorio en una cuadricula. Reclama casillas de alto valor y decide si enfrentarte o evitar el conflicto.' },
+    influence:    { name: 'Escenarios de Influencia', dim: 'I', icon: '💬', desc: 'Elige tu enfoque preferido para convencer a las personas en 6 situaciones laborales. Todas las opciones son validas.' },
+    change:       { name: 'Respuesta al Cambio', dim: 'S', icon: '🔄', desc: 'Clasifica objetos en contenedores. Las reglas cambiaran sin aviso — observa como te adaptas.' },
+    verification: { name: 'Verificacion de Pedidos', dim: 'C', icon: '📋', desc: 'Revisa pedidos de productos. Puedes aprobar rapido o verificar detalles — tu decides cuanto revisar.' }
+};
+
+// Per-mini-game raw data
+let territoryData = { rounds: [], totalPlayerScore: 0, totalAiScore: 0, aggressiveClaims: 0, passiveClaims: 0, steals: 0, totalClaims: 0, decisionTimes: [] };
+let influenceData = { choices: [], decisionTimes: [], approachCounts: { D: 0, I: 0, S: 0, C: 0 }, approachTimes: { D: [], I: [], S: [], C: [] } };
+let changeData = { phases: [], errorsAfterChange: [], adaptationTimes: [], stableConsistency: [], totalErrors: 0, totalCorrect: 0 };
+let verificationData = { orders: [], checksChosen: 0, requestsChosen: 0, approvalsChosen: 0, totalOrders: 0, decisionTimes: [], checkTimes: [] };
+
+// ============================================================
+// GAME FLOW
+// ============================================================
+
+async function startGame() {
+    const name = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const phone = document.getElementById('regPhone').value.trim();
+    const position = document.getElementById('regPosition').value;
+
+    if (!name || !email) { alert('Nombre y email son requeridos'); return; }
+
+    player = { name, email, phone, position };
+    gameStartTime = Date.now();
+
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/game_sessions`, {
+            method: 'POST', headers: HEADERS,
+            body: JSON.stringify({
+                email, name, phone, position,
+                game_type: 'game_disc_v2',
+                test_equivalent: 'disc',
+                user_agent: navigator.userAgent,
+                screen_width: screen.width,
+                screen_height: screen.height,
+                status: 'in_progress'
+            })
+        });
+        const data = await res.json();
+        if (data && data[0]) sessionId = data[0].id;
+    } catch (e) { console.warn('Session save failed:', e); }
+
+    document.getElementById('registerScreen').style.display = 'none';
+    showTransition(0);
+}
+
+function showTransition(mgIndex) {
+    currentMiniGame = mgIndex;
+    const mg = miniGames[mgIndex];
+    const info = miniGameLabels[mg];
+
+    document.getElementById('gameScreen').style.display = 'none';
+    const ts = document.getElementById('transitionScreen');
+    ts.style.display = 'flex';
+    document.getElementById('transEmoji').textContent = info.icon;
+    document.getElementById('transTitle').textContent = info.name;
+    document.getElementById('transDesc').textContent = info.desc;
+
+    let count = 3;
+    document.getElementById('transCountdown').textContent = count;
+    const iv = setInterval(() => {
+        count--;
+        if (count <= 0) {
+            clearInterval(iv);
+            ts.style.display = 'none';
+            startMiniGame(mgIndex);
+        } else {
+            document.getElementById('transCountdown').textContent = count;
+        }
+    }, 1000);
+}
+
+function startMiniGame(mgIndex) {
+    const gs = document.getElementById('gameScreen');
+    gs.style.display = 'block';
+    miniGameStartTime = Date.now();
+
+    const mg = miniGames[mgIndex];
+    const info = miniGameLabels[mg];
+    document.getElementById('miniGameLabel').textContent = `${info.icon} ${info.name}`;
+
+    clearInterval(miniGameTimer);
+    miniGameTimer = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - miniGameStartTime) / 1000);
+        const m = Math.floor(elapsed / 60);
+        const s = elapsed % 60;
+        document.getElementById('timerLabel').textContent = `${m}:${s.toString().padStart(2, '0')}`;
+    }, 200);
+
+    if (mg === 'territory') startTerritoryGame();
+    else if (mg === 'influence') startInfluenceGame();
+    else if (mg === 'change') startChangeGame();
+    else if (mg === 'verification') startVerificationGame();
+}
+
+function endMiniGame() {
+    clearInterval(miniGameTimer);
+    currentMiniGame++;
+    if (currentMiniGame < miniGames.length) {
+        showTransition(currentMiniGame);
+    } else {
+        finishGame();
+    }
+}
+
+// ============================================================
+// MINI-GAME 1: TERRITORY (D — Dominance)
+// ============================================================
+
+function startTerritoryGame() {
+    territoryData = { rounds: [], totalPlayerScore: 0, totalAiScore: 0, aggressiveClaims: 0, passiveClaims: 0, steals: 0, totalClaims: 0, decisionTimes: [] };
+    runTerritoryRound(0, 3);
+}
+
+function runTerritoryRound(round, totalRounds) {
+    if (round >= totalRounds) return endMiniGame();
+
+    document.getElementById('progressLabel').textContent = `Ronda ${round + 1}/${totalRounds}`;
+
+    const gridSize = 5;
+    const totalCells = gridSize * gridSize;
+
+    // Generate point values (1-3 stars)
+    const cellValues = [];
+    for (let i = 0; i < totalCells; i++) {
+        const r = Math.random();
+        cellValues.push(r < 0.5 ? 1 : r < 0.8 ? 2 : 3);
+    }
+
+    // State
+    const cellOwner = new Array(totalCells).fill(null); // null, 'player', 'ai'
+    let playerScore = 0;
+    let aiScore = 0;
+    let turnCount = 0;
+    let lastClickTime = Date.now();
+    let playerTurn = true;
+    let roundDone = false;
+
+    // AI tracks which cells player might want (adjacent to player cells)
+    function getPlayerAdjacent() {
+        const adj = new Set();
+        for (let i = 0; i < totalCells; i++) {
+            if (cellOwner[i] === 'player') {
+                const row = Math.floor(i / gridSize);
+                const col = i % gridSize;
+                [[row-1,col],[row+1,col],[row,col-1],[row,col+1]].forEach(([r,c]) => {
+                    if (r >= 0 && r < gridSize && c >= 0 && c < gridSize) {
+                        const idx = r * gridSize + c;
+                        if (cellOwner[idx] === null) adj.add(idx);
+                    }
+                });
+            }
+        }
+        return [...adj];
+    }
+
+    function isAdjacentToAi(idx) {
+        const row = Math.floor(idx / gridSize);
+        const col = idx % gridSize;
+        return [[row-1,col],[row+1,col],[row,col-1],[row,col+1]].some(([r,c]) => {
+            if (r >= 0 && r < gridSize && c >= 0 && c < gridSize) {
+                return cellOwner[r * gridSize + c] === 'ai';
+            }
+            return false;
+        });
+    }
+
+    function aiTurn() {
+        if (roundDone) return;
+        const available = [];
+        for (let i = 0; i < totalCells; i++) {
+            if (cellOwner[i] === null) available.push(i);
+        }
+        if (available.length === 0) { finishTerritoryRound(); return; }
+
+        // AI strategy: 40% chance to contest (claim near player), else claim high-value
+        const playerAdj = getPlayerAdjacent();
+        let aiChoice;
+        if (playerAdj.length > 0 && Math.random() < 0.4) {
+            // Contest: pick highest value near player
+            aiChoice = playerAdj.sort((a, b) => cellValues[b] - cellValues[a])[0];
+        } else {
+            // Pick highest value available
+            aiChoice = available.sort((a, b) => cellValues[b] - cellValues[a])[0];
+        }
+
+        cellOwner[aiChoice] = 'ai';
+        aiScore += cellValues[aiChoice];
+
+        // Mark contested cells (AI cells adjacent to player cells)
+        renderGrid();
+
+        // Check if board is full
+        if (available.length <= 1) { setTimeout(finishTerritoryRound, 500); return; }
+
+        playerTurn = true;
+        lastClickTime = Date.now();
+    }
+
+    function handlePlayerClaim(idx) {
+        if (!playerTurn || roundDone || cellOwner[idx] !== null) return;
+
+        const now = Date.now();
+        const dt = now - lastClickTime;
+        territoryData.decisionTimes.push(dt);
+        territoryData.totalClaims++;
+
+        // Determine if this is aggressive (adjacent to AI = steal/challenge) or passive
+        if (isAdjacentToAi(idx)) {
+            territoryData.aggressiveClaims++;
+            // Check if we're "stealing" — claiming a cell the AI was adjacent to
+            const row = Math.floor(idx / gridSize);
+            const col = idx % gridSize;
+            const nearAi = [[row-1,col],[row+1,col],[row,col-1],[row,col+1]].some(([r,c]) => {
+                if (r >= 0 && r < gridSize && c >= 0 && c < gridSize) return cellOwner[r * gridSize + c] === 'ai';
+                return false;
+            });
+            if (nearAi && cellValues[idx] >= 2) territoryData.steals++;
+        } else {
+            territoryData.passiveClaims++;
+        }
+
+        cellOwner[idx] = 'player';
+        playerScore += cellValues[idx];
+
+        recordEvent('territory', round, 'D', dt, {
+            cell: idx, value: cellValues[idx],
+            aggressive: isAdjacentToAi(idx),
+            playerScore, aiScore
+        }, null);
+
+        playerTurn = false;
+        turnCount++;
+        renderGrid();
+
+        // Check if board full
+        const remaining = cellOwner.filter(c => c === null).length;
+        if (remaining === 0) { setTimeout(finishTerritoryRound, 500); return; }
+
+        setTimeout(aiTurn, 400 + Math.random() * 300);
+    }
+
+    function finishTerritoryRound() {
+        roundDone = true;
+        territoryData.rounds.push({ playerScore, aiScore });
+        territoryData.totalPlayerScore += playerScore;
+        territoryData.totalAiScore += aiScore;
+
+        const area = document.getElementById('gameArea');
+        const resultMsg = playerScore > aiScore ? 'Ganaste esta ronda!' : playerScore < aiScore ? 'La IA gano esta ronda.' : 'Empate!';
+        const resultColor = playerScore > aiScore ? '#22c55e' : playerScore < aiScore ? '#ef4444' : '#fbbf24';
+
+        // Show brief result then next round
+        const card = area.querySelector('.challenge-card');
+        if (card) {
+            const msgEl = document.createElement('p');
+            msgEl.style.cssText = `color:${resultColor}; font-weight:700; font-size:1.1rem; margin-top:12px;`;
+            msgEl.textContent = `${resultMsg} (Tu: ${playerScore} vs IA: ${aiScore})`;
+            card.appendChild(msgEl);
+        }
+
+        setTimeout(() => runTerritoryRound(round + 1, totalRounds), 1500);
+    }
+
+    function renderGrid() {
+        const starsStr = (v) => v === 3 ? '★★★' : v === 2 ? '★★' : '★';
+        let gridHTML = '';
+        for (let i = 0; i < totalCells; i++) {
+            const owner = cellOwner[i];
+            let cls = '';
+            let content = starsStr(cellValues[i]);
+            if (owner === 'player') { cls = 'claimed-player'; content = '🔵'; }
+            else if (owner === 'ai') { cls = 'claimed-ai'; content = '🔴'; }
+            else {
+                // Mark contested: unclaimed but adjacent to both player and AI
+                const adjPlayer = isAdjacentToPlayer(i);
+                const adjAi = isAdjacentToAi(i);
+                if (adjPlayer && adjAi) cls = 'contested';
+            }
+            gridHTML += `<div class="territory-cell ${cls}" data-idx="${i}" id="tCell${i}"><span class="stars">${owner === null ? starsStr(cellValues[i]) : ''}</span>${owner === null ? cellValues[i] : (owner === 'player' ? '🔵' : '🔴')}</div>`;
+        }
+
+        const area = document.getElementById('gameArea');
+        area.innerHTML = `
+            <div class="challenge-card" style="max-width:500px;">
+                <h2>Reclama Territorio — Ronda ${round + 1}</h2>
+                <div class="instruction">Haz clic en casillas para reclamarlas. Las casillas con mas estrellas valen mas. Las casillas doradas estan en disputa.</div>
+                <div class="territory-score">
+                    <div class="score-item"><div class="score-num" style="color:#3b82f6;">${playerScore}</div><div class="score-lbl">Tu</div></div>
+                    <div class="score-item"><div class="score-num" style="color:#ef4444;">${aiScore}</div><div class="score-lbl">IA</div></div>
+                </div>
+                <div class="territory-grid" style="grid-template-columns: repeat(${gridSize}, 1fr);">
+                    ${gridHTML}
+                </div>
+                ${!playerTurn && !roundDone ? '<p style="color:#fbbf24; font-size:0.85rem; margin-top:8px;">Turno de la IA...</p>' : ''}
+            </div>`;
+
+        if (playerTurn && !roundDone) {
+            document.querySelectorAll('.territory-cell').forEach(cell => {
+                cell.onclick = function() {
+                    handlePlayerClaim(parseInt(this.dataset.idx));
+                };
+            });
+        }
+    }
+
+    function isAdjacentToPlayer(idx) {
+        const row = Math.floor(idx / gridSize);
+        const col = idx % gridSize;
+        return [[row-1,col],[row+1,col],[row,col-1],[row,col+1]].some(([r,c]) => {
+            if (r >= 0 && r < gridSize && c >= 0 && c < gridSize) return cellOwner[r * gridSize + c] === 'player';
+            return false;
+        });
+    }
+
+    renderGrid();
+
+    // AI goes first sometimes (50%)
+    if (Math.random() < 0.5) {
+        playerTurn = false;
+        renderGrid();
+        setTimeout(() => { aiTurn(); }, 600);
+    }
+}
+
+// ============================================================
+// MINI-GAME 2: INFLUENCE SCENARIOS (I — Influence)
+// ============================================================
+
+const influenceScenarios = [
+    {
+        situation: 'Tu cliente no esta seguro de comprar. ¿Como lo convences?',
+        options: [
+            { text: 'Le cuentas una historia emocionante de otro cliente satisfecho y lo animas con entusiasmo', dim: 'I' },
+            { text: 'Le dices directamente que es la mejor opcion y que debe actuar ahora', dim: 'D' },
+            { text: 'Le das su tiempo, escuchas sus dudas con paciencia y le ofreces acompanamiento', dim: 'S' },
+            { text: 'Le presentas datos, comparativas y evidencia concreta de por que conviene', dim: 'C' }
+        ]
+    },
+    {
+        situation: 'Tu companero no quiere ayudarte con una tarea. ¿Que haces?',
+        options: [
+            { text: 'Lo invitas a un cafe, le explicas por que seria divertido trabajar juntos', dim: 'I' },
+            { text: 'Le dices que necesitas su ayuda y que es importante hacerlo ya', dim: 'D' },
+            { text: 'Le preguntas que necesita el primero y ofreces ayuda mutua cuando pueda', dim: 'S' },
+            { text: 'Le envias un plan detallado mostrando exactamente que necesitas y por que', dim: 'C' }
+        ]
+    },
+    {
+        situation: 'Tu jefe rechaza tu idea. ¿Como respondes?',
+        options: [
+            { text: 'Buscas aliados en el equipo para presentarla de nuevo con mas apoyo', dim: 'I' },
+            { text: 'Le dices que crees firmemente en la idea y pides otra oportunidad', dim: 'D' },
+            { text: 'Aceptas la decision, ajustas la idea y la presentas cuando sea oportuno', dim: 'S' },
+            { text: 'Pides feedback especifico, investigas mas y presentas una version mejorada con datos', dim: 'C' }
+        ]
+    },
+    {
+        situation: 'Un cliente enojado quiere devolver un producto. ¿Como lo manejas?',
+        options: [
+            { text: 'Lo tranquilizas con empatia, lo haces sentir escuchado y buscas que se vaya contento', dim: 'I' },
+            { text: 'Le ofreces una solucion rapida y directa para resolver el problema de inmediato', dim: 'D' },
+            { text: 'Lo escuchas con paciencia sin interrumpir y le ofreces opciones cuando se calme', dim: 'S' },
+            { text: 'Revisas la politica de devoluciones, verificas el producto y sigues el proceso correcto', dim: 'C' }
+        ]
+    },
+    {
+        situation: 'Necesitas que el equipo trabaje horas extra. ¿Como lo pides?',
+        options: [
+            { text: 'Organizas una reunion motivacional y generas entusiasmo por el reto', dim: 'I' },
+            { text: 'Les dices que es necesario y que cuentas con ellos para sacar esto adelante', dim: 'D' },
+            { text: 'Les preguntas individualmente su disponibilidad y respetas sus limites', dim: 'S' },
+            { text: 'Les muestras el plan con las horas exactas, la razon y la compensacion detallada', dim: 'C' }
+        ]
+    },
+    {
+        situation: 'Un proveedor te ofrece un precio alto. ¿Como negocias?',
+        options: [
+            { text: 'Construyes una buena relacion personal con el, le cuentas tu situacion y buscas un acuerdo amigable', dim: 'I' },
+            { text: 'Le dices firmemente tu precio maximo y que tienes otras opciones', dim: 'D' },
+            { text: 'Le pides tiempo para considerar, buscas un punto medio que funcione para ambos', dim: 'S' },
+            { text: 'Le presentas cotizaciones de competidores y un analisis de mercado detallado', dim: 'C' }
+        ]
+    }
+];
+
+function startInfluenceGame() {
+    influenceData = { choices: [], decisionTimes: [], approachCounts: { D: 0, I: 0, S: 0, C: 0 }, approachTimes: { D: [], I: [], S: [], C: [] } };
+    showInfluenceScenario(0);
+}
+
+function showInfluenceScenario(index) {
+    if (index >= influenceScenarios.length) return endMiniGame();
+
+    const sc = influenceScenarios[index];
+    document.getElementById('progressLabel').textContent = `${index + 1}/${influenceScenarios.length}`;
+    const choiceStartTime = Date.now();
+
+    // Shuffle options
+    const shuffled = [...sc.options].sort(() => Math.random() - 0.5);
+
+    document.getElementById('gameArea').innerHTML = `
+        <div class="challenge-card">
+            <h2>Situacion ${index + 1}</h2>
+            <div class="instruction" style="font-size:1.05rem; color:#cbd5e1; margin-bottom:28px;">${sc.situation}</div>
+            <p style="color:#94a3b8; font-size:0.85rem; margin-bottom:16px;">Elige el enfoque que usarias naturalmente:</p>
+            <div class="options-grid" style="grid-template-columns: 1fr;">
+                ${shuffled.map((opt, i) => `<button class="option-btn" id="infOpt${i}" data-dim="${opt.dim}">${opt.text}</button>`).join('')}
+            </div>
+        </div>`;
+
+    shuffled.forEach((opt, i) => {
+        document.getElementById(`infOpt${i}`).onclick = function() {
+            const rt = Date.now() - choiceStartTime;
+            const dim = this.dataset.dim;
+
+            influenceData.choices.push(dim);
+            influenceData.decisionTimes.push(rt);
+            influenceData.approachCounts[dim]++;
+            influenceData.approachTimes[dim].push(rt);
+
+            // Visual feedback
+            document.querySelectorAll('.option-btn').forEach(b => { b.disabled = true; b.style.opacity = '0.5'; });
+            this.style.opacity = '1';
+            this.classList.add('selected');
+
+            recordEvent('influence', index, dim, rt, { scenario: index, chosen_approach: dim }, null);
+
+            setTimeout(() => showInfluenceScenario(index + 1), 700);
+        };
+    });
+}
+
+// ============================================================
+// MINI-GAME 3: CHANGE RESPONSE (S — Steadiness)
+// ============================================================
+
+const SORT_ITEMS = [
+    // color, shape, size
+    { emoji: '🔴', color: 'rojo', shape: 'circulo', size: 'grande' },
+    { emoji: '🟡', color: 'amarillo', shape: 'circulo', size: 'grande' },
+    { emoji: '🔵', color: 'azul', shape: 'circulo', size: 'grande' },
+    { emoji: '🟢', color: 'verde', shape: 'circulo', size: 'pequeno' },
+    { emoji: '🟠', color: 'naranja', shape: 'circulo', size: 'pequeno' },
+    { emoji: '🟣', color: 'morado', shape: 'circulo', size: 'pequeno' },
+    { emoji: '🔷', color: 'azul', shape: 'diamante', size: 'grande' },
+    { emoji: '🔶', color: 'naranja', shape: 'diamante', size: 'grande' },
+    { emoji: '🔻', color: 'rojo', shape: 'triangulo', size: 'pequeno' },
+    { emoji: '🔺', color: 'rojo', shape: 'triangulo', size: 'grande' },
+    { emoji: '⬛', color: 'negro', shape: 'cuadrado', size: 'grande' },
+    { emoji: '⬜', color: 'blanco', shape: 'cuadrado', size: 'grande' },
+    { emoji: '🟫', color: 'cafe', shape: 'cuadrado', size: 'pequeno' },
+    { emoji: '🟨', color: 'amarillo', shape: 'cuadrado', size: 'grande' },
+    { emoji: '🟦', color: 'azul', shape: 'cuadrado', size: 'grande' },
+    { emoji: '🟥', color: 'rojo', shape: 'cuadrado', size: 'grande' },
+    { emoji: '🟩', color: 'verde', shape: 'cuadrado', size: 'grande' },
+    { emoji: '🟧', color: 'naranja', shape: 'cuadrado', size: 'pequeno' },
+    { emoji: '🟪', color: 'morado', shape: 'cuadrado', size: 'pequeno' },
+    { emoji: '💎', color: 'azul', shape: 'diamante', size: 'pequeno' },
+];
+
+function startChangeGame() {
+    changeData = { phases: [], errorsAfterChange: [], adaptationTimes: [], stableConsistency: [], totalErrors: 0, totalCorrect: 0 };
+
+    // 4 phases: color, shape, size, back to color
+    const phases = [
+        { rule: 'color', label: 'Clasifica por COLOR', binA: 'Colores Calidos', binB: 'Colores Frios', checkA: (item) => ['rojo','naranja','amarillo','cafe'].includes(item.color), items: 10 },
+        { rule: 'shape', label: 'Clasifica por FORMA', binA: 'Redondos', binB: 'Angulares', checkA: (item) => item.shape === 'circulo', items: 10 },
+        { rule: 'size', label: 'Clasifica por TAMANO', binA: 'Grandes', binB: 'Pequenos', checkA: (item) => item.size === 'grande', items: 10 },
+        { rule: 'color', label: 'Clasifica por COLOR (de nuevo)', binA: 'Colores Calidos', binB: 'Colores Frios', checkA: (item) => ['rojo','naranja','amarillo','cafe'].includes(item.color), items: 10 }
+    ];
+
+    runChangePhase(0, phases);
+}
+
+function runChangePhase(phaseIdx, phases) {
+    if (phaseIdx >= phases.length) return endMiniGame();
+
+    const phase = phases[phaseIdx];
+    const isRuleChange = phaseIdx > 0;
+
+    // Generate items for this phase
+    const phaseItems = [];
+    for (let i = 0; i < phase.items; i++) {
+        phaseItems.push(SORT_ITEMS[Math.floor(Math.random() * SORT_ITEMS.length)]);
+    }
+
+    let itemIdx = 0;
+    let phaseErrors = 0;
+    let phaseCorrect = 0;
+    let phaseStartTime = Date.now();
+    let itemStartTime = Date.now();
+    let itemTimes = [];
+    let firstItemAfterChange = isRuleChange;
+    let adaptationMeasured = false;
+    let errorsBeforeAdapt = 0;
+
+    document.getElementById('progressLabel').textContent = `Fase ${phaseIdx + 1}/4`;
+
+    function showSortItem() {
+        if (itemIdx >= phaseItems.length) {
+            // Phase complete
+            const phaseTime = Date.now() - phaseStartTime;
+            const avgTime = itemTimes.length > 0 ? itemTimes.reduce((a, b) => a + b, 0) / itemTimes.length : 0;
+            const timeVariance = itemTimes.length > 1 ? Math.sqrt(itemTimes.reduce((sum, t) => sum + Math.pow(t - avgTime, 2), 0) / itemTimes.length) : 0;
+
+            changeData.phases.push({ rule: phase.rule, errors: phaseErrors, correct: phaseCorrect, avgTime, timeVariance, phaseTime });
+            changeData.totalErrors += phaseErrors;
+            changeData.totalCorrect += phaseCorrect;
+
+            if (isRuleChange) {
+                changeData.errorsAfterChange.push(errorsBeforeAdapt);
+            }
+
+            // Stable consistency: how consistent were item times in this phase?
+            if (itemTimes.length > 2) {
+                const cv = avgTime > 0 ? timeVariance / avgTime : 0;
+                changeData.stableConsistency.push(Math.max(0, 1 - cv));
+            }
+
+            // Brief pause, show next phase or rule change alert
+            if (phaseIdx + 1 < phases.length) {
+                const area = document.getElementById('gameArea');
+                area.innerHTML = `
+                    <div class="challenge-card">
+                        <h2>Fase ${phaseIdx + 1} Completada</h2>
+                        <p style="color:#22c55e; font-size:1.1rem; font-weight:600; margin:16px 0;">${phaseCorrect}/${phase.items} correctos</p>
+                        <div class="rule-display rule-change-alert" style="margin-top:16px;">
+                            NUEVA REGLA: ${phases[phaseIdx + 1].label}
+                        </div>
+                    </div>`;
+                setTimeout(() => runChangePhase(phaseIdx + 1, phases), 2000);
+            } else {
+                runChangePhase(phaseIdx + 1, phases);
+            }
+            return;
+        }
+
+        const item = phaseItems[itemIdx];
+        itemStartTime = Date.now();
+
+        const area = document.getElementById('gameArea');
+        area.innerHTML = `
+            <div class="challenge-card">
+                <h2>${isRuleChange && itemIdx < 3 ? '⚠️ ' : ''}${phase.label}</h2>
+                <div class="instruction">Item ${itemIdx + 1} de ${phase.items}${isRuleChange && itemIdx === 0 ? ' — La regla ha cambiado!' : ''}</div>
+                <div class="rule-display ${isRuleChange && itemIdx === 0 ? 'rule-change-alert' : ''}">Regla: ${phase.label}</div>
+                <div class="sort-item">
+                    ${item.emoji}
+                    <div class="sort-label">${item.color} / ${item.shape} / ${item.size}</div>
+                </div>
+                <div class="sort-bins">
+                    <div class="sort-bin" id="binA">
+                        <span style="font-size:1.5rem;">⬅️</span>
+                        <span class="bin-label">${phase.binA}</span>
+                    </div>
+                    <div class="sort-bin" id="binB">
+                        <span style="font-size:1.5rem;">➡️</span>
+                        <span class="bin-label">${phase.binB}</span>
+                    </div>
+                </div>
+                <p style="color:#64748b; font-size:0.75rem; margin-top:12px;">Errores: ${phaseErrors} | Correctos: ${phaseCorrect}</p>
+            </div>`;
+
+        document.getElementById('binA').onclick = () => handleSort(true);
+        document.getElementById('binB').onclick = () => handleSort(false);
+
+        function handleSort(choseA) {
+            const rt = Date.now() - itemStartTime;
+            itemTimes.push(rt);
+
+            const correctAnswer = phase.checkA(item);
+            const isCorrect = choseA === correctAnswer;
+
+            if (isCorrect) {
+                phaseCorrect++;
+                if (firstItemAfterChange && !adaptationMeasured) {
+                    // First correct after rule change = adapted
+                    changeData.adaptationTimes.push(rt);
+                    adaptationMeasured = true;
+                    changeData.errorsAfterChange.push(errorsBeforeAdapt);
+                }
+            } else {
+                phaseErrors++;
+                if (firstItemAfterChange && !adaptationMeasured) {
+                    errorsBeforeAdapt++;
+                }
+            }
+
+            // Flash feedback
+            const binEl = document.getElementById(choseA ? 'binA' : 'binB');
+            binEl.classList.add(isCorrect ? 'correct-flash' : 'wrong-flash');
+
+            recordEvent('change', phaseIdx * 10 + itemIdx, 'S', rt, {
+                phase: phaseIdx, rule: phase.rule, item: item.emoji,
+                choseA, correctAnswer, isCorrect,
+                isFirstAfterChange: firstItemAfterChange && itemIdx === 0
+            }, null);
+
+            if (itemIdx > 0) firstItemAfterChange = false;
+
+            itemIdx++;
+            setTimeout(showSortItem, 500);
+        }
+    }
+
+    showSortItem();
+}
+
+// ============================================================
+// MINI-GAME 4: VERIFICATION CHOICE (C — Compliance)
+// ============================================================
+
+const productOrders = [
+    { item: 'Tornillos hexagonales 3/8"', qty: 500, price: 450.00, hasError: false, errorType: null, extraInfo: 'Proveedor: Ferremax, Entrega: 3 dias' },
+    { item: 'Pintura vinilica blanca 19L', qty: 12, price: 1850.00, hasError: true, errorType: 'precio', correctPrice: 1650.00, extraInfo: 'Precio de lista: $1,650. El proveedor subio $200 sin aviso.' },
+    { item: 'Cable THW calibre 12', qty: 200, price: 3200.00, hasError: false, errorType: null, extraInfo: 'Proveedor: Electrocables, Stock disponible' },
+    { item: 'Cemento gris 50kg', qty: 30, price: 5100.00, hasError: true, errorType: 'cantidad', correctQty: 50, extraInfo: 'El pedido original era 50 bultos, se registro 30 por error.' },
+    { item: 'Varilla corrugada 3/8"', qty: 100, price: 8500.00, hasError: false, errorType: null, extraInfo: 'Proveedor: Aceros del Norte, Precio de mayoreo' },
+    { item: 'Impermeabilizante rojo 20L', qty: 8, price: 4800.00, hasError: true, errorType: 'precio', correctPrice: 3600.00, extraInfo: 'Precio anterior: $3,600. Incremento del 33% sin justificacion.' },
+    { item: 'Tubo PVC 4" x 6m', qty: 25, price: 2375.00, hasError: false, errorType: null, extraInfo: 'Proveedor: Plasticos Unidos, Entrega inmediata' },
+    { item: 'Cinta de aislar 3M', qty: 144, price: 4320.00, hasError: true, errorType: 'cantidad', correctQty: 100, extraInfo: 'Pedido original: 100 piezas. Se registro 144 (una caja extra).' }
+];
+
+function startVerificationGame() {
+    verificationData = { orders: [], checksChosen: 0, requestsChosen: 0, approvalsChosen: 0, totalOrders: 0, decisionTimes: [], checkTimes: [] };
+    showOrder(0);
+}
+
+function showOrder(index) {
+    if (index >= productOrders.length) return endMiniGame();
+
+    const order = productOrders[index];
+    document.getElementById('progressLabel').textContent = `Pedido ${index + 1}/${productOrders.length}`;
+    const orderStartTime = Date.now();
+
+    const area = document.getElementById('gameArea');
+    area.innerHTML = `
+        <div class="challenge-card" style="max-width:520px;">
+            <h2>Pedido #${1000 + index}</h2>
+            <div class="instruction">Revisa este pedido y decide que hacer. No hay penalizacion por aprobar rapido ni bonificacion por encontrar errores.</div>
+            <div class="order-card">
+                <div class="order-header">
+                    <span class="order-item">${order.item}</span>
+                </div>
+                <div class="order-detail">Cantidad: ${order.qty} piezas</div>
+                <div class="order-detail">Precio total: $${order.price.toLocaleString('es-MX', {minimumFractionDigits: 2})}</div>
+                <div class="order-detail">Precio unitario: $${(order.price / order.qty).toFixed(2)}</div>
+                <div class="order-actions" id="orderActions">
+                    <button class="order-btn approve" id="btnApprove">Aprobar</button>
+                    <button class="order-btn check" id="btnCheck">Verificar Detalles</button>
+                    <button class="order-btn request" id="btnRequest">Pedir Mas Info</button>
+                </div>
+                <div id="orderResult"></div>
+            </div>
+            <p style="color:#64748b; font-size:0.75rem; margin-top:8px;">Pedido ${index + 1} de ${productOrders.length} — Tu decides cuanto revisar</p>
+        </div>`;
+
+    // APPROVE: instant, no info
+    document.getElementById('btnApprove').onclick = () => {
+        const rt = Date.now() - orderStartTime;
+        verificationData.approvalsChosen++;
+        verificationData.totalOrders++;
+        verificationData.decisionTimes.push(rt);
+        verificationData.orders.push({ index, action: 'approve', rt, hadError: order.hasError, foundError: false });
+
+        recordEvent('verification', index, 'C', rt, { action: 'approve', hadError: order.hasError }, null);
+
+        const result = document.getElementById('orderResult');
+        result.innerHTML = `<div class="order-result" style="background:#052e16; color:#22c55e;">Aprobado rapidamente</div>`;
+        disableActions();
+        setTimeout(() => showOrder(index + 1), 800);
+    };
+
+    // CHECK: 3 second delay, reveals if error
+    document.getElementById('btnCheck').onclick = () => {
+        const clickTime = Date.now() - orderStartTime;
+        verificationData.checksChosen++;
+
+        disableActions();
+        const result = document.getElementById('orderResult');
+        result.innerHTML = `<div class="order-result" style="background:#0a1a2e; color:#60a5fa;">Verificando detalles...</div>`;
+
+        setTimeout(() => {
+            const totalRt = Date.now() - orderStartTime;
+            verificationData.totalOrders++;
+            verificationData.decisionTimes.push(totalRt);
+            verificationData.checkTimes.push(totalRt);
+
+            if (order.hasError) {
+                const errorMsg = order.errorType === 'precio'
+                    ? `Error encontrado: El precio deberia ser $${order.correctPrice.toLocaleString('es-MX', {minimumFractionDigits: 2})}`
+                    : `Error encontrado: La cantidad deberia ser ${order.correctQty}`;
+                result.innerHTML = `<div class="order-result" style="background:#422006; color:#fbbf24;">${errorMsg}</div>`;
+                verificationData.orders.push({ index, action: 'check', rt: totalRt, hadError: true, foundError: true });
+            } else {
+                result.innerHTML = `<div class="order-result" style="background:#052e16; color:#22c55e;">Todo correcto. Sin errores.</div>`;
+                verificationData.orders.push({ index, action: 'check', rt: totalRt, hadError: false, foundError: false });
+            }
+
+            recordEvent('verification', index, 'C', totalRt, { action: 'check', hadError: order.hasError, foundError: order.hasError }, null);
+            setTimeout(() => showOrder(index + 1), 1200);
+        }, 3000);
+    };
+
+    // REQUEST MORE INFO: 5 second delay, reveals extra context
+    document.getElementById('btnRequest').onclick = () => {
+        const clickTime = Date.now() - orderStartTime;
+        verificationData.requestsChosen++;
+
+        disableActions();
+        const result = document.getElementById('orderResult');
+        result.innerHTML = `<div class="order-result" style="background:#0a1a2e; color:#60a5fa;">Solicitando informacion adicional...</div>`;
+
+        setTimeout(() => {
+            const totalRt = Date.now() - orderStartTime;
+            verificationData.totalOrders++;
+            verificationData.decisionTimes.push(totalRt);
+            verificationData.checkTimes.push(totalRt);
+
+            let infoHTML = `<div class="order-result" style="background:#1e293b; color:#e2e8f0; text-align:left;">
+                <strong>Info adicional:</strong> ${order.extraInfo}`;
+            if (order.hasError) {
+                const errorMsg = order.errorType === 'precio'
+                    ? `<br><span style="color:#fbbf24;">Alerta: Discrepancia de precio detectada.</span>`
+                    : `<br><span style="color:#fbbf24;">Alerta: Discrepancia de cantidad detectada.</span>`;
+                infoHTML += errorMsg;
+            }
+            infoHTML += '</div>';
+            result.innerHTML = infoHTML;
+
+            verificationData.orders.push({ index, action: 'request', rt: totalRt, hadError: order.hasError, foundError: order.hasError });
+            recordEvent('verification', index, 'C', totalRt, { action: 'request', hadError: order.hasError, foundError: order.hasError, extraInfo: order.extraInfo }, null);
+
+            setTimeout(() => showOrder(index + 1), 1500);
+        }, 5000);
+    };
+
+    function disableActions() {
+        document.querySelectorAll('.order-btn').forEach(b => b.disabled = true);
+    }
+}
+
+// ============================================================
+// EVENT RECORDING
+// ============================================================
+
+function recordEvent(miniGame, eventIndex, dimension, reactionTime, response, correct) {
+    events.push({
+        session_id: sessionId,
+        mini_game: miniGame,
+        event_type: 'response',
+        event_index: eventIndex,
+        timestamp_ms: Date.now() - gameStartTime,
+        reaction_time_ms: reactionTime,
+        response: response,
+        correct: correct,
+        dimension: dimension,
+        hesitation_ms: null,
+        attempts: 1
+    });
+}
+
+// ============================================================
+// FINISH & SCORE
+// ============================================================
+
+async function finishGame() {
+    document.getElementById('gameScreen').style.display = 'none';
+    const totalDuration = Date.now() - gameStartTime;
+
+    // --- D Score: Territory Game ---
+    const totalClaims = territoryData.totalClaims || 1;
+    const assertionRate = territoryData.aggressiveClaims / totalClaims;
+    const stealRate = territoryData.steals / totalClaims;
+    const avgClaimTime = territoryData.decisionTimes.length > 0 ? territoryData.decisionTimes.reduce((a, b) => a + b, 0) / territoryData.decisionTimes.length : 5000;
+    const claimSpeedFactor = Math.max(0, 1 - avgClaimTime / 5000);
+    const territoryDominance = territoryData.totalPlayerScore / (territoryData.totalPlayerScore + territoryData.totalAiScore + 1);
+    const dRaw = assertionRate * 0.35 + stealRate * 0.15 + claimSpeedFactor * 0.25 + territoryDominance * 0.25;
+
+    // --- I Score: Influence Scenarios (primary contributor) ---
+    const iChoices = influenceData.approachCounts.I || 0;
+    const totalInfluenceChoices = influenceScenarios.length || 1;
+    const iPct = iChoices / totalInfluenceChoices;
+    // Speed on I choices = natural tendency
+    const iAvgTime = influenceData.approachTimes.I.length > 0 ? influenceData.approachTimes.I.reduce((a, b) => a + b, 0) / influenceData.approachTimes.I.length : 10000;
+    const allInfluenceTimes = influenceData.decisionTimes.length > 0 ? influenceData.decisionTimes.reduce((a, b) => a + b, 0) / influenceData.decisionTimes.length : 5000;
+    const iSpeedBonus = iAvgTime < allInfluenceTimes ? 0.15 : 0;
+    const iRaw = iPct * 0.70 + iSpeedBonus + Math.max(0, (1 - allInfluenceTimes / 8000) * 0.15);
+
+    // --- S Score: Change Response Game ---
+    // Higher S = resists change (more errors after change, slow adaptation, consistent during stable)
+    const avgErrorsAfterChange = changeData.errorsAfterChange.length > 0 ? changeData.errorsAfterChange.reduce((a, b) => a + b, 0) / changeData.errorsAfterChange.length : 0;
+    const changeResistance = Math.min(avgErrorsAfterChange / 3, 1); // More errors = higher S
+    const avgAdaptTime = changeData.adaptationTimes.length > 0 ? changeData.adaptationTimes.reduce((a, b) => a + b, 0) / changeData.adaptationTimes.length : 3000;
+    const slowAdaptation = Math.min(avgAdaptTime / 5000, 1); // Slower = higher S
+    const stableConsistencyAvg = changeData.stableConsistency.length > 0 ? changeData.stableConsistency.reduce((a, b) => a + b, 0) / changeData.stableConsistency.length : 0.5;
+    // Also contribute from influence game S choices
+    const sInfluence = (influenceData.approachCounts.S || 0) / totalInfluenceChoices * 0.5;
+    const sRaw = changeResistance * 0.30 + slowAdaptation * 0.20 + stableConsistencyAvg * 0.30 + sInfluence * 0.20;
+
+    // --- C Score: Verification Choice Game ---
+    const verifyRate = verificationData.totalOrders > 0 ? (verificationData.checksChosen + verificationData.requestsChosen) / verificationData.totalOrders : 0;
+    const requestRate = verificationData.totalOrders > 0 ? verificationData.requestsChosen / verificationData.totalOrders : 0;
+    const avgVerifyTime = verificationData.decisionTimes.length > 0 ? verificationData.decisionTimes.reduce((a, b) => a + b, 0) / verificationData.decisionTimes.length : 1000;
+    const timeInvestment = Math.min(avgVerifyTime / 8000, 1);
+    // Consistency of checking behavior
+    const checkActions = verificationData.orders.map(o => o.action === 'approve' ? 0 : 1);
+    let checkConsistency = 0.5;
+    if (checkActions.length > 2) {
+        const mean = checkActions.reduce((a, b) => a + b, 0) / checkActions.length;
+        // High consistency = either always checks or never checks (low variance)
+        const variance = checkActions.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / checkActions.length;
+        checkConsistency = Math.max(0, 1 - variance * 4); // Low variance = consistent
+    }
+    // Also contribute from influence game C choices
+    const cInfluence = (influenceData.approachCounts.C || 0) / totalInfluenceChoices * 0.3;
+    const cRaw = verifyRate * 0.35 + requestRate * 0.10 + timeInvestment * 0.15 + checkConsistency * 0.15 + cInfluence * 0.25;
+
+    // Also add cross-contributions from influence game to D
+    const dInfluence = (influenceData.approachCounts.D || 0) / totalInfluenceChoices * 0.3;
+    const dFinal = dRaw * 0.80 + dInfluence * 0.20;
+    const iFinal = iRaw;
+    const sFinal = sRaw;
+    const cFinal = cRaw;
+
+    // Scale to 15-40 range
+    function scaleScore(raw) { return Math.round(15 + Math.min(Math.max(raw, 0), 1) * 25); }
+
+    const rawScores = { D: scaleScore(dFinal), I: scaleScore(iFinal), S: scaleScore(sFinal), C: scaleScore(cFinal) };
+    const total = rawScores.D + rawScores.I + rawScores.S + rawScores.C;
+    const percentages = {
+        D: Math.round(rawScores.D / total * 1000) / 10,
+        I: Math.round(rawScores.I / total * 1000) / 10,
+        S: Math.round(rawScores.S / total * 1000) / 10,
+        C: Math.round(rawScores.C / total * 1000) / 10
+    };
+
+    // Dominant trait
+    let dominant = 'D';
+    let maxScore = rawScores.D;
+    for (const t of ['I', 'S', 'C']) { if (rawScores[t] > maxScore) { maxScore = rawScores[t]; dominant = t; } }
+
+    const traitDescriptions = {
+        D: 'Dominancia — Eres una persona orientada a resultados, directa y decidida. Tomas riesgos calculados y actuas con rapidez. Te motivan los retos y la autoridad.',
+        I: 'Influencia — Eres una persona sociable, entusiasta y persuasiva. Prefieres trabajar en equipo y motivas a los demas. Te motivan el reconocimiento y las relaciones.',
+        S: 'Estabilidad — Eres una persona paciente, consistente y confiable. Mantienes la calma bajo presion y eres un gran apoyo para el equipo. Te motivan la seguridad y la armonia.',
+        C: 'Cumplimiento — Eres una persona analitica, precisa y orientada al detalle. Buscas la calidad y la exactitud en todo. Te motivan los estandares altos y el orden.'
+    };
+
+    const description = traitDescriptions[dominant];
+
+    // Preferred persuasion style
+    const maxApproach = Object.entries(influenceData.approachCounts).sort((a, b) => b[1] - a[1])[0];
+    const persuasionStyles = { D: 'Directa', I: 'Entusiasta/Social', S: 'Paciente/Apoyo', C: 'Datos/Logica' };
+    const preferredStyle = maxApproach ? persuasionStyles[maxApproach[0]] : 'Mixta';
+
+    // Behavioral metrics
+    const allRTs = events.filter(e => e.reaction_time_ms).map(e => e.reaction_time_ms);
+    const avgRT = allRTs.length > 0 ? Math.round(allRTs.reduce((a, b) => a + b, 0) / allRTs.length) : 0;
+
+    const behavioralMetrics = {
+        assertion_rate: Math.round(assertionRate * 100) / 100,
+        preferred_persuasion_style: preferredStyle,
+        change_resistance_index: Math.round(changeResistance * 100) / 100,
+        voluntary_verification_rate: Math.round(verifyRate * 100) / 100,
+        avg_decision_time_ms: avgRT,
+        total_duration_ms: totalDuration,
+        territory_score: territoryData.totalPlayerScore,
+        steal_count: territoryData.steals,
+        stable_consistency: Math.round(stableConsistencyAvg * 100) / 100,
+        check_consistency: Math.round(checkConsistency * 100) / 100
+    };
+
+    // Save to Supabase
+    try {
+        if (events.length > 0 && sessionId) {
+            await fetch(`${SUPABASE_URL}/rest/v1/game_events`, {
+                method: 'POST', headers: HEADERS,
+                body: JSON.stringify(events)
+            });
+        }
+
+        const resultData = {
+            session_id: sessionId,
+            email: player.email,
+            game_type: 'game_disc_v2',
+            test_equivalent: 'disc',
+            scores: rawScores,
+            percentages: percentages,
+            dominant_trait: dominant,
+            description: description,
+            behavioral_metrics: behavioralMetrics
+        };
+
+        await fetch(`${SUPABASE_URL}/rest/v1/game_results`, {
+            method: 'POST', headers: HEADERS,
+            body: JSON.stringify(resultData)
+        });
+
+        if (sessionId) {
+            await fetch(`${SUPABASE_URL}/rest/v1/game_sessions?id=eq.${sessionId}`, {
+                method: 'PATCH', headers: HEADERS,
+                body: JSON.stringify({ status: 'completed', completed_at: new Date().toISOString(), duration_ms: totalDuration })
+            });
+        }
+    } catch (e) { console.warn('Save failed:', e); }
+
+    showResults(rawScores, percentages, dominant, description, behavioralMetrics);
+}
+
+function showResults(scores, percentages, dominant, description, bm) {
+    const rs = document.getElementById('resultsScreen');
+    rs.style.display = 'flex';
+
+    const dimNames = { D: 'Dominancia', I: 'Influencia', S: 'Estabilidad', C: 'Cumplimiento' };
+    const dimEmojis = { D: '🔴', I: '🟡', S: '🟢', C: '🔵' };
+    const barClasses = { D: 'd-bar', I: 'i-bar', S: 's-bar', C: 'c-bar' };
+
+    let barsHTML = '';
+    for (const dim of ['D', 'I', 'S', 'C']) {
+        barsHTML += `
+            <div class="result-bar">
+                <div class="label"><span>${dimEmojis[dim]} ${dimNames[dim]}</span><span>${scores[dim]} (${percentages[dim]}%)</span></div>
+                <div class="bar"><div class="bar-fill ${barClasses[dim]}" data-dim="${dim}" style="width: 0%"></div></div>
+            </div>`;
+    }
+
+    document.getElementById('resultsCard').innerHTML = `
+        <h2>Tu Perfil DISC</h2>
+        <div class="dominant-badge ${dominant}">${dimEmojis[dominant]} ${dimNames[dominant]}</div>
+        <p class="trait-desc">${description}</p>
+        ${barsHTML}
+        <div class="behavioral-stats">
+            <h3>Metricas Conductuales</h3>
+            <div class="stat-row"><span class="stat-label">Tasa de asercion (territorio)</span><span class="stat-value">${Math.round(bm.assertion_rate * 100)}%</span></div>
+            <div class="stat-row"><span class="stat-label">Estilo de persuasion preferido</span><span class="stat-value">${bm.preferred_persuasion_style}</span></div>
+            <div class="stat-row"><span class="stat-label">Indice de resistencia al cambio</span><span class="stat-value">${Math.round(bm.change_resistance_index * 100)}%</span></div>
+            <div class="stat-row"><span class="stat-label">Tasa de verificacion voluntaria</span><span class="stat-value">${Math.round(bm.voluntary_verification_rate * 100)}%</span></div>
+            <div class="stat-row"><span class="stat-label">Tiempo de decision promedio</span><span class="stat-value">${(bm.avg_decision_time_ms / 1000).toFixed(1)}s</span></div>
+            <div class="stat-row"><span class="stat-label">Robos de territorio</span><span class="stat-value">${bm.steal_count}</span></div>
+            <div class="stat-row"><span class="stat-label">Consistencia en periodos estables</span><span class="stat-value">${Math.round(bm.stable_consistency * 100)}%</span></div>
+            <div class="stat-row"><span class="stat-label">Consistencia de verificacion</span><span class="stat-value">${Math.round(bm.check_consistency * 100)}%</span></div>
+            <div class="stat-row"><span class="stat-label">Duracion total</span><span class="stat-value">${Math.round(bm.total_duration_ms / 1000)}s</span></div>
+        </div>
+        <div class="version-note">
+            Esta es la Version B del juego DISC. Tus resultados se compararan con la Version A para mejorar la precision.
+        </div>
+    `;
+
+    // Animate bars
+    setTimeout(() => {
+        document.querySelectorAll('.bar-fill').forEach(bar => {
+            const dim = bar.dataset.dim;
+            if (dim) bar.style.width = percentages[dim] * 2.5 + '%';
+        });
+    }, 200);
+}
+</script>
+</body>
+</html>
