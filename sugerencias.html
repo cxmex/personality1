@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buzon de Sugerencias</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+
+        .card { background: #1e293b; border-radius: 16px; padding: 32px; max-width: 500px; width: 100%; }
+        .card h1 { font-size: 1.4rem; margin-bottom: 6px; text-align: center; }
+        .card .subtitle { font-size: 0.85rem; color: #94a3b8; text-align: center; margin-bottom: 20px; line-height: 1.5; }
+        .card .anon-badge { display: block; text-align: center; margin-bottom: 16px; }
+        .card .anon-badge span { display: inline-block; background: #052e16; color: #22c55e; border: 1px solid #22c55e; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+
+        label { display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 6px; margin-top: 16px; }
+        select, textarea, input { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; font-size: 0.95rem; outline: none; font-family: inherit; }
+        select:focus, textarea:focus, input:focus { border-color: #60a5fa; }
+        textarea { min-height: 120px; resize: vertical; line-height: 1.6; }
+
+        .category-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+        .chip { padding: 8px 14px; border-radius: 20px; border: 1px solid #334155; background: #0f172a; color: #94a3b8; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; }
+        .chip:hover { border-color: #60a5fa; color: #e2e8f0; }
+        .chip.selected { border-color: #f59e0b; background: #451a03; color: #fbbf24; font-weight: 600; }
+
+        .urgency { display: flex; gap: 8px; margin-top: 6px; }
+        .urgency-btn { flex: 1; padding: 10px; border-radius: 10px; border: 2px solid #334155; background: #0f172a; color: #94a3b8; font-size: 0.8rem; cursor: pointer; text-align: center; transition: all 0.15s; }
+        .urgency-btn:hover { border-color: #60a5fa; }
+        .urgency-btn.selected { font-weight: 600; }
+        .urgency-btn.low.selected { border-color: #22c55e; color: #22c55e; background: #052e16; }
+        .urgency-btn.med.selected { border-color: #f59e0b; color: #f59e0b; background: #451a03; }
+        .urgency-btn.high.selected { border-color: #ef4444; color: #ef4444; background: #2a0a0a; }
+
+        .btn-submit { width: 100%; padding: 14px; border-radius: 10px; border: none; background: #3b82f6; color: white; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 20px; transition: all 0.2s; }
+        .btn-submit:hover { background: #2563eb; transform: translateY(-1px); }
+        .btn-submit:disabled { background: #475569; cursor: not-allowed; transform: none; }
+
+        .success-screen { display: none; text-align: center; }
+        .success-screen .emoji { font-size: 3rem; margin-bottom: 16px; }
+        .success-screen h2 { font-size: 1.3rem; margin-bottom: 8px; color: #22c55e; }
+        .success-screen p { font-size: 0.9rem; color: #94a3b8; line-height: 1.6; margin-bottom: 20px; }
+        .btn-another { padding: 12px 24px; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; font-size: 0.9rem; cursor: pointer; }
+        .btn-another:hover { border-color: #60a5fa; }
+
+        .past-count { text-align: center; margin-top: 16px; font-size: 0.8rem; color: #475569; }
+    </style>
+</head>
+<body>
+
+<div class="card" id="formCard">
+    <h1>💡 Buzon de Sugerencias</h1>
+    <div class="anon-badge"><span>🔒 100% Anonimo</span></div>
+    <div class="subtitle">Tu opinion importa. Comparte ideas, problemas o sugerencias para mejorar. Nadie sabra quien lo envio.</div>
+
+    <label>Categoria</label>
+    <div class="category-chips" id="categoryChips">
+        <div class="chip" onclick="selectCategory(this, 'mejora_proceso')">⚙️ Mejora de proceso</div>
+        <div class="chip" onclick="selectCategory(this, 'ambiente_laboral')">😊 Ambiente laboral</div>
+        <div class="chip" onclick="selectCategory(this, 'conflicto')">⚡ Conflicto</div>
+        <div class="chip" onclick="selectCategory(this, 'idea_nueva')">💡 Idea nueva</div>
+        <div class="chip" onclick="selectCategory(this, 'reconocimiento')">🌟 Reconocimiento</div>
+        <div class="chip" onclick="selectCategory(this, 'queja')">😤 Queja</div>
+        <div class="chip" onclick="selectCategory(this, 'otro')">📝 Otro</div>
+    </div>
+
+    <label>Tu sugerencia o comentario</label>
+    <textarea id="message" placeholder="Escribe lo que quieras compartir... No se guarda ningun dato que te identifique."></textarea>
+
+    <label>Urgencia</label>
+    <div class="urgency">
+        <div class="urgency-btn low" onclick="selectUrgency(this, 'baja')">🟢 Baja</div>
+        <div class="urgency-btn med" onclick="selectUrgency(this, 'media')">🟡 Media</div>
+        <div class="urgency-btn high" onclick="selectUrgency(this, 'alta')">🔴 Alta</div>
+    </div>
+
+    <button class="btn-submit" id="submitBtn" onclick="submitSugerencia()">Enviar Sugerencia</button>
+    <div class="past-count" id="pastCount"></div>
+</div>
+
+<div class="card success-screen" id="successCard">
+    <div class="emoji">✅</div>
+    <h2>Sugerencia enviada</h2>
+    <p>Gracias por compartir. Tu comentario es completamente anonimo y sera revisado por la gerencia.</p>
+    <button class="btn-another" onclick="resetForm()">Enviar otra sugerencia</button>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://gbkhkbfbarsnpbdkxzii.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdia2hrYmZiYXJzbnBiZGt4emlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQzODAzNzMsImV4cCI6MjA0OTk1NjM3M30.mcOcC2GVEu_wD3xNBzSCC3MwDck3CIdmz4D8adU-bpI';
+const HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+
+let selectedCategory = '';
+let selectedUrgency = '';
+
+function selectCategory(el, cat) {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedCategory = cat;
+}
+
+function selectUrgency(el, urg) {
+    document.querySelectorAll('.urgency-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedUrgency = urg;
+}
+
+async function submitSugerencia() {
+    const message = document.getElementById('message').value.trim();
+    if (!message) { alert('Escribe tu sugerencia'); return; }
+    if (!selectedCategory) { alert('Selecciona una categoria'); return; }
+    if (!selectedUrgency) { alert('Selecciona la urgencia'); return; }
+
+    document.getElementById('submitBtn').disabled = true;
+    document.getElementById('submitBtn').textContent = 'Enviando...';
+
+    try {
+        await fetch(`${SUPABASE_URL}/rest/v1/sugerencias`, {
+            method: 'POST', headers: HEADERS,
+            body: JSON.stringify({
+                category: selectedCategory,
+                message: message,
+                urgency: selectedUrgency,
+                word_count: message.split(/\s+/).length,
+                submitted_at: new Date().toISOString()
+            })
+        });
+
+        document.getElementById('formCard').style.display = 'none';
+        document.getElementById('successCard').style.display = 'block';
+    } catch (e) {
+        alert('Error al enviar. Intenta de nuevo.');
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('submitBtn').textContent = 'Enviar Sugerencia';
+    }
+}
+
+function resetForm() {
+    document.getElementById('message').value = '';
+    selectedCategory = '';
+    selectedUrgency = '';
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+    document.querySelectorAll('.urgency-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('submitBtn').textContent = 'Enviar Sugerencia';
+    document.getElementById('successCard').style.display = 'none';
+    document.getElementById('formCard').style.display = 'block';
+}
+
+// Load count
+(async () => {
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/sugerencias?select=id`, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+            document.getElementById('pastCount').textContent = `${data.length} sugerencia${data.length > 1 ? 's' : ''} enviada${data.length > 1 ? 's' : ''} hasta ahora`;
+        }
+    } catch(e) {}
+})();
+</script>
+</body>
+</html>

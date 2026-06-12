@@ -1677,6 +1677,21 @@ async def read_dashboard():
 
 # ========== GAME-BASED ASSESSMENTS ==========
 
+@app.get("/sugerencias", response_class=HTMLResponse)
+async def sugerencias():
+    with open("sugerencias.html", "r", encoding="utf-8") as f:
+        return f.read()
+
+@app.get("/api/sugerencias")
+async def get_sugerencias():
+    """Get all anonymous suggestions"""
+    async with httpx.AsyncClient() as client:
+        url = f"{SUPABASE_URL}/rest/v1/sugerencias?select=*&order=submitted_at.desc"
+        response = await client.get(url, headers=HEADERS)
+        if response.status_code == 200:
+            return response.json()
+        raise HTTPException(status_code=500, detail="Error obteniendo sugerencias")
+
 @app.get("/ventas-fortalezas", response_class=HTMLResponse)
 async def ventas_fortalezas():
     with open("ventas_fortalezas.html", "r", encoding="utf-8") as f:
