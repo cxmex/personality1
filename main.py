@@ -1677,6 +1677,11 @@ async def read_dashboard():
 
 # ========== GAME-BASED ASSESSMENTS ==========
 
+@app.get("/ventas-fortalezas", response_class=HTMLResponse)
+async def ventas_fortalezas():
+    with open("ventas_fortalezas.html", "r", encoding="utf-8") as f:
+        return f.read()
+
 @app.get("/games", response_class=HTMLResponse)
 async def games_menu():
     with open("games.html", "r", encoding="utf-8") as f:

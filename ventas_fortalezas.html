@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descubre tus Fortalezas en Ventas</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+        .screen { display: none; min-height: 100vh; }
+        .screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+
+        /* Registration */
+        .register-card { background: #1e293b; border-radius: 16px; padding: 40px; max-width: 480px; width: 100%; text-align: center; }
+        .register-card h1 { font-size: 1.6rem; margin-bottom: 8px; color: #fbbf24; }
+        .register-card .value-tag { display: inline-block; background: #052e16; color: #22c55e; border: 1px solid #22c55e; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-bottom: 16px; }
+        .register-card p { font-size: 0.9rem; color: #94a3b8; margin-bottom: 20px; line-height: 1.6; }
+        .register-card .benefits { text-align: left; margin: 16px 0; padding: 16px; background: #0f172a; border-radius: 10px; }
+        .register-card .benefits div { padding: 6px 0; font-size: 0.85rem; color: #94a3b8; }
+        .register-card .benefits span { color: #22c55e; margin-right: 8px; }
+        .register-card input { width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; font-size: 1rem; margin-bottom: 10px; outline: none; }
+        .register-card input:focus { border-color: #fbbf24; }
+        .btn-primary { width: 100%; padding: 14px; border-radius: 10px; border: none; background: #f59e0b; color: #0f172a; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .btn-primary:hover { background: #fbbf24; transform: translateY(-1px); }
+        .btn-primary:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; }
+        .time-note { font-size: 0.8rem; color: #64748b; margin-top: 12px; }
+
+        /* Questionnaire */
+        .quiz-screen { display: none; min-height: 100vh; padding: 0; }
+        .quiz-screen.active { display: block; }
+        .quiz-header { position: sticky; top: 0; background: #1e293b; padding: 16px 24px; border-bottom: 1px solid #334155; z-index: 10; display: flex; justify-content: space-between; align-items: center; }
+        .quiz-header .section-label { font-size: 0.8rem; color: #fbbf24; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .quiz-header .progress-text { font-size: 0.85rem; color: #94a3b8; }
+        .progress-bar { height: 4px; background: #334155; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #f59e0b, #22c55e); transition: width 0.3s; }
+
+        .question-container { max-width: 600px; margin: 0 auto; padding: 24px 20px; }
+        .question-card { background: #1e293b; border-radius: 14px; padding: 24px; margin-bottom: 16px; transition: all 0.2s; }
+        .question-card.answered { opacity: 0.7; }
+        .question-num { font-size: 0.75rem; color: #64748b; margin-bottom: 6px; }
+        .question-text { font-size: 0.95rem; color: #f1f5f9; line-height: 1.6; margin-bottom: 16px; }
+        .question-text .reverse-note { font-size: 0.75rem; color: #64748b; font-style: italic; }
+
+        .likert-scale { display: flex; justify-content: space-between; gap: 8px; }
+        .likert-btn { flex: 1; padding: 10px 4px; border-radius: 8px; border: 2px solid #334155; background: #0f172a; color: #94a3b8; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; text-align: center; }
+        .likert-btn:hover { border-color: #fbbf24; color: #e2e8f0; }
+        .likert-btn.selected { border-color: #f59e0b; background: #451a03; color: #fbbf24; font-weight: 600; }
+
+        .section-divider { text-align: center; padding: 20px; margin: 10px 0; }
+        .section-divider h3 { color: #fbbf24; font-size: 1rem; margin-bottom: 4px; }
+        .section-divider p { color: #64748b; font-size: 0.8rem; }
+
+        .submit-area { text-align: center; padding: 24px 20px 40px; max-width: 600px; margin: 0 auto; }
+
+        /* Results */
+        .results-card { background: #1e293b; border-radius: 16px; padding: 32px; max-width: 520px; width: 100%; }
+        .results-card h2 { font-size: 1.4rem; margin-bottom: 20px; color: #fbbf24; text-align: center; }
+        .scale-result { margin: 16px 0; }
+        .scale-result .scale-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .scale-result .scale-name { font-size: 0.9rem; font-weight: 600; }
+        .scale-result .scale-score { font-size: 0.9rem; color: #fbbf24; }
+        .scale-result .bar { height: 10px; background: #0f172a; border-radius: 5px; overflow: hidden; }
+        .scale-result .bar-fill { height: 100%; border-radius: 5px; transition: width 1s ease; }
+        .bar-fill.grit { background: #ef4444; }
+        .bar-fill.optimism { background: #f59e0b; }
+        .bar-fill.cse { background: #3b82f6; }
+        .bar-fill.customer { background: #22c55e; }
+        .bar-fill.selling { background: #8b5cf6; }
+
+        .type-badge { text-align: center; margin: 24px 0; }
+        .type-badge .emoji { font-size: 3rem; }
+        .type-badge .label { font-size: 1.3rem; font-weight: 700; color: #fbbf24; margin: 8px 0; }
+        .type-badge .desc { font-size: 0.85rem; color: #94a3b8; line-height: 1.5; max-width: 400px; margin: 0 auto; }
+
+        .insight-box { background: #0f172a; border-radius: 10px; padding: 16px; margin: 12px 0; }
+        .insight-box h4 { font-size: 0.85rem; color: #fbbf24; margin-bottom: 8px; }
+        .insight-box p { font-size: 0.85rem; color: #94a3b8; line-height: 1.5; }
+
+        .share-section { text-align: center; margin-top: 24px; padding-top: 20px; border-top: 1px solid #334155; }
+        .share-section p { font-size: 0.85rem; color: #64748b; margin-bottom: 12px; }
+        .btn-whatsapp { display: inline-block; padding: 12px 24px; background: #25d366; color: white; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; text-decoration: none; }
+        .btn-whatsapp:hover { background: #20bd5a; }
+        .btn-games { display: inline-block; padding: 12px 24px; background: #3b82f6; color: white; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-top: 8px; text-decoration: none; }
+
+        @media (max-width: 480px) {
+            .likert-btn { font-size: 0.7rem; padding: 8px 2px; }
+            .register-card { padding: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== REGISTRATION ===== -->
+<div class="screen active" id="registerScreen">
+    <div class="register-card">
+        <div class="value-tag">VALOR: $800+ MXN — GRATIS PARA TI</div>
+        <h1>🏆 Descubre tus Fortalezas en Ventas</h1>
+        <p>Evaluacion cientifica basada en investigacion de Gallup, Duckworth y mas de 30,000 vendedores. Las personas que conocen sus fortalezas son <strong style="color:#22c55e">6x mas productivas</strong>.</p>
+        <div class="benefits">
+            <div><span>✅</span> Tu tipo de vendedor (Closer, Conector, Consultor o Estratega)</div>
+            <div><span>✅</span> Tu nivel de determinacion y persistencia</div>
+            <div><span>✅</span> Tu orientacion al cliente vs resultados</div>
+            <div><span>✅</span> Tu autoconfianza y estabilidad emocional</div>
+            <div><span>✅</span> Recomendaciones personalizadas de desarrollo</div>
+        </div>
+        <input type="text" id="regName" placeholder="Tu nombre completo" required>
+        <input type="email" id="regEmail" placeholder="Tu email" required>
+        <input type="tel" id="regPhone" placeholder="Tu telefono (opcional)">
+        <button class="btn-primary" onclick="startQuiz()">DESCUBRIR MIS FORTALEZAS</button>
+        <div class="time-note">⏱ Solo 7 minutos · 36 preguntas · Resultados inmediatos</div>
+    </div>
+</div>
+
+<!-- ===== QUESTIONNAIRE ===== -->
+<div class="quiz-screen" id="quizScreen">
+    <div class="quiz-header">
+        <span class="section-label" id="sectionLabel">Determinacion</span>
+        <span class="progress-text" id="progressText">1/36</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="question-container" id="questionContainer"></div>
+    <div class="submit-area" id="submitArea" style="display:none;">
+        <button class="btn-primary" onclick="submitQuiz()">VER MIS RESULTADOS</button>
+    </div>
+</div>
+
+<!-- ===== RESULTS ===== -->
+<div class="screen" id="resultsScreen">
+    <div class="results-card" id="resultsCard"></div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://gbkhkbfbarsnpbdkxzii.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdia2hrYmZiYXJzbnBiZGt4emlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQzODAzNzMsImV4cCI6MjA0OTk1NjM3M30.mcOcC2GVEu_wD3xNBzSCC3MwDck3CIdmz4D8adU-bpI';
+const HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+
+// Auto-fill from URL params
+const urlParams = new URLSearchParams(window.location.search);
+const prefillEmail = urlParams.get('email');
+const prefillName = urlParams.get('name');
+window.addEventListener('DOMContentLoaded', () => {
+    if (prefillEmail) document.getElementById('regEmail').value = prefillEmail;
+    if (prefillName) document.getElementById('regName').value = prefillName;
+});
+
+let player = {};
+let answers = {};
+
+// ============================================================
+// SCALES — 36 items from 4 validated instruments
+// ============================================================
+
+const sections = [
+    {
+        id: 'grit',
+        name: 'Determinacion (Grit)',
+        emoji: '💪',
+        desc: 'Mide tu pasion y perseverancia ante objetivos a largo plazo',
+        color: 'grit',
+        items: [
+            { id: 'G1', text: 'He logrado una meta que me tomo anos de trabajo.', reverse: false },
+            { id: 'G2', text: 'Nuevas ideas y proyectos a veces me distraen de los anteriores.', reverse: true },
+            { id: 'G3', text: 'Los contratiempos no me desaniman. No me rindo facilmente.', reverse: false },
+            { id: 'G4', text: 'A menudo me pongo una meta pero luego la cambio por otra.', reverse: true },
+            { id: 'G5', text: 'Soy una persona trabajadora y dedicada.', reverse: false },
+            { id: 'G6', text: 'Me cuesta mantener el enfoque en proyectos que toman mas de unos meses.', reverse: true },
+            { id: 'G7', text: 'Termino todo lo que empiezo.', reverse: false },
+            { id: 'G8', text: 'Soy constante — mi esfuerzo no cambia con el tiempo.', reverse: false },
+        ]
+    },
+    {
+        id: 'optimism',
+        name: 'Optimismo',
+        emoji: '☀️',
+        desc: 'Mide tu tendencia a esperar resultados positivos',
+        color: 'optimism',
+        items: [
+            { id: 'O1', text: 'En tiempos de incertidumbre, generalmente espero lo mejor.', reverse: false },
+            { id: 'O2', text: 'Si algo puede salir mal para mi, saldra mal.', reverse: true },
+            { id: 'O3', text: 'Siempre soy optimista sobre mi futuro.', reverse: false },
+            { id: 'O4', text: 'Casi nunca espero que las cosas salgan como yo quiero.', reverse: true },
+            { id: 'O5', text: 'Rara vez cuento con que me pasen cosas buenas.', reverse: true },
+            { id: 'O6', text: 'En general, espero que me pasen mas cosas buenas que malas.', reverse: false },
+        ]
+    },
+    {
+        id: 'cse',
+        name: 'Autoconfianza Profesional',
+        emoji: '🛡️',
+        desc: 'Mide tu autoestima, autoeficacia y control interno',
+        color: 'cse',
+        items: [
+            { id: 'C1', text: 'Tengo confianza en que puedo tener exito en la vida.', reverse: false },
+            { id: 'C2', text: 'A veces me siento deprimido/a.', reverse: true },
+            { id: 'C3', text: 'Cuando lo intento, generalmente tengo exito.', reverse: false },
+            { id: 'C4', text: 'A veces, cuando fallo, me siento como una persona sin valor.', reverse: true },
+            { id: 'C5', text: 'Completo las tareas exitosamente.', reverse: false },
+            { id: 'C6', text: 'A veces no siento que tengo control sobre mi trabajo.', reverse: true },
+            { id: 'C7', text: 'En general, estoy satisfecho/a conmigo mismo/a.', reverse: false },
+            { id: 'C8', text: 'Tengo dudas sobre mi competencia profesional.', reverse: true },
+            { id: 'C9', text: 'Yo determino lo que pasara en mi vida.', reverse: false },
+            { id: 'C10', text: 'No siento que tengo control sobre mi exito profesional.', reverse: true },
+            { id: 'C11', text: 'Soy capaz de manejar la mayoria de mis problemas.', reverse: false },
+            { id: 'C12', text: 'Hay veces que las cosas se ven bastante desalentadoras y sin esperanza.', reverse: true },
+        ]
+    },
+    {
+        id: 'soco',
+        name: 'Orientacion en Ventas',
+        emoji: '🎯',
+        desc: 'Mide tu balance entre orientacion al cliente y orientacion a resultados',
+        color: 'customer',
+        items: [
+            { id: 'S1', text: 'Trato de ayudar a los clientes a encontrar lo que realmente necesitan, aunque sea mas barato.', reverse: false, type: 'CO' },
+            { id: 'S2', text: 'Me esfuerzo por vender todo lo que pueda, incluso si no es exactamente lo que el cliente necesita.', reverse: false, type: 'SO' },
+            { id: 'S3', text: 'Dedico tiempo a entender la situacion del cliente antes de ofrecer algo.', reverse: false, type: 'CO' },
+            { id: 'S4', text: 'Presento el producto de la mejor manera posible, aunque tenga limitaciones que no menciono.', reverse: false, type: 'SO' },
+            { id: 'S5', text: 'Si un producto no le conviene al cliente, le digo honestamente.', reverse: false, type: 'CO' },
+            { id: 'S6', text: 'Lo mas importante para mi es cerrar la venta.', reverse: false, type: 'SO' },
+            { id: 'S7', text: 'Prefiero un cliente satisfecho que regrese, aunque hoy compre menos.', reverse: false, type: 'CO' },
+            { id: 'S8', text: 'Uso tecnicas de presion para que el cliente tome una decision rapida.', reverse: false, type: 'SO' },
+            { id: 'S9', text: 'Me aseguro de que el cliente entienda completamente lo que esta comprando.', reverse: false, type: 'CO' },
+            { id: 'S10', text: 'Mi principal motivacion en ventas es ganar la comision.', reverse: false, type: 'SO' },
+        ]
+    }
+];
+
+const allItems = [];
+sections.forEach(s => s.items.forEach(item => allItems.push({ ...item, section: s.id, sectionName: s.name })));
+
+const labels = ['Muy en desacuerdo', 'En desacuerdo', 'Neutral', 'De acuerdo', 'Muy de acuerdo'];
+
+// ============================================================
+// QUIZ FLOW
+// ============================================================
+
+function startQuiz() {
+    const name = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    if (!name || !email) { alert('Nombre y email son requeridos'); return; }
+    player = { name, email, phone: document.getElementById('regPhone').value.trim() };
+
+    document.getElementById('registerScreen').classList.remove('active');
+    document.getElementById('quizScreen').classList.add('active');
+    renderQuestions();
+}
+
+function renderQuestions() {
+    const container = document.getElementById('questionContainer');
+    let html = '';
+    let globalIdx = 0;
+
+    sections.forEach(section => {
+        html += `<div class="section-divider"><h3>${section.emoji} ${section.name}</h3><p>${section.desc}</p></div>`;
+        section.items.forEach((item, i) => {
+            globalIdx++;
+            html += `
+                <div class="question-card" id="card-${item.id}">
+                    <div class="question-num">Pregunta ${globalIdx} de ${allItems.length}</div>
+                    <div class="question-text">${item.text}</div>
+                    <div class="likert-scale">
+                        ${labels.map((label, li) => `
+                            <button class="likert-btn" onclick="answer('${item.id}', ${li + 1}, this)">${li + 1}<br><span style="font-size:0.65rem">${label}</span></button>
+                        `).join('')}
+                    </div>
+                </div>`;
+        });
+    });
+
+    container.innerHTML = html;
+}
+
+function answer(itemId, value, btn) {
+    answers[itemId] = value;
+
+    // Visual feedback
+    const card = document.getElementById(`card-${itemId}`);
+    card.querySelectorAll('.likert-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    card.classList.add('answered');
+
+    // Update progress
+    const answered = Object.keys(answers).length;
+    const total = allItems.length;
+    document.getElementById('progressText').textContent = `${answered}/${total}`;
+    document.getElementById('progressFill').style.width = `${(answered / total) * 100}%`;
+
+    // Find current section
+    const item = allItems.find(i => i.id === itemId);
+    if (item) document.getElementById('sectionLabel').textContent = item.sectionName;
+
+    // Show submit when all answered
+    if (answered >= total) {
+        document.getElementById('submitArea').style.display = 'block';
+        document.getElementById('submitArea').scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+// ============================================================
+// SCORING
+// ============================================================
+
+async function submitQuiz() {
+    if (Object.keys(answers).length < allItems.length) {
+        alert('Por favor responde todas las preguntas');
+        return;
+    }
+
+    // Score each scale
+    function scoreScale(sectionId, maxPerItem = 5) {
+        const items = allItems.filter(i => i.section === sectionId);
+        let total = 0;
+        items.forEach(item => {
+            let val = answers[item.id];
+            if (item.reverse) val = 6 - val; // reverse score
+            total += val;
+        });
+        const max = items.length * maxPerItem;
+        return { raw: total, max, pct: Math.round((total / max) * 100) };
+    }
+
+    const grit = scoreScale('grit');
+    const optimism = scoreScale('optimism');
+    const cse = scoreScale('cse');
+
+    // SOCO: separate customer orientation (CO) and selling orientation (SO)
+    const socoItems = allItems.filter(i => i.section === 'soco');
+    let coTotal = 0, soTotal = 0, coCount = 0, soCount = 0;
+    socoItems.forEach(item => {
+        const val = answers[item.id];
+        if (item.type === 'CO') { coTotal += val; coCount++; }
+        else { soTotal += val; soCount++; }
+    });
+    const customerOrientation = Math.round((coTotal / (coCount * 5)) * 100);
+    const sellingOrientation = Math.round((soTotal / (soCount * 5)) * 100);
+
+    // Determine sales type
+    let salesType, salesEmoji, salesDesc;
+    if (grit.pct >= 75 && sellingOrientation >= 60) {
+        salesType = 'El Closer'; salesEmoji = '🎯';
+        salesDesc = 'Tu determinacion y orientacion a resultados te hacen un cerrador nato. La presion te motiva y no descansas hasta lograr el objetivo. Tu mejor arma: la persistencia ante el rechazo.';
+    } else if (customerOrientation >= 70 && cse.pct >= 65) {
+        salesType = 'El Consultor'; salesEmoji = '🤝';
+        salesDesc = 'Tu enfoque genuino en el cliente y tu autoconfianza te convierten en un asesor de confianza. Los clientes vuelven a ti porque saben que los escuchas y los ayudas a decidir bien.';
+    } else if (optimism.pct >= 70 && customerOrientation >= 60) {
+        salesType = 'El Conector'; salesEmoji = '🌟';
+        salesDesc = 'Tu optimismo y orientacion al cliente te hacen natural para crear relaciones. Tu energia positiva es contagiosa y los clientes se sienten comodos contigo desde el primer momento.';
+    } else {
+        salesType = 'El Estratega'; salesEmoji = '📊';
+        salesDesc = 'Tu enfoque analitico y tu autoconfianza te permiten preparar cada venta con precision. Conoces los datos, anticipas objeciones y presentas argumentos solidos. Tu fortaleza: la preparacion.';
+    }
+
+    // Strengths ranking
+    const scales = [
+        { name: 'Determinacion (Grit)', pct: grit.pct, color: 'grit' },
+        { name: 'Optimismo', pct: optimism.pct, color: 'optimism' },
+        { name: 'Autoconfianza Profesional', pct: cse.pct, color: 'cse' },
+        { name: 'Orientacion al Cliente', pct: customerOrientation, color: 'customer' },
+        { name: 'Orientacion a Resultados', pct: sellingOrientation, color: 'selling' },
+    ].sort((a, b) => b.pct - a.pct);
+
+    // Generate insights
+    const topStrength = scales[0];
+    const growthArea = scales[scales.length - 1];
+
+    // Save to Supabase
+    const resultData = {
+        email: player.email,
+        name: player.name,
+        phone: player.phone,
+        test_type: 'sales_strengths',
+        scores: { grit: grit.raw, optimism: optimism.raw, cse: cse.raw, customer_orientation: coTotal, selling_orientation: soTotal },
+        percentages: { grit: grit.pct, optimism: optimism.pct, cse: cse.pct, customer_orientation: customerOrientation, selling_orientation: sellingOrientation },
+        dominant_trait: salesType,
+        description: salesDesc,
+        sales_type: salesType,
+        answers: answers
+    };
+
+    try {
+        // Save as participant
+        const pRes = await fetch(`${SUPABASE_URL}/rest/v1/participants`, {
+            method: 'POST', headers: HEADERS,
+            body: JSON.stringify({ name: player.name, email: player.email, phone: player.phone, position: 'ventas_digital', test_type: 'sales_strengths', submitted_at: new Date().toISOString() })
+        });
+        const pData = await pRes.json();
+        const participantId = pData && pData[0] ? pData[0].id : null;
+
+        // Save answers
+        if (participantId) {
+            await fetch(`${SUPABASE_URL}/rest/v1/answers`, {
+                method: 'POST', headers: HEADERS,
+                body: JSON.stringify({ participant_id: participantId, test_type: 'sales_strengths', answers: Object.values(answers) })
+            });
+
+            // Save results
+            await fetch(`${SUPABASE_URL}/rest/v1/results`, {
+                method: 'POST', headers: HEADERS,
+                body: JSON.stringify({ participant_id: participantId, test_type: 'sales_strengths', scores: resultData.scores, percentages: resultData.percentages, dominant_trait: salesType, description: salesDesc })
+            });
+        }
+    } catch (e) { console.warn('Save failed:', e); }
+
+    // Show results
+    showResults(scales, salesType, salesEmoji, salesDesc, topStrength, growthArea, grit, optimism, cse, customerOrientation, sellingOrientation);
+}
+
+function showResults(scales, type, emoji, desc, top, growth, grit, optimism, cse, co, so) {
+    document.getElementById('quizScreen').classList.remove('active');
+    const rs = document.getElementById('resultsScreen');
+    rs.classList.add('active');
+
+    let barsHTML = scales.map(s => `
+        <div class="scale-result">
+            <div class="scale-header"><span class="scale-name">${s.name}</span><span class="scale-score">${s.pct}%</span></div>
+            <div class="bar"><div class="bar-fill ${s.color}" style="width:0%"></div></div>
+        </div>`).join('');
+
+    // Generate development tips
+    let tips = [];
+    if (grit.pct < 60) tips.push('Practica establecer UNA meta por semana y completarla sin cambiar. La constancia se entrena.');
+    if (optimism.pct < 60) tips.push('Antes de cada llamada, recuerda tu ultimo exito. El optimismo se construye con evidencia positiva.');
+    if (cse.pct < 60) tips.push('Lleva un "diario de logros" — escribe 3 cosas que hiciste bien cada dia. Tu confianza crecera con evidencia.');
+    if (co > so + 20) tips.push('Tu enfoque en el cliente es excelente, pero no olvides pedir la venta. Ayudar Y cerrar no son opuestos.');
+    if (so > co + 20) tips.push('Tu impulso por resultados es fuerte. Invertir 2 minutos mas escuchando al cliente puede duplicar tus cierres.');
+    if (tips.length === 0) tips.push('Tu perfil esta bien balanceado. Enfocate en convertir tu fortaleza principal en tu marca personal de ventas.');
+
+    document.getElementById('resultsCard').innerHTML = `
+        <h2>🏆 Tu Perfil de Ventas</h2>
+        <div class="type-badge">
+            <div class="emoji">${emoji}</div>
+            <div class="label">${type}</div>
+            <div class="desc">${desc}</div>
+        </div>
+        ${barsHTML}
+        <div class="insight-box">
+            <h4>💪 Tu Mayor Fortaleza</h4>
+            <p><strong>${top.name}</strong> (${top.pct}%) — Esta es tu ventaja competitiva natural en ventas. Usala conscientemente en cada interaccion con clientes.</p>
+        </div>
+        <div class="insight-box">
+            <h4>🌱 Tu Area de Crecimiento</h4>
+            <p><strong>${growth.name}</strong> (${growth.pct}%) — Aqui tienes mas espacio para crecer. La buena noticia: la ciencia muestra que estas habilidades son entrenables.</p>
+        </div>
+        <div class="insight-box">
+            <h4>📋 Tu Plan de Desarrollo</h4>
+            ${tips.map(t => `<p style="margin-bottom:8px;">• ${t}</p>`).join('')}
+        </div>
+        <div class="insight-box">
+            <h4>📊 Dato Cientifico</h4>
+            <p>Las personas que conocen y usan sus fortalezas diariamente son <strong style="color:#22c55e">6x mas productivas</strong> y tienen <strong style="color:#22c55e">29% mas probabilidades de superar sus metas</strong>. — Gallup, 1.2 millones de empleados</p>
+        </div>
+        <div class="share-section">
+            <p>Comparte tu resultado con tus contactos</p>
+            <a class="btn-whatsapp" href="https://wa.me/?text=${encodeURIComponent(`Acabo de descubrir que soy ${type} en ventas! 🏆 Descubre tu perfil gratis: ${window.location.origin}/ventas-fortalezas`)}" target="_blank">📱 Compartir en WhatsApp</a>
+            <br>
+            <a class="btn-games" href="/games?email=${encodeURIComponent(player.email)}">🎮 Juega los juegos cognitivos tambien</a>
+        </div>
+    `;
+
+    // Animate bars
+    setTimeout(() => {
+        document.querySelectorAll('.bar-fill').forEach((bar, i) => {
+            bar.style.width = scales[i].pct + '%';
+        });
+    }, 300);
+}
+</script>
+</body>
+</html>
